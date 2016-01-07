@@ -86,10 +86,10 @@ void make_header(char * output, char s[]) {
   strcat(output,repcode);
 }
 
-// put them together
+// put them together (the MAIN function)
 KSEQ_INIT(gzFile, gzread);
 
-void main_trimFETISH(char **infile, char **outfile)
+void trimFETISH(char **infile, char **outfile)
 {
   kseq_t *seq;
 	int l;
