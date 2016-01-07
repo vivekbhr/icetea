@@ -3,7 +3,14 @@
 #include "kseq.h"
 #include <string.h>
 //
+#include <Rversion.h>
+#if (R_VERSION >= R_Version(2,3,0))
+#define R_INTERFACE_PTRS 1
+#define CSTACK_DEFNS 1
+#include <Rinterface.h>
+#endif
 #include "trimFETISH.h"
+#include <R.h>
 
 //copy the index sequence (position 6 to 12)
 void copy_index(char d[], char s[]) {
@@ -82,20 +89,16 @@ void make_header(char * output, char s[]) {
 // put them together
 KSEQ_INIT(gzFile, gzread);
 
-int main(int argc, char *argv[]) //main_trimFETISH
+void main_trimFETISH(char *infile, char *outfile)
 {
-	gzFile fp;
-	FILE * fpout;
-	kseq_t *seq;
+  kseq_t *seq;
 	int l;
-	if (argc == 1) {
-		fprintf(stderr, "Usage: %s <in_R2.fastq.gz> <out_R2.fastq>\n", argv[0]);
-		return 1;
-	}
-	fp = gzopen(argv[1], "r");
-	fpout = fopen(argv[2], "w+");
-
+  gzFile fp;
+  FILE * fpout;
+  fp = gzopen(infile, "r");
+	fpout = fopen(outfile, "w+");
 	seq = kseq_init(fp);
+
 	char * sequence;
   char * name;
   char * qual;
@@ -124,7 +127,5 @@ int main(int argc, char *argv[]) //main_trimFETISH
 	kseq_destroy(seq);
 	gzclose(fp);
   fclose(fpout);
-
-  return 0;
 
 }
