@@ -89,14 +89,14 @@ void make_header(char * output, char s[]) {
 // put them together
 KSEQ_INIT(gzFile, gzread);
 
-void main_trimFETISH(char *infile, char *outfile)
+void main_trimFETISH(char **infile, char **outfile)
 {
   kseq_t *seq;
 	int l;
   gzFile fp;
   FILE * fpout;
-  fp = gzopen(infile, "r");
-	fpout = fopen(outfile, "w+");
+  fp = gzopen(*infile, "r");
+	fpout = fopen(*outfile, "w+");
 	seq = kseq_init(fp);
 
 	char * sequence;
