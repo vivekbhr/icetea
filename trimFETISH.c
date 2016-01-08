@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) //main_trimFETISH
 		return 1;
 	}
 	fp = gzopen(argv[1], "r");
-	fpout = fopen(argv[2], "w+");
+	fpout = gzopen(argv[2], "w+");
 
 	seq = kseq_init(fp);
 	char * sequence;
@@ -112,18 +112,18 @@ int main(int argc, char *argv[]) //main_trimFETISH
     if (seq->comment.l) comment = seq->comment.s;//comment
     //now print
     make_header(header,sequence);
-    fprintf(fpout,"@%s#%s %s\n", name,header,comment);
+    gzrintf(fpout,"@%s#%s %s\n", name,header,comment);
     trim_seq(trimseq,sequence);
-    fprintf(fpout,"%s\n", trimseq);//trimmed seq:
-    fprintf(fpout,"%s\n","+" );
+    gzrintf(fpout,"%s\n", trimseq);//trimmed seq:
+    gzrintf(fpout,"%s\n","+" );
     trim_seq(trimqual,qual);
-    fprintf(fpout,"%s\n", trimqual);//trimmed qual:
+    gzrintf(fpout,"%s\n", trimqual);//trimmed qual:
 
 	}
 
 	kseq_destroy(seq);
 	gzclose(fp);
-  fclose(fpout);
+  gzclose(fpout);
 
   return 0;
 
