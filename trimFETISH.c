@@ -85,15 +85,16 @@ KSEQ_INIT(gzFile, gzread);
 int main(int argc, char *argv[]) //main_trimFETISH
 {
 	gzFile fp;
-	FILE * fpout;
+	gzFile fpout;
 	kseq_t *seq;
 	int l;
 	if (argc == 1) {
 		fprintf(stderr, "Usage: %s <in_R2.fastq.gz> <out_R2.fastq>\n", argv[0]);
 		return 1;
 	}
+
 	fp = gzopen(argv[1], "r");
-	fpout = gzopen(argv[2], "w+");
+	fpout = gzopen(argv[2], "wb");
 
 	seq = kseq_init(fp);
 	char * sequence;
@@ -112,12 +113,12 @@ int main(int argc, char *argv[]) //main_trimFETISH
     if (seq->comment.l) comment = seq->comment.s;//comment
     //now print
     make_header(header,sequence);
-    gzrintf(fpout,"@%s#%s %s\n", name,header,comment);
+    gzprintf(fpout,"@%s#%s %s\n", name,header,comment);
     trim_seq(trimseq,sequence);
-    gzrintf(fpout,"%s\n", trimseq);//trimmed seq:
-    gzrintf(fpout,"%s\n","+" );
+    gzprintf(fpout,"%s\n", trimseq);//trimmed seq:
+    gzprintf(fpout,"%s\n","+" );
     trim_seq(trimqual,qual);
-    gzrintf(fpout,"%s\n", trimqual);//trimmed qual:
+    gzprintf(fpout,"%s\n", trimqual);//trimmed qual:
 
 	}
 
