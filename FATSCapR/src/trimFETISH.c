@@ -94,9 +94,9 @@ void trimFETISH(char **infile, char **outfile)
   kseq_t *seq;
 	int l;
   gzFile fp;
-  FILE * fpout;
+  gzFile fpout;
   fp = gzopen(*infile, "r");
-	fpout = fopen(*outfile, "w+");
+	fpout = gzopen(*outfile, "wb");
 	seq = kseq_init(fp);
 
 	char * sequence;
@@ -115,17 +115,17 @@ void trimFETISH(char **infile, char **outfile)
     if (seq->comment.l) comment = seq->comment.s;//comment
     //now print
     make_header(header,sequence);
-    fprintf(fpout,"@%s#%s %s\n", name,header,comment);
+    gzprintf(fpout,"@%s#%s %s\n", name,header,comment);
     trim_seq(trimseq,sequence);
-    fprintf(fpout,"%s\n", trimseq);//trimmed seq:
-    fprintf(fpout,"%s\n","+" );
+    gzprintf(fpout,"%s\n", trimseq);//trimmed seq:
+    gzprintf(fpout,"%s\n","+" );
     trim_seq(trimqual,qual);
-    fprintf(fpout,"%s\n", trimqual);//trimmed qual:
+    gzprintf(fpout,"%s\n", trimqual);//trimmed qual:
 
 	}
 
 	kseq_destroy(seq);
 	gzclose(fp);
-  fclose(fpout);
+  gzclose(fpout);
 
 }
