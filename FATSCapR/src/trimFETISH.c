@@ -89,43 +89,80 @@ void make_header(char * output, char s[]) {
 // put them together (the MAIN function)
 KSEQ_INIT(gzFile, gzread);
 
-void trimFETISH(char **infile, char **outfile)
+void trimFETISH(char **inR1, char **inR2, char **outR1, char **outR2)
 {
-  kseq_t *seq;
-	int l;
   gzFile fp;
+  gzFile fpt;
   gzFile fpout;
-  fp = gzopen(*infile, "r");
-	fpout = gzopen(*outfile, "wb");
-	seq = kseq_init(fp);
+  gzFile fptout;
 
+  kseq_t *seq;
+  kseq_t *seqt;
+
+  fp = gzopen(*inR2, "r"); // file pointer for R2
+  fpt = gzopen(*inR1, "r"); // file pointer for R1
+
+  fpout = gzopen(*outR2, "wb"); // output file pointer for R2
+  fptout = gzopen(*outR1, "wb"); // output file pointer for R1
+
+  seq = kseq_init(fp);
+  seqt = kseq_init(fpt);
+// save data for R2
 	char * sequence;
   char * name;
   char * qual;
   char * comment;
+// for R1
+  char * tsequence;
+  char * tname;
+  char * tqual;
+  char * tcomment;
+
   char header[100];
   char trimseq[50];
   char trimqual[50];
 
+  int l;
 	while ((l = kseq_read(seq)) >= 0) {
+    kseq_read(seqt);
+    // save data for R2
 		sequence = seq->seq.s;
-    // other components
     name = seq->name.s;
     if (seq->qual.l) qual = seq->qual.s;//quality
     if (seq->comment.l) comment = seq->comment.s;//comment
-    //now print
-    make_header(header,sequence);
+    // for file R1
+    tsequence = seqt->seq.s;
+    tname = seqt->name.s;
+    if (seqt->qual.l) tqual = seqt->qual.s;//quality
+    if (seqt->comment.l) tcomment = seqt->comment.s;//comment
+
+    //now print data for both R1 and R2
+    make_header(header,sequence); // header only taken from R2
     gzprintf(fpout,"@%s#%s %s\n", name,header,comment);
+    gzprintf(fptout,"@%s#%s %s\n", tname,header,tcomment);
+
     trim_seq(trimseq,sequence);
-    gzprintf(fpout,"%s\n", trimseq);//trimmed seq:
+    gzprintf(fpout,"%s\n", trimseq);//trimmed seq for R2
+    gzprintf(fptout,"%s\n", tsequence);//normal seq for R1
+
     gzprintf(fpout,"%s\n","+" );
+    gzprintf(fptout,"%s\n","+" );
+
     trim_seq(trimqual,qual);
-    gzprintf(fpout,"%s\n", trimqual);//trimmed qual:
+    gzprintf(fpout,"%s\n", trimqual);//trimmed qual for R2
+    gzprintf(fptout,"%s\n", tqual);//normal qual for R1:
 
 	}
 
+// close the files
 	kseq_destroy(seq);
+  kseq_destroy(seqt);
+
 	gzclose(fp);
+  gzclose(fpt);
+
   gzclose(fpout);
+  gzclose(fptout);
+
 
 }
