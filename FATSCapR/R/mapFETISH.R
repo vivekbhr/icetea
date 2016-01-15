@@ -14,7 +14,7 @@
 #' @return bamfile A mapped BAM file for the sample.
 #' @examples
 #'
-#'
+#' @export
 
 mapFETISH <- function(index,R1,R2,output,nthreads,logfile=NULL,...){
 	# open a logfile if given

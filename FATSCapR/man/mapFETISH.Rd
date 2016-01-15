@@ -4,10 +4,11 @@
 \alias{mapFETISH}
 \title{Map the paired-end FETISH data.}
 \usage{
-mapFETISH(index, R1, R2, output, nthreads, PE_orientation = "rf", ...)
+mapFETISH(index, R1, R2, output, nthreads, logfile = NULL, ...)
 }
 \arguments{
-\item{index}{Subread Index file for the genome}
+\item{index}{character string giving the basename of the Subread index file.
+Index files should be located in the current directory.}
 
 \item{R1}{forward read (_R1) fastq.}
 
@@ -17,7 +18,9 @@ mapFETISH(index, R1, R2, output, nthreads, PE_orientation = "rf", ...)
 
 \item{nthreads}{number of threads to use for mapping.}
 
-\item{PE_orientation}{library type.}
+\item{logfile}{a log file to write the processing message.}
+
+\item{...}{additional arguments passed to the RSubread::align function.}
 }
 \value{
 bamfile A mapped BAM file for the sample.
@@ -26,7 +29,6 @@ bamfile A mapped BAM file for the sample.
 Map the paired-end FETISH data.
 }
 \examples{
-
 
 }
 
