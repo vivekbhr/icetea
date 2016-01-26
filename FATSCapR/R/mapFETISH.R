@@ -13,6 +13,7 @@
 #' @param ... additional arguments passed to the RSubread::align function.
 #' @return bamfile A mapped BAM file for the sample.
 #' @examples
+#'	mapFETISH(index,R1,R2,output,nthreads,logfile=NULL)
 #'
 #' @export
 

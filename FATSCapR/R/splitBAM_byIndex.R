@@ -60,9 +60,9 @@ splitBAM_byIndex <- function(bamFile, index_list, outfile_list, max_mismatch = 0
 	
 	param = BiocParallel::MulticoreParam(workers = nthreads)
 	BiocParallel::bplapply(seq_along(destinations), function(i, file, destinations, filtrules) {
-								filterBam(file, destinations[i], filter = filtrules[[i]])
+								Rsamtools::filterBam(file, destinations[i], filter = filtrules[[i]])
 								}, bamFile, destinations, filtrules,
-		   BPPARAM = param)
+		   			BPPARAM = param)
 	
 	## Files written
 	message("Done!")
