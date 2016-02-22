@@ -11,56 +11,57 @@
 #' @export
 #'
 #' @examples
-#' 
+#'
 #' cager_wrapper(input, labels, ncores = NULL, tpmCutoff = 10, genome = "BSgenome.Dmelanogaster.UCSC.dm6")
-#' 
+#'
 
 cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10, genome = "BSgenome.Dmelanogaster.UCSC.dm6"){
 	# build mycage
 	mycage <- new("CAGEset", genomeName = genome,
 			  inputFiles = input, inputFilesType = "bam", sampleLabels = labels)
-	ctss <- getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE)
-	
+	ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE)
+
 	# plot correlation
-	corr.m <- plotCorrelation(mycage, samples = "all", method = "pearson")
+	corr.m <- CAGEr::plotCorrelation(mycage, samples = "all", method = "pearson")
 	# get lib sizes
 	print("Library Sizes : ")
-	print(librarySizes(mycage))
+	print(CAGEr::librarySizes(mycage))
 	# plot rev cums
-	plotReverseCumulatives(mycage, fitInRange = c(5, 1000), onePlot = TRUE)
-	
+	CAGEr::plotReverseCumulatives(mycage, fitInRange = c(5, 1000), onePlot = TRUE)
+
 	# After loking into the plot I can determine suitable alpha and T for normalization
 	# I can use it if i want to normalize by power law, but disabled by default
 	#normalizeTagCount(mycage, method = "powerLaw", fitInRange = c(5, 50000), alpha = 1.05, T = 1*10^4)
-	
-	normalizeTagCount(mycage, method = "simpleTpm")
+
+	CAGEr::normalizeTagCount(mycage, method = "simpleTpm")
 	# export normalized data to bedgraph
-	exportCTSStoBedGraph(mycage, values = "normalized", oneFile = FALSE)
-	
+	CAGEr::exportCTSStoBedGraph(mycage, values = "normalized", oneFile = FALSE)
+
 	# Check if multicore needed
 	multi <- ifelse(is.null(ncores), FALSE, TRUE)
-	
+
 	if (multi == TRUE) {
 		PARAM = BiocParallel::MulticoreParam(ncores)
 	} else {
 		PARAM = BiocParallel::MulticoreParam(1)
 	}
-	
+
 	# TSS clustering
-	clusterCTSS(object = mycage, threshold = tpmCutoff, thresholdIsTpm = TRUE, nrPassThreshold = 1, 
-			method = "distclu", maxDist = 20, removeSingletons = TRUE, keepSingletonsAbove = 10,
-			useMulticore = multi, nrCores = ncores)
+	CAGEr::clusterCTSS(object = mycage, threshold = tpmCutoff, thresholdIsTpm = TRUE, nrPassThreshold = 1,
+				method = "distclu", maxDist = 20, removeSingletons = TRUE, keepSingletonsAbove = 10,
+				useMulticore = multi, nrCores = ncores)
 	tc <- BiocParallel::bplapply(sampleLabels(mycage), function(x) tagClusters(mycage, sample = x), BPPARAM = PARAM)
-	
+
 	# get TSS width (combining all samples)
 	message("Annotating TSS")
-	cumulativeCTSSdistribution(mycage, clusters = "tagClusters")
-	quantilePositions(mycage, clusters = "tagClusters", qLow = 0.1, qUp = 0.9)
+	CAGEr::cumulativeCTSSdistribution(mycage, clusters = "tagClusters")
+	CAGEr::quantilePositions(mycage, clusters = "tagClusters", qLow = 0.1, qUp = 0.9)
 	tc <- BiocParallel::bplapply(sampleLabels(mycage), function(x) {
 		tagClusters(mycage, sample = x, returnInterquantileWidth = TRUE, qLow = 0.1, qUp = 0.9)
 	}, BPPARAM = PARAM)
-	
+
 	# export bed files
-	exportToBed(object = mycage, what = "tagClusters", qLow = 0.1, qUp = 0.9, oneFile = FALSE, colorByExpressionProfile = TRUE)
-	
+	CAGEr::exportToBed(object = mycage, what = "tagClusters", qLow = 0.1, qUp = 0.9,
+			   oneFile = FALSE, colorByExpressionProfile = TRUE)
+
 }
