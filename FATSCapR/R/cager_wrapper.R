@@ -19,7 +19,7 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10, genome = 
 	# build mycage
 	mycage <- new("CAGEset", genomeName = genome,
 			  inputFiles = input, inputFilesType = "bam", sampleLabels = labels)
-	ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE, ncores = ncores)
+	ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE, chrConvert = TRUE)
 
 	# plot correlation
 	corr.m <- CAGEr::plotCorrelation(mycage, samples = "all", method = "pearson")
