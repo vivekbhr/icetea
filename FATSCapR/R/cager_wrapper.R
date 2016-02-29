@@ -19,7 +19,16 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10, genome = 
 	# build mycage
 	mycage <- new("CAGEset", genomeName = genome,
 			  inputFiles = input, inputFilesType = "bam", sampleLabels = labels)
-	ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE, chrConvert = TRUE)
+	tryCatch({
+		ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE, chrConvert = TRUE)
+	}, error = function(e){
+		if(grepl("negative",e) == TRUE){
+			print("It seems that the file is too big. Try splitting the file by chromosome and process one by one.")
+		} else {
+			print("Error: ", e)
+		}
+	})
+
 
 	# plot correlation
 	corr.m <- CAGEr::plotCorrelation(mycage, samples = "all", method = "pearson")
