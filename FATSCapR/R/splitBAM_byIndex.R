@@ -25,9 +25,9 @@ splitBAM_byIndex <- function(bamFile, index_list, outfile_list, max_mismatch = 0
 	## Write a CLOSURE that return the function to search idx in readname
 	message("Creating Filtering Rules")
 	make_FilterFunc <- function(idx_name,maxM = max_mismatch){
-		
+
 		idx_name = Biostrings::DNAString(idx_name)
-		
+
 		function(df){
 			df$qname <- as.character(df$qname)
 			df_sep <- data.frame(idx = vapply(strsplit(df$qname, "#"), "[[", character(1), 2),
@@ -57,13 +57,14 @@ splitBAM_byIndex <- function(bamFile, index_list, outfile_list, max_mismatch = 0
 	## Filter the files in parallel
 	message("Filtering the BAM file")
 	destinations <- outfile_list
-	
+
 	param = BiocParallel::MulticoreParam(workers = nthreads)
-	BiocParallel::bplapply(seq_along(destinations), function(i, file, destinations, filtrules) {
-								Rsamtools::filterBam(file, destinations[i], filter = filtrules[[i]])
-								}, bamFile, destinations, filtrules,
-		   			BPPARAM = param)
-	
+	BiocParallel::bplapply(seq_along(destinations),
+			       function(i, file, destinations, filtrules) {
+					Rsamtools::filterBam(file, destinations[i], filter = filtrules[[i]])
+					}, bamFile, destinations, filtrules,
+		   		BPPARAM = param)
+
 	## Files written
 	message("Done!")
 }
