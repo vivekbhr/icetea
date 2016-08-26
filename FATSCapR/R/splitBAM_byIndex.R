@@ -30,6 +30,7 @@ splitBAM_byIndex <- function(bamFile, index_list, outfile_list, max_mismatch = 0
 
 		function(df){
 			df$qname <- as.character(df$qname)
+			# wasteful use of dataframe here, i should use only vectors
 			df_sep <- data.frame(idx = vapply(strsplit(df$qname, "#"), "[[", character(1), 2),
 					     stringsAsFactors = FALSE)
 			df_sep2 <- data.frame(idx = vapply(strsplit(df_sep$idx, ":"), "[[", character(1), 1),
