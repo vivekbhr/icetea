@@ -1,0 +1,75 @@
+
+#' Filter PCR-duplicates from BAM file using internal UMIs
+#'
+#' @param bamFile Input BAM file
+#' @param outFile Output BAM file
+#'
+#' @return Filtered BAM file (with only R1), after PCR duplicate removal
+#' @export
+#'
+#' @examples
+#'
+#'filterDuplicates(bamFile = "FATSCapR/tests/testthat/test_sorted.bam",
+#'			outFile = "FATSCapR/tests/testthat/test_pcrRem.bam")
+
+
+filterDuplicates <- function(bamFile,outFile) {
+
+	sparam <- ScanBamParam(what = c("qname", "flag", "rname", "pos", "mapq"),
+			       flag = scanBamFlag(isUnmappedQuery = FALSE, isFirstMateRead = TRUE) ) # I also want hasUnmappedMate = TRUE eventually
+
+	filterDups <- function(bam){
+
+		# function to get umis from qname and bins
+		dupumi_perbin <- function(qname, bins) {
+			# Get the UMI sequence out from header
+			getumi <- function(x) {
+				hdr <- vapply(strsplit(x, "#"), "[[", character(1), 2)
+				umi <- vapply(strsplit(hdr, ":"), "[[", character(1), 2)
+			}
+			# Do it per bin
+			umis <- lapply(split(qname, bins), getumi)
+			# Get the duplicated umis per bin -> merge
+			dupStatus <- lapply(umis, function(x) !(duplicated(x)) )
+			return(unlist(dupStatus))
+		}
+
+		# split DF by chromosome
+		chroms <- unique(as.character(bam$rname))
+		bam2 <- split(bam, as.character(bam$rname) )
+
+
+		dupstats <- lapply(bam2, function(x){
+
+			# round chrom start/end to nearest 1000th
+			getEnd <- function(b) {
+				maxp <- max(b$pos)
+				y <- round(maxp, -3)
+				z <- ifelse(maxp < y, y, y + 1000)
+				return(z)
+			}
+			getStart <- function(b) {
+				minp <- min(b$pos)
+				y <- round(minp, -3)
+				z <- ifelse(minp > y, y, y - 1000)
+				return(z)
+			}
+			chromStart <- getStart(x)
+			chromEnd <- getEnd(x)
+
+			# make chrom-wise bins
+			bins <- .bincode(x$pos, seq(chromStart,chromEnd, 1000))
+			dupstats <- dupumi_perbin(as.character(x$qname), bins)
+			return(dupstats)
+		})
+
+		return(unlist(dupstats))
+	}
+
+	rule <- FilterRules(list(filterDups))
+
+	# filter command
+	filterBam(file = bamFile,destination = outFile, filter = rule, param = sparam )
+
+	return("Done!")
+}
