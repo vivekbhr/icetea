@@ -16,7 +16,8 @@
 filterDuplicates <- function(bamFile,outFile) {
 
 	sparam <- ScanBamParam(what = c("qname", "flag", "rname", "pos", "mapq"),
-			       flag = scanBamFlag(isUnmappedQuery = FALSE, isFirstMateRead = TRUE) ) # I also want hasUnmappedMate = TRUE eventually
+			       flag = scanBamFlag(isUnmappedQuery = FALSE, isFirstMateRead = TRUE) )
+	# I also want hasUnmappedMate = TRUE eventually
 
 	filterDups <- function(bam){
 
@@ -26,6 +27,7 @@ filterDuplicates <- function(bamFile,outFile) {
 			getumi <- function(x) {
 				hdr <- vapply(strsplit(x, "#"), "[[", character(1), 2)
 				umi <- vapply(strsplit(hdr, ":"), "[[", character(1), 2)
+				return(umi)
 			}
 			# Do it per bin
 			umis <- lapply(split(qname, bins), getumi)
@@ -34,14 +36,13 @@ filterDuplicates <- function(bamFile,outFile) {
 			return(unlist(dupStatus))
 		}
 
-		# split DF by chromosome
-		chroms <- unique(as.character(bam$rname))
-		bam2 <- split(bam, as.character(bam$rname) )
+		# split df by chromosome
+		chroms <- factor(bam$rname, levels = unique(as.character(bam$rname)))
+		bam2 <- split(bam, chroms )
 
+		getdupstats <- function(x){
 
-		dupstats <- lapply(bam2, function(x){
-
-			# round chrom start/end to nearest 1000th
+			# round the start/end to nearest 1000th
 			getEnd <- function(b) {
 				maxp <- max(b$pos)
 				y <- round(maxp, -3)
@@ -57,12 +58,13 @@ filterDuplicates <- function(bamFile,outFile) {
 			chromStart <- getStart(x)
 			chromEnd <- getEnd(x)
 
-			# make chrom-wise bins
+			# make chrom-wise 1kb bins
 			bins <- .bincode(x$pos, seq(chromStart,chromEnd, 1000))
 			dupstats <- dupumi_perbin(as.character(x$qname), bins)
 			return(dupstats)
-		})
+		}
 
+		dupstats <- lapply(bam2, getdupstats)
 		return(unlist(dupstats))
 	}
 
