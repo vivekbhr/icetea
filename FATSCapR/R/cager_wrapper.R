@@ -23,7 +23,8 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10, genome = 
 		ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE, chrConvert = TRUE)
 	}, error = function(e){
 		if(grepl("negative",e) == TRUE){
-			print("It seems that the file is too big. Try splitting the file by chromosome and process one by one.")
+			print("It seems that the file is too big. Try splitting the file by chromosome and 
+				process one by one.")
 		} else {
 			print("Error: ", e)
 		}
@@ -56,21 +57,29 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10, genome = 
 	}
 
 	# TSS clustering
-	CAGEr::clusterCTSS(object = mycage, threshold = tpmCutoff, thresholdIsTpm = TRUE, nrPassThreshold = 1,
-				method = "distclu", maxDist = 20, removeSingletons = TRUE, keepSingletonsAbove = 10,
-				useMulticore = multi, nrCores = ncores)
-	tc <- BiocParallel::bplapply(sampleLabels(mycage), function(x) tagClusters(mycage, sample = x), BPPARAM = PARAM)
-
-	# get TSS width (combining all samples)
-	message("Annotating TSS")
-	CAGEr::cumulativeCTSSdistribution(mycage, clusters = "tagClusters")
-	CAGEr::quantilePositions(mycage, clusters = "tagClusters", qLow = 0.1, qUp = 0.9)
-	tc <- BiocParallel::bplapply(sampleLabels(mycage), function(x) {
-		tagClusters(mycage, sample = x, returnInterquantileWidth = TRUE, qLow = 0.1, qUp = 0.9)
-	}, BPPARAM = PARAM)
-
-	# export bed files
-	CAGEr::exportToBed(object = mycage, what = "tagClusters", qLow = 0.1, qUp = 0.9,
-			   oneFile = FALSE, colorByExpressionProfile = TRUE)
+	tryCatch({
+		CAGEr::clusterCTSS(object = mycage, threshold = tpmCutoff, thresholdIsTpm = TRUE, nrPassThreshold = 1,
+					 method = "distclu", maxDist = 20, removeSingletons = TRUE, keepSingletonsAbove = 10,
+					 useMulticore = multi, nrCores = ncores)
+		tc <- BiocParallel::bplapply(sampleLabels(mycage), function(x) tagClusters(mycage, sample = x), 
+						     BPPARAM = PARAM)
+		
+		# get TSS width (combining all samples)
+		message("Annotating TSS")
+		CAGEr::cumulativeCTSSdistribution(mycage, clusters = "tagClusters")
+		CAGEr::quantilePositions(mycage, clusters = "tagClusters", qLow = 0.1, qUp = 0.9)
+		tc <- BiocParallel::bplapply(sampleLabels(mycage), function(x) {
+			tagClusters(mycage, sample = x, returnInterquantileWidth = TRUE, qLow = 0.1, qUp = 0.9)
+		}, BPPARAM = PARAM)
+		
+		# export bed files
+		CAGEr::exportToBed(object = mycage, what = "tagClusters", qLow = 0.1, qUp = 0.9,
+					 oneFile = FALSE, colorByExpressionProfile = TRUE)
+		
+	},  error = function(e){
+		print("Error: ", e)
+		print("CAGEset object with normalized counts saved in current directory as : myCAGEset.Rdata")
+		save(ctss, file= "myCAGEset.Rdata")
+	})
 
 }
