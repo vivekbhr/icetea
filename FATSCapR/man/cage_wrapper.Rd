@@ -5,7 +5,8 @@
 \title{A wrapper for CAGE Normalization and TSS calling}
 \usage{
 cage_wrapper(input, labels, ncores = NULL, tpmCutoff = 10,
-  genome = "BSgenome.Dmelanogaster.UCSC.dm6")
+  genome = "BSgenome.Dmelanogaster.UCSC.dm6", find_TSSshift = FALSE,
+  scoreshift_groupX, scoreshift_groupY, promoterShift_outFile)
 }
 \arguments{
 \item{input}{path to input bam file(s)}
@@ -17,6 +18,14 @@ cage_wrapper(input, labels, ncores = NULL, tpmCutoff = 10,
 \item{tpmCutoff}{TPM cutoff for TSS calling}
 
 \item{genome}{The name of corresponding BSGenome object (must be installed)}
+
+\item{find_TSSshift}{logical, indicating if TSS shift between two samples are to be calculated}
+
+\item{scoreshift_groupX}{Test sample for TSS shift}
+
+\item{scoreshift_groupY}{Control sample for TSS shift}
+
+\item{promoterShift_outFile}{Output file name for calculated TSS shift positions}
 }
 \value{
 QC plots, Normalized bedgraph files and TSS bed files
