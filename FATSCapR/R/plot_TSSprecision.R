@@ -17,42 +17,29 @@
 plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutoff = 500 , outFile = NULL) {
 	# resize gene/transcript file to start
 	refRanges <- GenomicRanges::resize(reference, width = 1, fix = "start")
+	refRanges <- unique(refRanges)
 	# read bed files
 	tssData <- lapply(TSSbedFiles, bedToGRanges)
 	names(tssData) <- sampleNames
 
 	# get distances of bed entries from nearest TSS
-	tssdistances <- lapply(tssData, function(x){
+	tssdistances <- sapply(tssData, function(x){
 		y <- GenomicRanges::distanceToNearest(x,refRanges)
-		return(as.data.frame(y))
-	})
-	lapply(tssdistances, function(x) print(head(x)))
-	# take cumulative sum of distance from nearest TSS
-	tssdistances <- lapply(tssdistances, function(x){
-		dist <- dplyr::arrange(x,distance)
-		dist$numbers <- 1:nrow(dist)
-		return(dist)
+		return(as.data.frame(y)$distance)
 	})
 
-	# plot line chart of num of detected TSS vs distance from TSS
+	# melt to df
+	tssdistances <- plyr::ldply(tssdistances, data.frame)
+	colnames(tssdistances) <- c("sample","distances")
+
+	# plot ECDF with distance cutoff
 	png(outFile, res = 100, width = 800, height = 800)
-	lapply(1:length(tssdistances), function(n){
-		# get name and color
-		name <- names(tssdistances)[n]
-		colpal <- colorRampPalette(RColorBrewer::brewer.pal(7,"Set1"))(length(tssdistances))
-		test <- tssdistances[[n]]
-		test[test$distance >  distanceCutoff, "distance"] <-  distanceCutoff
-		test$numbers <- test$numbers*100/max(test$numbers) # convert to %age
-		if(n == 1){
-			plot(numbers ~ distance, test, type = "l", lwd = 2, col = colpal[n], xaxt = "n",
-			     xlab = "Distance from annotated TSS", ylab= "% of known TSS detected",
-			     main = "TSS detection precision")
-			axis(side = 1, at = seq(0,distanceCutoff,50))
-			legend(10,100, legend = name, fill = colpal[n], cex = 0.7)
-		} else {
-			lines(numbers ~ distance, test, type = "l",lwd = 2, col = colpal[n])
-			legend(n*50,100, legend = name, fill = colpal[n], cex = 0.7)
-		}
-	})
+	ggplot(tssdistances, aes(distances, col = sample)) +
+		stat_ecdf(geom = "step", size = 1) +
+		theme_light(base_size = 14)  +
+		scale_x_continuous(limits = c(0,distanceCutoff)) +
+		scale_color_brewer(palette = "Set2") +
+		labs(x = "Distances from nearby TSS (in bp)", y = "Cumulative Fraction",
+		     title = "TSS precisions", col = "Category")
 	dev.off()
 }
