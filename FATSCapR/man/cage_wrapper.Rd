@@ -35,7 +35,8 @@ A wrapper for CAGE Normalization and TSS calling
 }
 \examples{
 
-cager_wrapper(input, labels, ncores = NULL, tpmCutoff = 10, genome = "BSgenome.Dmelanogaster.UCSC.dm6")
+bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
+cager_wrapper(input = bam, labels = "test", tpmCutoff = 10, genome = "BSgenome.Dmelanogaster.UCSC.dm6")
 
 }
 

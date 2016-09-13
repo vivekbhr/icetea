@@ -12,10 +12,16 @@
 #' @param logfile a log file to write the processing message.
 #' @param ... additional arguments passed to the RSubread::align function.
 #' @return bamfile A mapped BAM file for the sample.
+#'
 #' @examples
-#'	mapFETISH(index,R1,R2,output,nthreads,logfile=NULL)
+#' r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "FATSCapR")
+#' r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "FATSCapR")
+#' \dontrun{
+#' mapFETISH(index,R1 = r1, R2 = r2, output = "test_mapped.bam", nthreads = 10, logfile=NULL)
+#' }
 #'
 #' @export
+#'
 
 mapFETISH <- function(index,R1,R2,output,nthreads,logfile=NULL,...){
 	# open a logfile if given

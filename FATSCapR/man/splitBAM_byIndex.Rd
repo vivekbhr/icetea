@@ -25,9 +25,9 @@ Filtered files
 Split the composite BAM file using internal indexes
 }
 \examples{
-splitBAM_byIndex(bamFile = "FATSCapR/tests/testthat/test_sorted.bam",
+bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
+splitBAM_byIndex(bamFile = bam,
  	   index_list = c("TTAGCC" ,"CAAGTG"),
- 	    	   outfile_list = c("FATSCapR/tests/testthat/test_filt1.bam",
- 	    	   "FATSCapR/tests/testthat/test_filt2.bam"), nthreads = 10)
+ 	    	   outfile_list = c("test_filt1.bam","test_filt2.bam"), nthreads = 10)
 }
 

@@ -21,8 +21,8 @@ Split the composite BAM file using replicate indexes
 }
 \examples{
 
-splitBAM_byRepindex(bamFile = "FATSCapR/tests/testthat/test_sorted.bam",
- 	   	    	   outfile_prefix = "TEST", nthreads = 10)
+bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
+splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
 
 }
 

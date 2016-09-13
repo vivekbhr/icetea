@@ -22,7 +22,9 @@ output_R1, output_R2 : The trimmed R1 and R2 .fastq.gz files.
 Trim the raw fastq files and tag the read headers
 }
 \examples{
-trimFlash("testdata/test_R1.fastq.gz","testdata/test_R2.fastq.gz",
-		"test_trimmed_R1.fastq.gz","test_trimmed_R2.fastq.gz")
+r1 <- system.file("extdata", "test_R1.fastq.gz", package = "FATSCapR")
+r2 <- system.file("extdata", "test_R2.fastq.gz", package = "FATSCapR")
+trimFlash(r1, r2,"test_trimmed_R1.fastq.gz","test_trimmed_R2.fastq.gz")
+
 }
 

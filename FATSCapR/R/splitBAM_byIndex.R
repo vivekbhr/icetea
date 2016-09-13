@@ -14,10 +14,10 @@
 #' @export
 #'
 #' @examples
-#' splitBAM_byIndex(bamFile = "FATSCapR/tests/testthat/test_sorted.bam",
+#' bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
+#' splitBAM_byIndex(bamFile = bam,
 #'  	   index_list = c("TTAGCC" ,"CAAGTG"),
-#'  	    	   outfile_list = c("FATSCapR/tests/testthat/test_filt1.bam",
-#'  	    	   "FATSCapR/tests/testthat/test_filt2.bam"), nthreads = 10)
+#'  	    	   outfile_list = c("test_filt1.bam","test_filt2.bam"), nthreads = 10)
 
 
 splitBAM_byIndex <- function(bamFile, index_list, outfile_list, max_mismatch = 0, nthreads = 1) {

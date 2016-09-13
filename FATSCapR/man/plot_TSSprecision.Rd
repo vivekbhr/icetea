@@ -25,7 +25,13 @@ A plot showing % TSS called per sample w.r.t their distance to TSS
 Plot precision of TSS calling between multiple samples
 }
 \examples{
-?plot_TSSprecision
-
+\dontrun{
+library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+transcripts <- transcripts(dm6GTF)
+files <- system.file("extdata", c("tssclusters1.bed","tssclusters2.bed"), package = "FATSCapR")
+plot_TSSprecision(TSSbedFiles = files, sampleNames = c("test1", "test2"),
+		reference = transcripts , distanceCutoff = 500,
+		outFile = "TSS_detection_precision.png")
+}
 }
 

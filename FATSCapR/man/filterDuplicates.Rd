@@ -19,7 +19,8 @@ Filter PCR-duplicates from BAM file using internal UMIs
 }
 \examples{
 
-filterDuplicates(bamFile = "FATSCapR/tests/testthat/test_sorted.bam",
-		outFile = "FATSCapR/tests/testthat/test_pcrRem.bam")
+bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
+filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
+
 }
 

@@ -1,14 +1,9 @@
-##
-##	GENERIC FUNCTIONS FOR INTERNAL USE IN FATSCapR package
-##
-
 
 #' Import TSS bed file as GRanges
 #'
 #' @param bed BedFile to import
 #'
 #' @return GRanges object
-#' @export
 #'
 #' @examples
 #' bedToGRanges(bed)
