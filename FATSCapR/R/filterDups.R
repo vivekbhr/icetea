@@ -14,10 +14,11 @@
 #'
 
 
-filterDuplicates <- function(bamFile,outFile) {
+filterDuplicates <- function(bamFile, outFile) {
 
-	sparam <- ScanBamParam(what = c("qname", "flag", "rname", "pos", "mapq"),
-			       flag = scanBamFlag(isUnmappedQuery = FALSE, isFirstMateRead = TRUE) )
+	sparam <- Rsamtools::ScanBamParam(what = c("qname", "flag", "rname", "pos", "mapq"),
+			       flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
+			       			      isFirstMateRead = TRUE) )
 	# I also want hasUnmappedMate = TRUE eventually
 
 	filterDups <- function(bam){
@@ -37,13 +38,12 @@ filterDuplicates <- function(bamFile,outFile) {
 			return(unlist(dupStatus))
 		}
 
-		# split df by chromosome
+		# split list by chromosome
 		chroms <- factor(bam$rname, levels = unique(as.character(bam$rname)))
-		bam2 <- split(bam, chroms )
+		bam2 <- S4Vectors::split(bam, chroms)
 
 		getdupstats <- function(x){
-
-			# round the start/end to nearest 1000th
+			# round to nearest 1000th
 			getEnd <- function(b) {
 				maxp <- max(b$pos)
 				y <- round(maxp, -3)
@@ -59,7 +59,7 @@ filterDuplicates <- function(bamFile,outFile) {
 			chromStart <- getStart(x)
 			chromEnd <- getEnd(x)
 
-			# make chrom-wise 1kb bins
+			# make chrom-wise bins
 			bins <- .bincode(x$pos, seq(chromStart,chromEnd, 1000))
 			dupstats <- dupumi_perbin(as.character(x$qname), bins)
 			return(dupstats)
@@ -69,10 +69,10 @@ filterDuplicates <- function(bamFile,outFile) {
 		return(unlist(dupstats))
 	}
 
-	rule <- FilterRules(list(filterDups))
+	rule <- S4Vectors::FilterRules(list(filterDups))
 
 	# filter command
-	filterBam(file = bamFile,destination = outFile, filter = rule, param = sparam )
+	Rsamtools::filterBam(file = bamFile, destination = outFile, filter = rule, param = sparam )
 
 	return("Done!")
 }
