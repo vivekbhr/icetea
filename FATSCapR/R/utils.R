@@ -2,11 +2,8 @@
 #' Import TSS bed file as GRanges
 #'
 #' @param bed BedFile to import
-#'
 #' @return GRanges object
 #'
-#' @examples
-#' bedToGRanges(bed)
 #'
 
 bedToGRanges <- function(bed){

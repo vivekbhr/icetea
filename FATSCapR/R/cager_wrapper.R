@@ -17,11 +17,15 @@
 #' @examples
 #'
 #' bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
-#' cager_wrapper(input = bam, labels = "test", tpmCutoff = 10, genome = "BSgenome.Dmelanogaster.UCSC.dm6")
+#' cage_wrapper(input = bam, labels = "test", tpmCutoff = 10,
+#' 			genome = "BSgenome.Dmelanogaster.UCSC.dm6")
 #'
 
-cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10, genome = "BSgenome.Dmelanogaster.UCSC.dm6",
-			 find_TSSshift = FALSE, scoreshift_groupX, scoreshift_groupY, promoterShift_outFile){
+cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
+			 genome = "BSgenome.Dmelanogaster.UCSC.dm6",
+			 find_TSSshift = FALSE,
+			 scoreshift_groupX, scoreshift_groupY, promoterShift_outFile){
+
 	## 1... build mycage
 	mycage <- new("CAGEset", genomeName = genome,
 			  inputFiles = input, inputFilesType = "bam", sampleLabels = labels)
