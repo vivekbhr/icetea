@@ -15,10 +15,11 @@
 #' @export
 #'
 #' @examples
-#'
+#'\dontrun{
 #' bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
 #' cage_wrapper(input = bam, labels = "test", tpmCutoff = 10,
 #' 			genome = "BSgenome.Dmelanogaster.UCSC.dm6")
+#' }
 #'
 
 cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,

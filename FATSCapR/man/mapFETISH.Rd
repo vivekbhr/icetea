@@ -7,14 +7,13 @@
 mapFETISH(index, R1, R2, output, nthreads, logfile = NULL, ...)
 }
 \arguments{
-\item{index}{character string giving the basename of the Subread index file.
-Index files should be located in the current directory.}
+\item{index}{character string giving the basename of the Subread index file.}
 
-\item{R1}{forward read (_R1) fastq.}
+\item{R1}{forward read (_R1) fastq, output of \code{\link{trimFlash}} command.}
 
-\item{R2}{reverse read (_R2) fastq.}
+\item{R2}{reverse read (_R2) fastq, output of \code{\link{trimFlash}} command.}
 
-\item{output}{output file name}
+\item{output}{output file name (without ".bam" extention)}
 
 \item{nthreads}{number of threads to use for mapping.}
 
@@ -32,7 +31,7 @@ Map the paired-end FETISH data.
 r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "FATSCapR")
 r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "FATSCapR")
 \dontrun{
-mapFETISH(index,R1 = r1, R2 = r2, output = "test_mapped.bam", nthreads = 10, logfile=NULL)
+mapFETISH(index,R1 = r1, R2 = r2, output = "test_mapped", nthreads = 10, logfile=NULL)
 }
 
 }

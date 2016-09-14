@@ -4,10 +4,9 @@
 #' Map the paired-end FETISH data.
 #'
 #' @param index character string giving the basename of the Subread index file.
-#' Index files should be located in the current directory.
-#' @param R1 forward read (_R1) fastq.
-#' @param R2 reverse read (_R2) fastq.
-#' @param output output file name
+#' @param R1 forward read (_R1) fastq, output of \code{\link{trimFlash}} command.
+#' @param R2 reverse read (_R2) fastq, output of \code{\link{trimFlash}} command.
+#' @param output output file name (without ".bam" extention)
 #' @param nthreads number of threads to use for mapping.
 #' @param logfile a log file to write the processing message.
 #' @param ... additional arguments passed to the RSubread::align function.
@@ -17,13 +16,13 @@
 #' r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "FATSCapR")
 #' r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "FATSCapR")
 #' \dontrun{
-#' mapFETISH(index,R1 = r1, R2 = r2, output = "test_mapped.bam", nthreads = 10, logfile=NULL)
+#' mapFETISH(index,R1 = r1, R2 = r2, output = "test_mapped", nthreads = 10, logfile=NULL)
 #' }
 #'
 #' @export
 #'
 
-mapFETISH <- function(index,R1,R2,output,nthreads,logfile=NULL,...){
+mapFETISH <- function(index, R1, R2, output, nthreads, logfile = NULL,...){
 	# open a logfile if given
 	if(!is.null(logfile)){
 		sink(logfile)
@@ -43,12 +42,20 @@ mapFETISH <- function(index,R1,R2,output,nthreads,logfile=NULL,...){
 
 	cat("Mapping the FETISH data\n\n")
 	# Align using RSubread
+	tmpout <- paste0(output,".tmp.bam")
 	Rsubread::align(index = index,
 			readfile1 = R1,
 			readfile2 = R2,
-			output_file = output,
+			output_file = tmpout,
 			nthreads = nthreads,
 			...)
+
+	# Sort and Index
+	cat("Sorting and Indexing")
+	Rsamtools::sortBam(file = tmpout, destination = output)
+	Rsamtools::index(output)
+	file.remove(tmpout)
+
 	# Close logfile
 	if(!is.null(logfile)){
 		sink()
