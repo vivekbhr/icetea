@@ -1,1 +1,1 @@
-int main_trimFETISH(int argc, char *argv[]) ;
+int main_trimFastq(int argc, char *argv[]) ;

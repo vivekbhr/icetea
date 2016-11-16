@@ -3,7 +3,7 @@
 #include "kseq.h"
 #include <string.h>
 //
-#include "trimFETISH.h"
+#include "trimFastq.h"
 
 // THIS PROGRAM WILL TAKE TWO FASTA FILES (R1 & R2) AND TRIM THE INDEX OFF R2 SEQUENCES TO ADD IT ON BOTH R1 AND R2 SEQ HEADERS
 
