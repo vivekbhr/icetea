@@ -16,7 +16,7 @@
 #'
 #' @examples
 #'\dontrun{
-#' bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
+#' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
 #' cage_wrapper(input = bam, labels = "test", tpmCutoff = 10,
 #' 			genome = "BSgenome.Dmelanogaster.UCSC.dm6")
 #' }

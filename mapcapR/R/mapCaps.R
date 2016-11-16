@@ -1,11 +1,11 @@
-#### ~~~~ Part of the FATSCapR package for analysis of FETISH data ~~~~ ####
+#### ~~~~ Part of the mapcapR package for analysis of FETISH data ~~~~ ####
 ### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
 
-#' Map the paired-end FETISH data.
+#' Map the paired-end MAPCap data.
 #'
 #' @param index character string giving the basename of the Subread index file.
-#' @param R1 forward read (_R1) fastq, output of \code{\link{trimFlash}} command.
-#' @param R2 reverse read (_R2) fastq, output of \code{\link{trimFlash}} command.
+#' @param R1 forward read (_R1) fastq, output of \code{\link{trimFastq}} command.
+#' @param R2 reverse read (_R2) fastq, output of \code{\link{trimFastq}} command.
 #' @param output output file name (without ".bam" extention)
 #' @param nthreads number of threads to use for mapping.
 #' @param logfile a log file to write the processing message.
@@ -13,16 +13,16 @@
 #' @return bamfile A mapped BAM file for the sample.
 #'
 #' @examples
-#' r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "FATSCapR")
-#' r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "FATSCapR")
+#' r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "mapcapR")
+#' r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "mapcapR")
 #' \dontrun{
-#' mapFETISH(index,R1 = r1, R2 = r2, output = "test_mapped", nthreads = 10, logfile=NULL)
+#' mapCaps(index,R1 = r1, R2 = r2, output = "test_mapped", nthreads = 10, logfile=NULL)
 #' }
 #'
 #' @export
 #'
 
-mapFETISH <- function(index, R1, R2, output, nthreads, logfile = NULL,...){
+mapCaps <- function(index, R1, R2, output, nthreads, logfile = NULL,...){
 	# open a logfile if given
 	if(!is.null(logfile)){
 		sink(logfile)

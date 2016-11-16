@@ -9,7 +9,7 @@
 #'
 #' @examples
 #'
-#' bam <- system.file("extdata", "test_mapped.bam", package = "FATSCapR")
+#' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
 #' filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
 #'
 

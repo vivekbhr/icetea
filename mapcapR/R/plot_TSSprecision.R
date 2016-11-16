@@ -14,7 +14,7 @@
 #' \dontrun{
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' transcripts <- transcripts(dm6GTF)
-#' files <- system.file("extdata", c("tssclusters1.bed","tssclusters2.bed"), package = "FATSCapR")
+#' files <- system.file("extdata", c("tssclusters1.bed","tssclusters2.bed"), package = "mapcapR")
 #' plot_TSSprecision(TSSbedFiles = files, sampleNames = c("test1", "test2"),
 #' 		reference = transcripts , distanceCutoff = 500,
 #' 		outFile = "TSS_detection_precision.png")

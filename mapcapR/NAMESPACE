@@ -2,9 +2,9 @@
 
 export(cage_wrapper)
 export(filterDuplicates)
-export(mapFETISH)
+export(mapCaps)
 export(plot_TSSprecision)
 export(splitBAM_byIndex)
 export(splitBAM_byRepindex)
-export(trimFlash)
-useDynLib(FATSCapR,trimFETISH)
+export(trimFastq)
+useDynLib(mapcapR,trimFastq)
