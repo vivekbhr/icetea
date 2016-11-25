@@ -7,8 +7,8 @@
 #' @param tpmCutoff TPM cutoff for TSS calling
 #' @param genome The name of corresponding BSGenome object (must be installed)
 #' @param find_TSSshift logical, indicating if TSS shift between two samples are to be calculated
-#' @param scoreshift_groupX Test sample for TSS shift
-#' @param scoreshift_groupY Control sample for TSS shift
+#' @param scoreshift_groupX Test sample(c) for TSS shift
+#' @param scoreshift_groupY Control sample(c) for TSS shift
 #' @param promoterShift_outFile Output file name for calculated TSS shift positions
 #'
 #' @return QC plots, Normalized bedgraph files and TSS bed files
@@ -25,7 +25,9 @@
 cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
 			 genome = "BSgenome.Dmelanogaster.UCSC.dm6",
 			 find_TSSshift = FALSE,
-			 scoreshift_groupX, scoreshift_groupY, promoterShift_outFile){
+			 scoreshift_groupX = NULL,
+			 scoreshift_groupY = NULL,
+			 promoterShift_outFile = NULL){
 
 	## 1... build mycage
 	mycage <- new("CAGEset", genomeName = genome,
@@ -89,6 +91,7 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
 		message("Annotating TSS")
 		CAGEr::cumulativeCTSSdistribution(mycage, clusters = "tagClusters")
 		CAGEr::quantilePositions(mycage, clusters = "tagClusters", qLow = qmin, qUp = qmax)
+		# sample by sample Tag clusters --> save in a list
 		tc <- BiocParallel::bplapply(sampleLabels(mycage), function(x) {
 			tagClusters(mycage, sample = x, returnInterquantileWidth = TRUE, qLow = qmin, qUp = 0.9)
 		}, BPPARAM = PARAM)
@@ -96,12 +99,13 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
 		# export bed files
 		CAGEr::exportToBed(object = mycage, what = "tagClusters", qLow = qmin, qUp = qmax,
 					 oneFile = FALSE, colorByExpressionProfile = TRUE)
-
+		save(ctss, file= "myCAGEset.Rdata")
 	},  error = function(e){
 		print("Error: ", e)
-		print("CAGEset object with normalized counts saved in current directory as : myCAGEset.Rdata")
 		save(ctss, file= "myCAGEset.Rdata")
 	})
+
+	print("CAGEset object with normalized counts saved in current directory as : myCAGEset.Rdata")
 
 	## 3..Aggregate TSS by positions -- > cluster --> promoter shifts
 
@@ -111,16 +115,18 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
 		CAGEr::aggregateTagClusters(mycage, tpmThreshold = tpmCutoff, qLow = qmin, qUp = qmax, maxDist = clusterMaxdist*5)
 		CAGEr::quantilePositions(mycage, clusters = "consensusClusters", qLow = qmin, qUp = qmax)
 
-		consensusCl <- lapply(labels, function(sample) {
-			return(CAGEr::consensusClusters(mycage, sample = sample,
-						 returnInterquantileWidth = TRUE, qLow = qmin, qUp = qmax) )
-		})
-		print("Writing out consensus clusters..")
-		names(consensusCl) <- labels
-		lapply(labels, function(x) {
-			write.table(consensusCl[[x]], file = paste0(x,"_consensusClusters.tsv"), sep = "\t", row.names = FALSE)
-		})
+		# extract consensus clusters sampl-wise (not recommended since you often want to compare accross samples)
+		#consensusCl <- lapply(labels, function(sample) {
+		#	return(CAGEr::consensusClusters(mycage, sample = sample,
+		#				 returnInterquantileWidth = TRUE, qLow = qmin, qUp = qmax) )
+		#})
+		#print("Writing out consensus clusters..")
+		#names(consensusCl) <- labels
+		#lapply(labels, function(x) {
+		#	write.table(consensusCl[[x]], file = paste0(x,"_consensusClusters.tsv"), sep = "\t", row.names = FALSE)
+		#})
 
+		consensusCl <- CAGEr::consensusClusters(mycage, returnInterquantileWidth = TRUE, qLow = qmin, qUp = qmax)
 		## expression profiles
 		message("Clustering TSS by expression.")
 		CAGEr::getExpressionProfiles(mycage, what = "consensusClusters", tpmThreshold = tpmCutoff,

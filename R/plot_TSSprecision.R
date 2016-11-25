@@ -39,7 +39,10 @@ plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutof
 	colnames(tssdistances) <- c("sample","distances")
 
 	# plot ECDF with distance cutoff
-	png(outFile, res = 100, width = 800, height = 800)
+	if(!(is.null(outFile))) {
+		png(outFile, res = 100, width = 800, height = 800)
+	}
+
 	ggplot(tssdistances, aes(distances, col = sample)) +
 		stat_ecdf(geom = "step", size = 1) +
 		theme_light(base_size = 14)  +
@@ -47,5 +50,8 @@ plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutof
 		scale_color_brewer(palette = "Set2") +
 		labs(x = "Distances from nearby TSS (in bp)", y = "Cumulative Fraction",
 		     title = "TSS precisions", col = "Category")
-	dev.off()
+
+	if(!(is.null(outFile))) {
+		dev.off()
+	}
 }
