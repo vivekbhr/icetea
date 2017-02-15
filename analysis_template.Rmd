@@ -1,0 +1,219 @@
+---
+title: 'MAPCap Analysis Template'
+author: "@vivekbhr"
+date: "`r date()`"
+output:
+ html_document:
+  toc: yes
+---
+
+## MAPCap processing
+
+```{r setup,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+## ------------------ LOAD PACKGES ------------
+
+library(magrittr)
+library(ggplot2)
+library(CAGEr)
+library(BSgenome.Dmelanogaster.UCSC.dm6)
+library(mapcapR)
+library(Rsamtools)
+library(plyr)
+library(dplyr)
+library(GenomicRanges)
+library(GenomicFeatures)
+
+## -----------------  CREATE DIRECTORIES ------------
+
+# Link to seq files
+dir.create("01_fastq")
+dir.create("01_fastq/raw")
+dir.create("01_fastq/trimmed")
+# mapping
+dir.create("02_mapping")
+# splitting
+dir.create("03_splitting")
+# rmdup
+dir.create("04_removedup")
+# bigwigs
+dir.create("05_bigwigs")
+# tss calling
+dir.create("06_tssCalling")
+# IGV
+dir.create("07_IGV")
+
+## ------------------  DEFINE VARIABLES -----------
+seqfiles <- 	# prefix for the MAPCap sequencing reads file. Eg : "/path/to/seq_data/MAPCap_B_"
+
+idxlist <- # List of sample barcodes : Eg: c("CAAGTG", "TTAGCC", "GTGGAA")
+fnames <-  # Sample names. Eg: c("GSTa", "NSL1b", "NURFc")
+
+deeptools <- # path to installed deeptools. Eg: "/package/deeptools-2.3.3/bin"
+GTFdb <- # path to a database of GTF file. Eg : "dm6_GTF.DB"	
+```
+
+
+```{r functions,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+
+## --------- FUNCTIONS FOR MAPPING --------------
+	
+# link the files from the path to fastq dir
+makelinks <- function(x) {
+	f1 <- paste0(x, "R1.fastq.gz")
+	f2 <- paste0(x, "R2.fastq.gz")
+	file.symlink(f1, "01_fastq/raw")
+	file.symlink(f2, "01_fastq/raw")
+}
+
+# trim
+trimheader <- function (x){
+	mapcapR::trimFastqIndex(input_R1 = paste0("01_fastq/raw/",x,"_R1.fastq.gz"),
+			  input_R2 = paste0("01_fastq/raw/",x,"_R2.fastq.gz"),
+			  output_R1 = paste0("01_fastq/trimmed/",x,"_R1.fastq.gz"), 
+			  output_R2 = paste0("01_fastq/trimmed/",x,"_R2.fastq.gz")
+	)}
+# map
+mapIT <- function (x){
+	mapcapR::mapCaps(index = "", # path to subread index /data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_index/dm6
+				  R1 = paste0("01_fastq/trimmed/",x,"_R1.fastq.gz"),
+				  R2 = paste0("01_fastq/trimmed/",x,"_R2.fastq.gz"),
+				  output = paste0("02_mapping/",x, ".bam"),
+				  logfile = paste0("02_mapping/",x,"mapping.log"),
+				  nthreads = 20
+				  )
+		}
+#sort index
+sort_index <- function(x){
+	Rsamtools::sortBam(paste0("02_mapping/", x ,".bam"), paste0(x,".sorted"))
+	Rsamtools::indexBam(paste0("02_mapping/", x ,".sorted.bam"))
+}
+
+# Get mapping log
+maplog <- function(x) {
+	print("Fragments mapped : ")
+	system(paste0("grep Mapped 02_mapping/",x,"mapping.log"), intern = TRUE)
+}
+
+```
+
+### Processing Stats
+
+```{r mapNlog, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
+## ----------------  MAP THE DATA --------- 
+# make links
+makelinks(seqfiles)
+# trim the headers
+trimheader("MAPCap_B")
+# MAP
+mapIT("MAPCap_B")
+# SORT and INDEX
+sort_index("MAPCap_B")
+
+# SPLIT BY BARCODES
+mapcapR::splitBAM_byIndex(bamFile = "02_mapping/MAPCap_B.sorted.bam", 
+				   index_list = idxlist,
+				   outfile_list = paste0("03_splitting/", fnames, ".bam"),
+				   max_mismatch = 0, nthreads = 20)
+
+# Get maplog
+maplog("MAPCap_B")
+
+# Flagstat
+print("Alignments recorded (flagstat) ")
+readLines("02_mapping/flagstat.txt")
+
+# Flagstat after splitting
+print("Alignments recorded after splitting (flagstat) ")
+readLines("03_splitting/flagstat.txt")
+```
+
+
+### Removal of PCR dups
+
+```{r filter,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+## Filter all BAMs
+fnames <- list.files("03_splitting", pattern = ".bam$")
+
+lapply(fnames, function(f) {
+	name <- gsub("(.*).bam", "\\1", f)
+	mapcapR::filterDuplicates(paste0("03_splitting/",f) ,
+					paste0("04_removedup/", name ,"_dupFilt.bam") )
+})
+
+## Create Bigwigs
+bams <- list.files("04_removedup", pattern = ".bam$")
+lapply(bams, function(bam) {
+	name <- sub(".bam","",bam)
+	system(paste0(deeptools,"/bamCoverage \\
+			  -p 20 -bs 5 -b 04_removedup/",
+			  bam," -o 05_bigwigs/",name,".bw") )
+
+	})
+
+```
+
+
+### Stats after duplicate filter
+
+```{r filterstats, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
+print("Alignments recorded after duplicate removal ")
+readLines("04_removedup/flagstat.txt")
+```
+
+
+## Peak calling
+**On PCR duplicate removed reads**
+
+```{r peakcalling,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+input <- list.files("04_removedup",pattern = ".bam$", full.names = TRUE)
+input.names <- gsub("04_removedup/(.*)_dupFilt.bam","\\1",input)
+mapcapR::cage_wrapper(input = input, labels = input.names, ncores = 20, # change it as per the threads
+		 tpmCutoff = 5,genome = "BSgenome.Dmelanogaster.ENSEMBL.dm6", # change it with required BSgenome
+		 scoreshift_groupX = NULL,scoreshift_groupY = NULL,
+		 find_TSSshift = FALSE,
+		 promoterShift_outFile = "test.out")
+## move files to another folder
+system("mv *CTSS* 06_tssCalling; \
+	 mv *tagClusters* 06_tssCalling")
+
+```
+
+### Library sizes
+
+
+### Called peaks
+
+```{r peakstats,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE }
+tssfiles <- list.files("06_tssCalling", pattern = ".bed$", full.names = TRUE)
+samplenames <- gsub("06_tssCalling/(.*).tagClusters.qLow0.1_qUp0.9.bed","\\1",tssfiles)
+
+cmd <- paste0("wc -l ",tssfiles)
+peakdat <- sapply(cmd, function(x) system(x, intern = TRUE))
+names(peakdat) <- NULL
+
+peakdat <- data.frame(peakdat, stringsAsFactors = FALSE) %>% 
+	tidyr::separate(peakdat, into = c("number","sample"), sep = " ")
+peakdat$sample <- gsub("06_tssCalling/(.*).tagClusters.qLow0.1_qUp0.9.bed","\\1",peakdat$sample)
+peakdat$number %<>% as.numeric()
+
+# plot
+ggplot(peakdat, aes(sample, number, fill = sample)) + 
+	geom_bar(stat = "identity") + coord_flip()
+```
+
+
+### Precision 
+
+```{r tsspres, echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE }
+gtf <- loadDb(GTFdb)
+transcripts <- transcripts(gtf)
+plot_TSSprecision(TSSbedFiles = tssfiles, sampleNames = samplenames, 
+			reference = transcripts , distanceCutoff = 500,
+			outFile = "06_tssCalling/TSS_detection_precision.png")
+
+## Make IGV session
+
+```
+
+![](06_tssCalling/TSS_detection_precision.png)
+
