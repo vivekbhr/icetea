@@ -9,7 +9,7 @@ output:
 
 ## MAPCap processing
 
-```{r setup,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+```{r setup,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 ## ------------------ LOAD PACKGES ------------
 
 library(magrittr)
@@ -53,7 +53,7 @@ GTFdb <- # path to a database of GTF file. Eg : "dm6_GTF.DB"
 ```
 
 
-```{r functions,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+```{r functions,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 
 ## --------- FUNCTIONS FOR MAPPING --------------
 	
@@ -130,7 +130,7 @@ readLines("03_splitting/flagstat.txt")
 
 ### Removal of PCR dups
 
-```{r filter,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+```{r filter,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 ## Filter all BAMs
 fnames <- list.files("03_splitting", pattern = ".bam$")
 
@@ -164,7 +164,7 @@ readLines("04_removedup/flagstat.txt")
 ## Peak calling
 **On PCR duplicate removed reads**
 
-```{r peakcalling,echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
+```{r peakcalling,echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
 input <- list.files("04_removedup",pattern = ".bam$", full.names = TRUE)
 input.names <- gsub("04_removedup/(.*)_dupFilt.bam","\\1",input)
 mapcapR::cage_wrapper(input = input, labels = input.names, ncores = 20, # change it as per the threads
@@ -204,7 +204,7 @@ ggplot(peakdat, aes(sample, number, fill = sample)) +
 
 ### Precision 
 
-```{r tsspres, echo=FALSE,eval=FALSE,message=FALSE,warning=FALSE }
+```{r tsspres, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE }
 gtf <- loadDb(GTFdb)
 transcripts <- transcripts(gtf)
 plot_TSSprecision(TSSbedFiles = tssfiles, sampleNames = samplenames, 
@@ -217,3 +217,8 @@ plot_TSSprecision(TSSbedFiles = tssfiles, sampleNames = samplenames,
 
 ![](06_tssCalling/TSS_detection_precision.png)
 
+```{r sysinfo, echo=FALSE,eval=TRUE,message=FALSE,warning=FALSE}
+sink("sessionInfo.txt")
+sessionInfo()
+sink()
+```
