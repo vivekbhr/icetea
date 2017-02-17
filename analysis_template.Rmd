@@ -80,7 +80,7 @@ mapIT <- function (x){
 	mapcapR::mapCaps(index = subread_idx, # path to subread index
 				  R1 = paste0("01_fastq/trimmed/",x,"_R1.fastq.gz"),
 				  R2 = paste0("01_fastq/trimmed/",x,"_R2.fastq.gz"),
-				  output = paste0("02_mapping/",x, ".bam"),
+				  output = paste0("02_mapping/",x),
 				  logfile = paste0("02_mapping/",x,"mapping.log"),
 				  nthreads = 20
 				  )
