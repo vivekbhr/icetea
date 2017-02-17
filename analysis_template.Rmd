@@ -43,7 +43,7 @@ dir.create("06_tssCalling")
 dir.create("07_IGV")
 
 ## ------------------  DEFINE VARIABLES -----------
-seqfiles <- 	# prefix for the MAPCap sequencing reads file. Eg : "/path/to/seq_data/MAPCap_B_"
+seqfiles <- 	# prefix for the MAPCap sequencing reads file. Eg : "/path/to/seq_data/MAPCap_B"
 
 idxlist <- # List of sample barcodes : Eg: c("CAAGTG", "TTAGCC", "GTGGAA")
 fnames <-  # Sample names. Eg: c("GSTa", "NSL1b", "NURFc")
@@ -62,8 +62,8 @@ samtools <- # path to samtools binary . Eg. /package/samtools-1.2/bin/samtools
 
 # link the files from the path to fastq dir
 makelinks <- function(x) {
-	f1 <- paste0(x, "R1.fastq.gz")
-	f2 <- paste0(x, "R2.fastq.gz")
+	f1 <- paste0(x, "_R1.fastq.gz")
+	f2 <- paste0(x, "_R2.fastq.gz")
 	file.symlink(f1, "01_fastq/raw")
 	file.symlink(f2, "01_fastq/raw")
 }
