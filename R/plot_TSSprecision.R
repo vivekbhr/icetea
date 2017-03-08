@@ -48,7 +48,7 @@ plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutof
 		     title = "TSS precisions", col = "Category")
 	if(!(is.null(outFile))) {
 
-		ggsave(plot = p, path = outFile, dpi = 100)
+		ggsave(outFile, plot = p, dpi = 100)
 
 	} else {
 		return(p)
