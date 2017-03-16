@@ -6,7 +6,7 @@
 #' @param index character string giving the basename of the Subread index file.
 #' @param R1 forward read (_R1) fastq, output of \code{\link{trimFastqIndex}} command.
 #' @param R2 reverse read (_R2) fastq, output of \code{\link{trimFastqIndex}} command.
-#' @param output output file name (without ".bam" extention)
+#' @param outprefix output file prefix (without ".bam" extention)
 #' @param nthreads number of threads to use for mapping.
 #' @param logfile a log file to write the processing message.
 #' @param ... additional arguments passed to the RSubread::align function.
@@ -22,7 +22,7 @@
 #' @export
 #'
 
-mapCaps <- function(index, R1, R2, output, nthreads, logfile = NULL,...){
+mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 	# open a logfile if given
 	if(!is.null(logfile)){
 		sink(logfile)
@@ -40,7 +40,7 @@ mapCaps <- function(index, R1, R2, output, nthreads, logfile = NULL,...){
 		stop("Stop! read R2 seems untrimmed. Run trimFETISH first.")
 	}
 
-	cat("Mapping the FETISH data\n\n")
+	cat("Mapping the data\n\n")
 	# Align using RSubread
 	tmpout <- paste0(output,".tmp.bam")
 	Rsubread::align(index = index,

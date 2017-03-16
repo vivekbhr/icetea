@@ -4,7 +4,7 @@
 \alias{mapCaps}
 \title{Map the paired-end MAPCap data.}
 \usage{
-mapCaps(index, R1, R2, output, nthreads, logfile = NULL, ...)
+mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
 }
 \arguments{
 \item{index}{character string giving the basename of the Subread index file.}
@@ -13,7 +13,7 @@ mapCaps(index, R1, R2, output, nthreads, logfile = NULL, ...)
 
 \item{R2}{reverse read (_R2) fastq, output of \code{\link{trimFastqIndex}} command.}
 
-\item{output}{output file name (without ".bam" extention)}
+\item{outprefix}{output file prefix (without ".bam" extention)}
 
 \item{nthreads}{number of threads to use for mapping.}
 
