@@ -117,8 +117,9 @@ int main(int argc, char *argv[]) //main_trimFETISH
     make_header(r1_header,r1_sequence,"r1"); // header taken from R1
     make_header(r2_header,r2_sequence,"r2"); // header taken from R2
 
-    gzprintf(fpout_r2,"@%s#%s %s\n", r2_name,r2_header,r2_comment);//doesn't work with GEO output
-    gzprintf(fpout_r1,"@%s#%s %s\n", r1_name,r1_header,r1_comment);
+    // copy both r1 header (index) and r2 header (pcr barcode) into both reads
+    gzprintf(fpout_r2,"@%s#%s:%s %s\n", r2_name,r1_header,r2_header,r2_comment);//doesn't work with GEO output
+    gzprintf(fpout_r1,"@%s#%s:%s %s\n", r1_name,r1_header,r2_header,r1_comment);
 
     trim_seq(r2_trimseq,r2_sequence, 15);
     trim_seq(r1_trimseq,r1_sequence, 6);
@@ -133,7 +134,7 @@ int main(int argc, char *argv[]) //main_trimFETISH
     trim_seq(r1_trimqual,r1_qual, 6);
 
     gzprintf(fpout_r2,"%s\n", r2_trimqual);//trimmed qual for R2
-    gzprintf(fpout_r1,"%s\n", r1_trimqual);//normal qual for R1:
+    gzprintf(fpout_r1,"%s\n", r1_trimqual);//normal qual for R1
 	}
 
 	kseq_destroy(seq_r2);
