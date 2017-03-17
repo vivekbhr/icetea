@@ -59,7 +59,7 @@ filterDuplicates <- function(bamFile, outFile) {
 			chromStart <- getStart(x)
 			chromEnd <- getEnd(x)
 
-			# make chrom-wise bins
+			# divide chrom into 1kb bins
 			bins <- .bincode(x$pos, seq(chromStart,chromEnd, 1000))
 			dupstats <- dupumi_perbin(as.character(x$qname), bins)
 			return(dupstats)
