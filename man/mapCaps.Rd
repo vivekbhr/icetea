@@ -19,7 +19,7 @@ mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
 
 \item{logfile}{a log file to write the processing message.}
 
-\item{...}{additional arguments passed to the RSubread::align function.}
+\item{...}{additional arguments passed to the \code{\link{subjunc}} function.}
 }
 \value{
 bamfile A mapped BAM file for the sample.
