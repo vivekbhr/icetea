@@ -29,7 +29,7 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 	}
 
 	# test for trimmed R2
-	cat("Checking for trimmed R2\n\n")
+	message("Checking for trimmed R2\n\n")
 	read2 <- gzfile(R2)
 	data <- readLines(read2,100)
 	close(read2)
@@ -37,10 +37,10 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 	# Check if the read header has "#" (which is introduced during trimming.)
 	header <- data[seq(1,100,4)]
 	if (unique(grepl("#",header)) != TRUE) {
-		stop("Stop! read R2 seems untrimmed. Run trimFETISH first.")
+		stop("Stop! read R2 seems untrimmed. Run trimFastqIndex first.")
 	}
 
-	cat("Mapping the data\n\n")
+	message("Mapping the data\n\n")
 	# Align using RSubread
 	tmpout <- paste0(output,".tmp.bam")
 	Rsubread::align(index = index,
@@ -51,7 +51,7 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 			...)
 
 	# Sort and Index
-	cat("Sorting and Indexing")
+	message("Sorting and Indexing")
 	Rsamtools::sortBam(file = tmpout, destination = output)# adds .bam suffix
 	Rsamtools::index(paste0(output, ".bam") )
 	file.remove(tmpout)

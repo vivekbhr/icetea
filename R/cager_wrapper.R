@@ -36,7 +36,7 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
 		ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE)
 	}, error = function(e){
 		if(grepl("negative",e) == TRUE){
-			print("It seems that the file is too big. Try splitting the file by chromosome and
+			warning("It seems that the file is too big. Try splitting the file by chromosome and
 				process one by one.")
 		} else {
 			print("Error: ", e)
@@ -105,7 +105,7 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
 		save(ctss, file= "myCAGEset.Rdata")
 	})
 
-	print("CAGEset object with normalized counts saved in current directory as : myCAGEset.Rdata")
+	message("CAGEset object with normalized counts saved in current directory as : myCAGEset.Rdata")
 
 	## 3..Aggregate TSS by positions -- > cluster --> promoter shifts
 
