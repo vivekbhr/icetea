@@ -9,9 +9,9 @@ mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
 \arguments{
 \item{index}{character string giving the basename of the Subread index file.}
 
-\item{R1}{forward read (_R1) fastq, output of \code{\link{trimFastqIndex}} command.}
+\item{R1}{forward read (R1) fastq file, output of \code{\link{trimFastqIndex}} command.}
 
-\item{R2}{reverse read (_R2) fastq, output of \code{\link{trimFastqIndex}} command.}
+\item{R2}{reverse read (R2) fastq file, output of \code{\link{trimFastqIndex}} command.}
 
 \item{outprefix}{output file prefix (without ".bam" extention)}
 

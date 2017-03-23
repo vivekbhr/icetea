@@ -4,8 +4,8 @@
 #' Map the paired-end MAPCap data.
 #'
 #' @param index character string giving the basename of the Subread index file.
-#' @param R1 forward read (_R1) fastq, output of \code{\link{trimFastqIndex}} command.
-#' @param R2 reverse read (_R2) fastq, output of \code{\link{trimFastqIndex}} command.
+#' @param R1 forward read (R1) fastq file, output of \code{\link{trimFastqIndex}} command.
+#' @param R2 reverse read (R2) fastq file, output of \code{\link{trimFastqIndex}} command.
 #' @param outprefix output file prefix (without ".bam" extention)
 #' @param nthreads number of threads to use for mapping.
 #' @param logfile a log file to write the processing message.
