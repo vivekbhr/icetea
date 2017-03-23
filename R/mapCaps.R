@@ -9,7 +9,7 @@
 #' @param outprefix output file prefix (without ".bam" extention)
 #' @param nthreads number of threads to use for mapping.
 #' @param logfile a log file to write the processing message.
-#' @param ... additional arguments passed to the RSubread::align function.
+#' @param ... additional arguments passed to the \code{\link{subjunc}} function.
 #' @return bamfile A mapped BAM file for the sample.
 #'
 #' @examples
@@ -43,11 +43,13 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 	message("Mapping the data\n\n")
 	# Align using RSubread
 	tmpout <- paste0(output,".tmp.bam")
-	Rsubread::align(index = index,
+	Rsubread::subjunc(index = index,
 			readfile1 = R1,
 			readfile2 = R2,
 			output_file = tmpout,
 			nthreads = nthreads,
+			minFragLength=10,
+			reportAllJunctions = TRUE,
 			...)
 
 	# Sort and Index
