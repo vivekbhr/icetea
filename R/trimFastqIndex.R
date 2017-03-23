@@ -1,4 +1,4 @@
-#### ~~~~ Part of the mapcapR package for analysis of FETISH data ~~~~ ####
+#### ~~~~ Part of the mapcapR package for analysis of MAPCap data ~~~~ ####
 ### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
 
 #' Trim the raw fastq files and tag the read headers
