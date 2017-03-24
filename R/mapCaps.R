@@ -55,7 +55,7 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 	# Sort and Index
 	message("Sorting and Indexing")
 	Rsamtools::sortBam(file = tmpout, destination = output)# adds .bam suffix
-	Rsamtools::index(paste0(output, ".bam") )
+	Rsamtools::indexBam(paste0(output, ".bam") )
 	file.remove(tmpout)
 
 	# Close logfile
