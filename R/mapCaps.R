@@ -16,7 +16,7 @@
 #' r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "mapcapR")
 #' r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "mapcapR")
 #' \dontrun{
-#' mapCaps(index,R1 = r1, R2 = r2, output = "test_mapped", nthreads = 10, logfile=NULL)
+#' mapCaps(index,R1 = r1, R2 = r2, outprefix = "test_mapped", nthreads = 10, logfile=NULL)
 #' }
 #'
 #' @export
@@ -42,7 +42,7 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 
 	message("Mapping the data\n\n")
 	# Align using RSubread
-	tmpout <- paste0(output,".tmp.bam")
+	tmpout <- paste0(outprefix,".tmp.bam")
 	Rsubread::subjunc(index = index,
 			readfile1 = R1,
 			readfile2 = R2,
@@ -54,8 +54,8 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 
 	# Sort and Index
 	message("Sorting and Indexing")
-	Rsamtools::sortBam(file = tmpout, destination = output)# adds .bam suffix
-	Rsamtools::indexBam(paste0(output, ".bam") )
+	Rsamtools::sortBam(file = tmpout, destination = outprefix)# adds .bam suffix
+	Rsamtools::indexBam(paste0(outprefix, ".bam") )
 	file.remove(tmpout)
 
 	# Close logfile
