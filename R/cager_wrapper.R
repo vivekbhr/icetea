@@ -36,10 +36,10 @@ cage_wrapper <- function(input, labels, ncores = NULL, tpmCutoff = 10,
 		ctss <- CAGEr::getCTSS(mycage, removeFirstG = TRUE, correctSystematicG = TRUE)
 	}, error = function(e){
 		if(grepl("negative",e) == TRUE){
-			warning("It seems that the file is too big. Try splitting the file by chromosome and
+			stop("It seems that the file is too big. Try splitting the file by chromosome and
 				process one by one.")
 		} else {
-			print("Error: ", e)
+			stop(paste0("Error: ", e))
 		}
 	})
 
