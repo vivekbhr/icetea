@@ -28,8 +28,8 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 		sink(logfile)
 	}
 
-	# test for trimmed R2
-	message("Checking for trimmed R2\n\n")
+	# test for trimmed R2 index
+	message("Checking for trimmed barcodes\n")
 	read2 <- gzfile(R2)
 	data <- readLines(read2,100)
 	close(read2)
@@ -40,7 +40,7 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 		stop("Stop! read R2 seems untrimmed. Run trimFastqIndex first.")
 	}
 
-	message("Mapping the data\n\n")
+	message("Mapping the data\n")
 	# Align using RSubread
 	tmpout <- paste0(outprefix,".tmp.bam")
 	Rsubread::subjunc(index = index,

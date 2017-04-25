@@ -31,7 +31,7 @@ Map the paired-end MAPCap data.
 r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "mapcapR")
 r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "mapcapR")
 \dontrun{
-mapCaps(index,R1 = r1, R2 = r2, output = "test_mapped", nthreads = 10, logfile=NULL)
+mapCaps(index,R1 = r1, R2 = r2, outprefix = "test_mapped", nthreads = 10, logfile=NULL)
 }
 
 }
