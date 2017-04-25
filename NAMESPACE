@@ -2,6 +2,7 @@
 
 export(cage_wrapper)
 export(detect_TSS)
+export(detect_diffTSS)
 export(filterDuplicates)
 export(mapCaps)
 export(plot_TSSprecision)
