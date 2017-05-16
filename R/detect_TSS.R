@@ -41,7 +41,7 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 
 	# Get counts for 2kb local region surrounding each bin
 	surrounds <- 2000
-	neighbor <- suppressWarnings(GenomicRanges::resize(rowRanges(data), surrounds, fix = "center"))
+	neighbor <- suppressWarnings(GenomicRanges::resize(GenomicRanges::rowRanges(data), surrounds, fix = "center"))
 	wider <- csaw::regionCounts(bam.files, param = regionparam, regions = neighbor, ext = frag.len)
 	colnames(wider) <- rownames(design)
 	SummarizedExperiment::colData(wider) <- c(SummarizedExperiment::colData(wider), design)
