@@ -37,14 +37,14 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 	# Count reads into sliding windows
 	data <- csaw::strandedCounts(bam.files, param=param, ext=frag.len, width=win.width, bin = TRUE)
 	colnames(data) <- rownames(design)
-	colData(data) <- c(colData(data), design)
+	SummarizedExperiment::colData(data) <- c(SummarizedExperiment::colData(data), design)
 
 	# Get counts for 2kb local region surrounding each bin
 	surrounds <- 2000
 	neighbor <- suppressWarnings(resize(rowRanges(data), surrounds, fix = "center"))
 	wider <- csaw::regionCounts(bam.files, param = regionparam, regions = neighbor, ext = frag.len)
 	colnames(wider) <- rownames(design)
-	colData(wider) <- c(colData(wider), design)
+	SummarizedExperiment::colData(wider) <- c(SummarizedExperiment::colData(wider), design)
 
 	## take out groups --> Generate filter statistics for each group (based on local enrichment)
 	filterstat <- lapply(unique(design$group), function(x){
