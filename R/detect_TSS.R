@@ -41,9 +41,16 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 
 	# Get counts for 2kb local region surrounding each bin
 	surrounds <- 2000
-	neighbor <- suppressWarnings(GenomicRanges::resize(SummarizedExperiment::rowRanges(data),
-							   surrounds, fix = "center"))
-	wider <- csaw::regionCounts(bam.files, param = regionparam, regions = neighbor, ext = frag.len)
+	neighbor <- suppressWarnings(
+		GenomicRanges::trim(
+			GenomicRanges::resize(SummarizedExperiment::rowRanges(data),
+							   surrounds, fix = "center")
+			))
+
+	wider <- suppressWarnings(
+		csaw::regionCounts(bam.files, param = regionparam, regions = neighbor, ext = frag.len)
+	)
+
 	colnames(wider) <- rownames(design)
 	SummarizedExperiment::colData(wider) <- c(SummarizedExperiment::colData(wider), design)
 
@@ -71,12 +78,14 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 	})
 
 	## write merged output for each group
+	message("Writing output .bed files per group")
 	mapply(function(bedfile, group) {
-		rtracklayer::export.bed(object = bedfile, con = group)
+		rtracklayer::export.bed(object = bedfile$region, con = group)
 	}, bedfile = merged, group = paste0(outfile_prefix, "_" , design$group, ".bed") )
 
 	## write out the union of merges
-	merged %<>% lapply(function(x) return(x$region))
+	message("Writing merged .bed files")
+	merged <- lapply(merged, function(x) return(x$region))
 	mergedall <- Reduce(union, merged)
 	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
 }
