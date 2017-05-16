@@ -21,6 +21,7 @@
 #' 	   (union) TSS sites of all samples.
 #' @export
 #'
+#' @importFrom GenomicRanges rowRanges
 #' @examples
 #'
 #'
