@@ -27,8 +27,6 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	# first check if design df and bam files are accurate
 	if(length(bam.files) != nrow(design)) {
 		stop("Number of rows in design data frame doesn't match the number of bam files")
-	} else if(!(testGroup %in% design$group & contGroup %in% design$group)) {
-		stop("testGroup and/or contGroup not in the design data frame")
 	} else {
 		c <- rownames(design)
 	}
