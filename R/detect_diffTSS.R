@@ -1,5 +1,5 @@
 
-#' Detect differentially expressed Transcription Start Sites between two conditions
+#' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 #'
 #' @param bam.files List of bam files to use
 #' @param TSSfile A .bed file with TS sites to test. Normally it would be the *merged.bed file
@@ -7,13 +7,14 @@
 #'
 #' @param design A data frame with rownames = sample names and a column called 'group'
 #' 		that contains information about the sample group (see example)
+#' @param outplots Output pdf filename for plots
 #'
 #' @param plotref Name of reference sample to plot for detection of composition bias in the
 #' 		  data. Data is normalized using the TMM method to avoid composition bias.
 #' @param testGroup Name of Test group (should be present in the design data frame)
 #' @param contGroup Name of Control group (should be present in the design data frame)
 #'
-#' @return A GRanges object containing p-values of differential expression for each TSS.
+#' @return Returns an object of class DGEGLM.
 #'
 #' @export
 #'
@@ -21,7 +22,7 @@
 #'
 #'
 
-detect_diffTSS <- function(bam.files, TSSfile, design, plotref, testGroup, contGroup) {
+fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 
 	# first check if design df and bam files are accurate
 	if(length(bam.files) != nrow(design)) {
@@ -34,6 +35,8 @@ detect_diffTSS <- function(bam.files, TSSfile, design, plotref, testGroup, contG
 
 	## Normalize for composition bias : TMM
 	# important to try different bin sizes and see if the values are close to unity (low composition effect)
+	restrictChr <- NULL
+	regionparam <- csaw::readParam(minq=30, restrict = restrictChr)
 	binned <- csaw::windowCounts(bam.files, bin = TRUE, width = 10000, param = regionparam)
 	normfacs <- csaw::normOffsets(binned) # close to unity
 	names(normfacs) <- c
@@ -60,7 +63,7 @@ detect_diffTSS <- function(bam.files, TSSfile, design, plotref, testGroup, contG
 	})
 
 	# Import tss locations to test
-	mergedall <- import.bed(TSSfile)
+	mergedall <- rtracklayer::import.bed(TSSfile)
 
 	## get 5' read counts on the locations from the bam.files
 	# function to resize reads
@@ -75,10 +78,16 @@ detect_diffTSS <- function(bam.files, TSSfile, design, plotref, testGroup, contG
 							  reads = bam.files,
 							  preprocess.reads = ResizeReads)
 	#### ------ Now do EdgeR ------ ####
-	y <- asDGEList(tsscounts, norm.factors = normfacs)
+	y <- csaw::asDGEList(tsscounts, norm.factors = normfacs)
 	designm <- model.matrix(~0+group, design)
 	y <- edgeR::estimateDisp(y, designm)
 	fit <- edgeR::glmQLFit(y, designm, robust = TRUE)
+
+	# check prior degrees of freedom (avoid Infs)
+	message("Prior degrees of freedom : ")
+	print(summary(fit$df.prior))
+
+	pdf(outplots)
 
 	## check that the Fit is good
 	par(mfrow=c(1,2))
@@ -90,14 +99,36 @@ detect_diffTSS <- function(bam.files, TSSfile, design, plotref, testGroup, contG
 	# dispersion plot
 	edgeR::plotQLDisp(fit)
 
-	# check prior df
-	summary(fit$df.prior)
-
 	## check with MDSplot if there is batch effect
 	par(mfrow = c(2,2), mar = c(5,4,2,2))
 	for (top in c(100, 500, 1000, 5000)) {
-		out <- plotMDS(cpm(y, log = TRUE), main = top, labels = design$group, top = top)
+		out <- limma::plotMDS(edgeR::cpm(y, log = TRUE), main = top,
+				      labels = design$group, top = top)
 	}
+
+	dev.off()
+
+	## return the fit
+	return(fit)
+
+}
+
+
+
+#' Detect differentially expressed Transcription Start Sites between two conditions (test)
+#'
+#' @param fit DGEGLM object (output of \code{\link{fit_diffTSS}} command )
+#' @param testGroup Test group name
+#' @param contGroup Control group name
+#'
+#' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
+#' @export
+#'
+#' @examples
+#'
+#'
+
+detect_diffTSS <- function(fit, testGroup, contGroup) {
 
 	## Testing the differential TSS
 	# make contrast matrix
@@ -113,3 +144,4 @@ detect_diffTSS <- function(bam.files, TSSfile, design, plotref, testGroup, contG
 
 	return(difftss)
 }
+

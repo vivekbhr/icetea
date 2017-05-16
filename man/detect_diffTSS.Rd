@@ -2,31 +2,22 @@
 % Please edit documentation in R/detect_diffTSS.R
 \name{detect_diffTSS}
 \alias{detect_diffTSS}
-\title{Detect differentially expressed Transcription Start Sites between two conditions}
+\title{Detect differentially expressed Transcription Start Sites between two conditions (test)}
 \usage{
-detect_diffTSS(bam.files, TSSfile, design, plotref, testGroup, contGroup)
+detect_diffTSS(fit, testGroup, contGroup)
 }
 \arguments{
-\item{bam.files}{List of bam files to use}
+\item{fit}{DGEGLM object (output of \code{\link{fit_diffTSS}} command )}
 
-\item{TSSfile}{A .bed file with TS sites to test. Normally it would be the *merged.bed file
-(output of \code{\link{detect_TSS}} command)}
+\item{testGroup}{Test group name}
 
-\item{design}{A data frame with rownames = sample names and a column called 'group'
-that contains information about the sample group (see example)}
-
-\item{plotref}{Name of reference sample to plot for detection of composition bias in the
-data. Data is normalized using the TMM method to avoid composition bias.}
-
-\item{testGroup}{Name of Test group (should be present in the design data frame)}
-
-\item{contGroup}{Name of Control group (should be present in the design data frame)}
+\item{contGroup}{Control group name}
 }
 \value{
-A GRanges object containing p-values of differential expression for each TSS.
+A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 }
 \description{
-Detect differentially expressed Transcription Start Sites between two conditions
+Detect differentially expressed Transcription Start Sites between two conditions (test)
 }
 \examples{
 
