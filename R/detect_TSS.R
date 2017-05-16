@@ -67,7 +67,7 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 
 	## merge nearby windows (within 50bp) to get broader TSS
 	merged <- lapply(filtered.data, function(d) {
-		return(csaw::mergeWindows(d, tol = 50L, ignore.strand = FALSE))
+		return(csaw::mergeWindows(d, tol = 10L, ignore.strand = FALSE))
 	})
 
 	## write merged output for each group
