@@ -28,7 +28,7 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	if(length(bam.files) != nrow(design)) {
 		stop("Number of rows in design data frame doesn't match the number of bam files")
 	} else {
-		c <- rownames(design)
+		c <- design$sample
 	}
 
 	## Normalize for composition bias : TMM
@@ -118,6 +118,7 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 #' @param fit DGEGLM object (output of \code{\link{fit_diffTSS}} command )
 #' @param testGroup Test group name
 #' @param contGroup Control group name
+#' @param tssFile The TSS .bed file used for \code{\link{fit_diffTSS}} command
 #'
 #' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 #' @export
@@ -126,12 +127,15 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 #'
 #'
 
-detect_diffTSS <- function(fit, testGroup, contGroup) {
+detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile) {
+
+	# Import tss locations to test
+	mergedall <- rtracklayer::import.bed(TSSfile)
 
 	## Testing the differential TSS
 	# make contrast matrix
-	contr <- paste0("sample", testGroup , "-sample", contGroup)
-	contrast <- limma::makeContrasts(contrasts = contr, levels = designm)
+	contr <- paste0("group", testGroup , "-group", contGroup)
+	contrast <- limma::makeContrasts(contrasts = contr, levels = fit$design)
 	# test
 	results <- edgeR::glmQLFTest(fit, contrast = contrast)
 	top <- as.data.frame(edgeR::topTags(results, n = Inf))

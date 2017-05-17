@@ -4,7 +4,7 @@
 \alias{detect_diffTSS}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (test)}
 \usage{
-detect_diffTSS(fit, testGroup, contGroup)
+detect_diffTSS(fit, testGroup, contGroup, TSSfile)
 }
 \arguments{
 \item{fit}{DGEGLM object (output of \code{\link{fit_diffTSS}} command )}
@@ -12,6 +12,8 @@ detect_diffTSS(fit, testGroup, contGroup)
 \item{testGroup}{Test group name}
 
 \item{contGroup}{Control group name}
+
+\item{tssFile}{The TSS .bed file used for \code{\link{fit_diffTSS}} command}
 }
 \value{
 A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
