@@ -119,6 +119,7 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 #' @param testGroup Test group name
 #' @param contGroup Control group name
 #' @param tssFile The TSS .bed file used for \code{\link{fit_diffTSS}} command
+#' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
 #'
 #' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 #' @export
@@ -127,7 +128,7 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 #'
 #'
 
-detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile) {
+detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA) {
 
 	# Import tss locations to test
 	mergedall <- rtracklayer::import.bed(TSSfile)
@@ -143,6 +144,20 @@ detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile) {
 	# sort output by pvalue and return
 	difftss <- mergedall[rownames(top) %>% as.numeric()]
 	difftss$score <- top$FDR
+	difftss$logFC <- top$logFC
+	difftss$logCPM <- top$logCPM
+
+	# MA plot
+	if(!(is.na(MAplot_fdr)) ) {
+	p <- ggplot(top, aes(logCPM, logFC, col = factor(top$FDR < MAplot_fdr))) +
+			geom_point(alpha = 0.5) +
+			geom_abline(slope = 0, intercept = 0) +
+			scale_color_manual(values = c("grey40", "darkred")) +
+			labs(col = "Differentially Expressed") +
+			theme_gray(base_size = 14) +
+			theme(legend.position = "top")
+	print(p)
+	}
 
 	return(difftss)
 }

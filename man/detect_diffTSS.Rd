@@ -4,7 +4,7 @@
 \alias{detect_diffTSS}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (test)}
 \usage{
-detect_diffTSS(fit, testGroup, contGroup, TSSfile)
+detect_diffTSS(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA)
 }
 \arguments{
 \item{fit}{DGEGLM object (output of \code{\link{fit_diffTSS}} command )}
@@ -12,6 +12,8 @@ detect_diffTSS(fit, testGroup, contGroup, TSSfile)
 \item{testGroup}{Test group name}
 
 \item{contGroup}{Control group name}
+
+\item{MAplot_fdr}{FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)}
 
 \item{tssFile}{The TSS .bed file used for \code{\link{fit_diffTSS}} command}
 }
