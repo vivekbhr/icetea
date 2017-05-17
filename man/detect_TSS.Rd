@@ -4,7 +4,7 @@
 \alias{detect_TSS}
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
-detect_TSS(bam.files, design, logFC = 2, restrictChr, outfile_prefix)
+detect_TSS(bam.files, design, foldChange = 2, restrictChr, outfile_prefix)
 }
 \arguments{
 \item{bam.files}{List of bam files to use}
@@ -12,9 +12,9 @@ detect_TSS(bam.files, design, logFC = 2, restrictChr, outfile_prefix)
 \item{design}{A data frame with rownames = sample names and a column called 'group'
 that contains information about the sample group (see example)}
 
-\item{logFC}{A log-fold change cutoff of local enrichment to detect the TSS. For samples with
+\item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
 'usual' amount of starting material and squencing depth (>=5ug starting material,
->= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with lower
+>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
 amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 samples with 500ng starting material).}
 

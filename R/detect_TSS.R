@@ -6,9 +6,9 @@
 #' @param design A data frame with rownames = sample names and a column called 'group'
 #' 		that contains information about the sample group (see example)
 #'
-#' @param logFC A log-fold change cutoff of local enrichment to detect the TSS. For samples with
+#' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #' 		'usual' amount of starting material and squencing depth (>=5ug starting material,
-#' 		>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with lower
+#' 		>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
 #' 		amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 #' 		samples with 500ng starting material).
 #'
@@ -26,7 +26,7 @@
 #'
 
 
-detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix) {
+detect_TSS <- function(bam.files, design, foldChange = 2, restrictChr, outfile_prefix) {
 
 	# Define read params
 	frag.len <- NA
@@ -64,7 +64,7 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 
 	# Require X-fold enrichment over local background to keep the window (similar to MACS)
 	keep <- lapply(filterstat, function(x) {
-		kp <- x$filter > log2(logFC)
+		kp <- x$filter > log2(foldChange)
 		return(kp)
 	})
 
@@ -88,4 +88,8 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 	merged <- lapply(merged, function(x) return(x$region))
 	mergedall <- base::Reduce(S4vectors::union, merged)
 	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
+
+	# return data
+	output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
+	return(output)
 }
