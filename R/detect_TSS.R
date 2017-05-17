@@ -86,6 +86,6 @@ detect_TSS <- function(bam.files, design, logFC = 2, restrictChr, outfile_prefix
 	## write out the union of merges
 	message("Writing merged .bed files")
 	merged <- lapply(merged, function(x) return(x$region))
-	mergedall <- Reduce(union, merged)
+	mergedall <- base::Reduce(S4vectors::union, merged)
 	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
 }
