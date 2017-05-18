@@ -28,6 +28,8 @@
 
 detect_TSS <- function(bam.files, design, foldChange = 2, restrictChr, outfile_prefix) {
 
+	# convert group to char
+	design$group <- as.character(design$group)
 	# Define read params
 	frag.len <- NA
 	win.width <- 10
@@ -81,13 +83,13 @@ detect_TSS <- function(bam.files, design, foldChange = 2, restrictChr, outfile_p
 	message("Writing output .bed files per group")
 	mapply(function(bedfile, group) {
 		rtracklayer::export.bed(object = bedfile$region, con = group)
-	}, bedfile = merged, group = paste0(outfile_prefix, "_" , design$group, ".bed") )
+	}, bedfile = merged, group = paste0(outfile_prefix, "_" , unique(design$group), ".bed") )
 
 	## write out the union of merges
 	message("Writing merged .bed files")
 	merged <- lapply(merged, function(x) return(x$region))
-	mergedall <- base::Reduce(S4vectors::union, merged)
-	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
+	mergedall <- base::Reduce(S4Vectors::union, merged)
+	#rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
 
 	# return data
 	output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
