@@ -33,10 +33,17 @@ annotate_TSS <- function(tssFile, txdb){
 }
 
 
-## resolve 1:many mapping issue by prioritising UTR over others
+## resolve 1:many mapping issue by prioritising some features over others
 rankdf <- data.frame(feature = c("fiveUTR","promoter", "intron","coding","spliceSite","threeUTR","intergenic"),
 		     rank = c(1,2,3,4,5,6,7))
 
+#' Assign feature ranks on a VariantAnnotation output
+#'
+#' @param x output from VariantAnnotation
+#'
+#' @return A list of ranks
+#'
+#'
 getranks <- function(x) {
 	x$rank <- sapply(x$LOCATION, function(y) {
 		return(rankdf[rankdf$feature == y, "rank"])
@@ -44,6 +51,13 @@ getranks <- function(x) {
 	return(x)
 }
 
+#' Get features with the best rank for each TSS
+#'
+#' @param x output of getranks
+#'
+#' @return A data frame with counts
+#'
+#'
 splitranks <- function(x) {
 	l <- lapply(split(x, x$QUERYID), unique)
 	l2 <- lapply(l, function(y) {
