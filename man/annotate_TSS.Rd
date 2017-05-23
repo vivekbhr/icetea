@@ -4,12 +4,14 @@
 \alias{annotate_TSS}
 \title{Annotate detected Transcription Start Sites}
 \usage{
-annotate_TSS(tssFile, txdb)
+annotate_TSS(tssFile, txdb, plot = NA)
 }
 \arguments{
 \item{tssFile}{BED file with detected TSS/differential TSS results.}
 
 \item{txdb}{A txdb object.}
+
+\item{plot}{Type of plot to make (choose from "numbers", "proportions" or NA for no plot)}
 }
 \value{
 Annotation of detected TSS

@@ -3,6 +3,7 @@
 #'
 #' @param tssFile BED file with detected TSS/differential TSS results.
 #' @param txdb A txdb object.
+#' @param plot Type of plot to make (choose from "numbers", "proportions" or NA for no plot)
 #'
 #' @return Annotation of detected TSS
 #' @export
@@ -11,7 +12,7 @@
 #'
 #'
 
-annotate_TSS <- function(tssFile, txdb){
+annotate_TSS <- function(tssFile, txdb, plot = NA) {
 
 	# import TSS file
 	x <- rtracklayer::import.bed(tssFile)
@@ -27,6 +28,28 @@ annotate_TSS <- function(tssFile, txdb){
 	ttt <- splitranks(tt)
 	## Return a table of tss counts per feature
 	final <- as.data.frame(table(ttt$LOCATION))
+
+	## plot if asked
+	if(!is.na(plot)) {
+		if(plot == "numbers") {
+			t <- as.data.frame(apply(x[-1], 1, function(x) (x/sum(x))*100 ) )
+			colnames(t) <- x$.id
+			t$Feature <- rownames(t)
+			t <- melt(t)
+			n <- "% "
+		} else if(plot == "proportions") {
+			t <- melt(x)
+			n <- "Number "
+		} else {
+			warning("Plot type neither 'number' nor 'proportion'.")
+		}
+
+		print(ggplot(t, aes(Feature, value, fill = variable)) +
+			geom_bar(stat = "identity", position = "dodge") +
+			scale_fill_brewer(palette = "Set1") +
+			labs(x = "Feature", y = paste0(n, "of TSS"), fill = "Sample")
+		)
+	}
 
 	return(final)
 
@@ -66,3 +89,21 @@ splitranks <- function(x) {
 	l3 <- plyr::ldply(l2, data.frame)
 	return(l3)
 }
+
+
+#' Melt the output df from splitranks
+#'
+#' @param x
+#'
+#' @return
+#'
+#' @examples
+#'
+#'
+melt <- function(x) {
+	vars <- colnames(x[2:ncol(x)])
+	d <- plyr::unrowname(reshape(x, direction = "long", idvar = ".id", varying = vars) )
+	d$time <- vars[d$time]
+	colnames(d) <- c("variable", "Feature", "value")
+}
+
