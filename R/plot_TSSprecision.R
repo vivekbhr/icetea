@@ -25,7 +25,7 @@ plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutof
 	refRanges <- GenomicRanges::resize(reference, width = 1, fix = "start")
 	refRanges <- unique(refRanges)
 	# read bed files
-	tssData <- lapply(TSSbedFiles, bedToGRanges)
+	tssData <- lapply(TSSbedFiles, rtracklayer::import.bed)
 	names(tssData) <- sampleNames
 
 	# get distances of bed entries from nearest TSS

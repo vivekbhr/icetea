@@ -25,9 +25,9 @@ annotate_TSS <- function(tssFile, txdb){
 	t <- data.frame(QUERYID = db$QUERYID, LOCATION = db$LOCATION)
 	tt <- getranks(t)
 	ttt <- splitranks(tt)
-
 	## Return a table of tss counts per feature
 	final <- as.data.frame(table(ttt$LOCATION))
+
 	return(final)
 
 }
