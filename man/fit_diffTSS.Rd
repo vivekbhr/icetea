@@ -19,10 +19,6 @@ that contains information about the sample group (see example)}
 
 \item{plotref}{Name of reference sample to plot for detection of composition bias in the
 data. Data is normalized using the TMM method to avoid composition bias.}
-
-\item{testGroup}{Name of Test group (should be present in the design data frame)}
-
-\item{contGroup}{Name of Control group (should be present in the design data frame)}
 }
 \value{
 Returns an object of class DGEGLM.

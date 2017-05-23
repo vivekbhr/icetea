@@ -11,12 +11,13 @@
 #'
 #' @param plotref Name of reference sample to plot for detection of composition bias in the
 #' 		  data. Data is normalized using the TMM method to avoid composition bias.
-#' @param testGroup Name of Test group (should be present in the design data frame)
-#' @param contGroup Name of Control group (should be present in the design data frame)
 #'
 #' @return Returns an object of class DGEGLM.
 #'
 #' @export
+#' @importFrom graphics abline par plot smoothScatter
+#' @importFrom grDevices dev.off pdf
+#' @importFrom stats model.matrix
 #'
 #' @examples
 #'
@@ -54,7 +55,8 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	par(cex.lab=1.5, mfrow=c(n,3))
 	lapply(cols_toplot, function(x) {
 		smoothScatter(bin.ab, adjc[,plotref] - adjc[,x], ylim = c(-6, 6),
-			      xlab = "Average abundance", ylab = paste0("Log-ratio (", plotref," vs ", x,")") )
+			      xlab = "Average abundance",
+			      ylab = paste0("Log-ratio (", plotref," vs ", x,")") )
 
 		abline(h = log2(normfacs[plotref]/normfacs[x]), col = "red")
 
@@ -67,8 +69,8 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	# function to resize reads
 	ResizeReads <- function(reads, width=1, fix="start", ...) {
 		reads <- as(reads, "GRanges")
-		stopifnot(all(strand(reads) != "*"))
-		resize(reads, width=width, fix=fix, ...)
+		stopifnot(all(GenomicRanges::strand(reads) != "*"))
+		GenomicRanges::resize(reads, width=width, fix=fix, ...)
 	}
 
 	# now read the data
@@ -118,12 +120,12 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 #' @param fit DGEGLM object (output of \code{\link{fit_diffTSS}} command )
 #' @param testGroup Test group name
 #' @param contGroup Control group name
-#' @param tssFile The TSS .bed file used for \code{\link{fit_diffTSS}} command
+#' @param TSSfile The TSS .bed file used for \code{\link{fit_diffTSS}} command
 #' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
 #'
 #' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 #' @export
-#'
+#' @importFrom ggplot2 ggplot aes geom_point geom_abline scale_color_manual labs theme_gray theme
 #' @examples
 #'
 #'
@@ -142,7 +144,7 @@ detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA) 
 	top <- as.data.frame(edgeR::topTags(results, n = Inf))
 
 	# sort output by pvalue and return
-	difftss <- mergedall[rownames(top) %>% as.numeric()]
+	difftss <- mergedall[as.numeric(rownames(top))]
 	difftss$score <- top$FDR
 	difftss$logFC <- top$logFC
 	difftss$logCPM <- top$logCPM

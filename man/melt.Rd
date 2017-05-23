@@ -7,7 +7,7 @@
 melt(x)
 }
 \arguments{
-\item{x}{}
+\item{x}{df to melt}
 }
 \value{
 

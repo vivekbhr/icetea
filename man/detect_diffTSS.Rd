@@ -13,9 +13,9 @@ detect_diffTSS(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA)
 
 \item{contGroup}{Control group name}
 
-\item{MAplot_fdr}{FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)}
+\item{TSSfile}{The TSS .bed file used for \code{\link{fit_diffTSS}} command}
 
-\item{tssFile}{The TSS .bed file used for \code{\link{fit_diffTSS}} command}
+\item{MAplot_fdr}{FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)}
 }
 \value{
 A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.

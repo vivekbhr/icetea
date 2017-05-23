@@ -5,28 +5,32 @@
 #' @param bam.files List of bam files to use
 #' @param design A data frame with rownames = sample names and a column called 'group'
 #' 		that contains information about the sample group (see example)
+#' @param outfile_prefix Output name prefix for the .bed files
 #'
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #' 		'usual' amount of starting material and squencing depth (>=5ug starting material,
 #' 		>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
 #' 		amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 #' 		samples with 500ng starting material).
-#'
 #' @param restrictChr Chromosomes to restrict the analysis to.
-#'
-#' @param outfile_prefix Output name prefix for the .bed files
 #'
 #'
 #' @return .bed files containing TSS position for each group, along with a bed file for consensus
 #' 	   (union) TSS sites of all samples.
 #' @export
+#' @importFrom utils write.table
 #'
 #' @examples
-#'
+#' \dontrun{
+#' bams <- system.file("extdata", c("test_filt1.bam", "test_filt2.bam"), package = "mapcapR")
+#' detect_TSS(bam.files = bams, design = design, outfile_prefix = "testTSS",
+#'            foldChange = 6, restrictChr = c("2L","2R","X"))
+#'}
 #'
 
 
-detect_TSS <- function(bam.files, design, foldChange = 2, restrictChr, outfile_prefix) {
+detect_TSS <- function(bam.files, design,  outfile_prefix,
+		       foldChange = 2, restrictChr = NULL) {
 
 	# convert group to char
 	design$group <- as.character(design$group)

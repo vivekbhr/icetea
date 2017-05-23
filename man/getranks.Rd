@@ -4,10 +4,12 @@
 \alias{getranks}
 \title{Assign feature ranks on a VariantAnnotation output}
 \usage{
-getranks(x)
+getranks(x, rankdf = rankdf)
 }
 \arguments{
 \item{x}{output from VariantAnnotation}
+
+\item{rankdf}{the defined rankdf data.frame}
 }
 \value{
 A list of ranks

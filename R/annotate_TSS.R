@@ -7,6 +7,8 @@
 #'
 #' @return Annotation of detected TSS
 #' @export
+#' @importFrom ggplot2 ggplot aes geom_bar scale_fill_brewer labs
+#' @importFrom stats reshape
 #'
 #' @examples
 #'
@@ -14,6 +16,9 @@
 
 annotate_TSS <- function(tssFile, txdb, plot = NA) {
 
+	## resolve 1:many mapping issue by prioritising some features over others
+	rankdf <- data.frame(feature = c("fiveUTR","promoter", "intron","coding","spliceSite","threeUTR","intergenic"),
+		     rank = c(1,2,3,4,5,6,7))
 	# import TSS file
 	x <- rtracklayer::import.bed(tssFile)
 	# Annotate
@@ -56,18 +61,15 @@ annotate_TSS <- function(tssFile, txdb, plot = NA) {
 }
 
 
-## resolve 1:many mapping issue by prioritising some features over others
-rankdf <- data.frame(feature = c("fiveUTR","promoter", "intron","coding","spliceSite","threeUTR","intergenic"),
-		     rank = c(1,2,3,4,5,6,7))
-
 #' Assign feature ranks on a VariantAnnotation output
 #'
 #' @param x output from VariantAnnotation
+#' @param rankdf the defined rankdf data.frame
 #'
 #' @return A list of ranks
 #'
 #'
-getranks <- function(x) {
+getranks <- function(x, rankdf = rankdf) {
 	x$rank <- sapply(x$LOCATION, function(y) {
 		return(rankdf[rankdf$feature == y, "rank"])
 	})
@@ -93,7 +95,7 @@ splitranks <- function(x) {
 
 #' Melt the output df from splitranks
 #'
-#' @param x
+#' @param x df to melt
 #'
 #' @return
 #'
