@@ -1,13 +1,16 @@
 Package: mapcapR
-Title: R package for MAPCap data analysis
-Version: 0.0.0.9000
+Title: R package for processing and analysis of CAGE data
+Version: 0.1
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
-Description: MAPCap (Multiplexed Affinity Purification of Capped RNA) is a CAGE technique that can be performed in a day, and with low input RNA.
-            This package can be used for all steps in the analysis of FATSCap data, beginning from read trimming to TSS calling.
+Description: mapcapR is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection
 Depends:
     R (>= 3.2.2)
 Imports:
-    BiocParallel, Biostrings, CAGEr, GenomicRanges, Rsamtools, Rsubread, S4Vectors, plyr
+    stats, utils, methods, grDevices,
+    plyr, ggplot2,
+    BiocParallel, Biostrings, S4Vectors, Rsamtools,
+    GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
+    VariantAnnotation,  Rsubread, limma, edgeR, csaw, CAGEr
 biocViews: CAGE, MAPCap
 License: GPL-3
 LazyData: true

@@ -9,13 +9,14 @@
 #'
 #' @return A plot showing % TSS called per sample w.r.t their distance to TSS
 #' @export
+#' @importFrom ggplot2 stat_ecdf theme_light scale_x_continuous scale_color_brewer ggsave
 #'
 #' @examples
 #' \dontrun{
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' transcripts <- transcripts(dm6GTF)
-#' files <- system.file("extdata", c("tssclusters1.bed","tssclusters2.bed"), package = "mapcapR")
-#' plot_TSSprecision(TSSbedFiles = files, sampleNames = c("test1", "test2"),
+#' files <- system.file("extdata", "testTSS.bed", package = "mapcapR")
+#' plot_TSSprecision(TSSbedFiles = files, sampleNames = "testTSS",
 #' 		reference = transcripts , distanceCutoff = 500,
 #' 		outFile = "TSS_detection_precision.png")
 #' }
@@ -25,7 +26,7 @@ plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutof
 	refRanges <- GenomicRanges::resize(reference, width = 1, fix = "start")
 	refRanges <- unique(refRanges)
 	# read bed files
-	tssData <- lapply(TSSbedFiles, bedToGRanges)
+	tssData <- lapply(TSSbedFiles, rtracklayer::import.bed)
 	names(tssData) <- sampleNames
 
 	# get distances of bed entries from nearest TSS

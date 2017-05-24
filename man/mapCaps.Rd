@@ -9,9 +9,9 @@ mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
 \arguments{
 \item{index}{character string giving the basename of the Subread index file.}
 
-\item{R1}{forward read (_R1) fastq, output of \code{\link{trimFastqIndex}} command.}
+\item{R1}{forward read (R1) fastq file, output of \code{\link{trimFastqIndex}} command.}
 
-\item{R2}{reverse read (_R2) fastq, output of \code{\link{trimFastqIndex}} command.}
+\item{R2}{reverse read (R2) fastq file, output of \code{\link{trimFastqIndex}} command.}
 
 \item{outprefix}{output file prefix (without ".bam" extention)}
 
@@ -19,7 +19,7 @@ mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
 
 \item{logfile}{a log file to write the processing message.}
 
-\item{...}{additional arguments passed to the RSubread::align function.}
+\item{...}{additional arguments passed to the \code{\link{subjunc}} function.}
 }
 \value{
 bamfile A mapped BAM file for the sample.
@@ -31,7 +31,7 @@ Map the paired-end MAPCap data.
 r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "mapcapR")
 r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "mapcapR")
 \dontrun{
-mapCaps(index,R1 = r1, R2 = r2, output = "test_mapped", nthreads = 10, logfile=NULL)
+mapCaps(index,R1 = r1, R2 = r2, outprefix = "test_mapped", nthreads = 10, logfile=NULL)
 }
 
 }

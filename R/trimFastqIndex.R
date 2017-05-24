@@ -1,12 +1,12 @@
-#### ~~~~ Part of the mapcapR package for analysis of FETISH data ~~~~ ####
+#### ~~~~ Part of the mapcapR package for analysis of MAPCap data ~~~~ ####
 ### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
 
 #' Trim the raw fastq files and tag the read headers
 #'
-#' @param input_R1 Input _R1.fastq (or _R1.fastq.gz) file.
-#' @param input_R2 Input _R2.fastq (or _R2.fastq.gz) file.
-#' @param output_R1 Name of the Output _R1.fastq.gz file.
-#' @param output_R2 Name of the Output _R2.fastq.gz file.
+#' @param input_R1 input _R1.fastq (or _R1.fastq.gz) file.
+#' @param input_R2 input _R2.fastq (or _R2.fastq.gz) file.
+#' @param output_R1 name of the Output _R1.fastq.gz file.
+#' @param output_R2 name of the Output _R2.fastq.gz file.
 #' @return output_R1, output_R2 : The trimmed R1 and R2 .fastq.gz files.
 #' @examples
 #' r1 <- system.file("extdata", "test_R1.fastq.gz", package = "mapcapR")

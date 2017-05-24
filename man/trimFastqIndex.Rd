@@ -7,13 +7,13 @@
 trimFastqIndex(input_R1, input_R2, output_R1, output_R2)
 }
 \arguments{
-\item{input_R1}{Input _R1.fastq (or _R1.fastq.gz) file.}
+\item{input_R1}{input _R1.fastq (or _R1.fastq.gz) file.}
 
-\item{input_R2}{Input _R2.fastq (or _R2.fastq.gz) file.}
+\item{input_R2}{input _R2.fastq (or _R2.fastq.gz) file.}
 
-\item{output_R1}{Name of the Output _R1.fastq.gz file.}
+\item{output_R1}{name of the Output _R1.fastq.gz file.}
 
-\item{output_R2}{Name of the Output _R2.fastq.gz file.}
+\item{output_R2}{name of the Output _R2.fastq.gz file.}
 }
 \value{
 output_R1, output_R2 : The trimmed R1 and R2 .fastq.gz files.
