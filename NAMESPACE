@@ -2,11 +2,13 @@
 
 export(annotate_TSS)
 export(cage_wrapper)
+export(check_capSet)
 export(detect_TSS)
 export(detect_diffTSS)
 export(filterDuplicates)
 export(fit_diffTSS)
 export(mapCaps)
+export(newCapSet)
 export(plot_TSSprecision)
 export(splitBAM_byIndex)
 export(splitBAM_byRepindex)

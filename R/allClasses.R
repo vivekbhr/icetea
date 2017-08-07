@@ -31,14 +31,15 @@ newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleBarco
 	    sampleBarcodes = sampleBarcodes)
 }
 
-
-CapSet <- setClass("CapSet",
-		   slots = c(fastqType = "character",
-		   	  fastq_R1 = "character",
-		   	  fastq_R2 = "character",
-		   	  expMethod = "character",
-		   	  sampleBarcodes = "data.frame"),
-		   validity = check_capSet)
+#' Check capset validity
+#'
+#' @param object capset object
+#'
+#' @return boolean
+#' @export
+#'
+#' @examples
+#'
 
 check_capSet <- function(object) {
 	errors <- character()
@@ -74,3 +75,11 @@ check_capSet <- function(object) {
 	## return
 	if (length(errors) == 0) TRUE else errors
 }
+
+CapSet <- setClass("CapSet",
+		   slots = c(fastqType = "character",
+		   	  fastq_R1 = "character",
+		   	  fastq_R2 = "character",
+		   	  expMethod = "character",
+		   	  sampleBarcodes = "data.frame"),
+		   validity = check_capSet)
