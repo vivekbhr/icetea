@@ -4,6 +4,7 @@
 #'
 #' @param txdb A txdb object
 #' @param bamfiles Bam files to count the reads from
+#' @param single_end whether reads are single end
 #' @param outfile Tab-separated output file name (if required)
 #'
 #' @return data.frame with gene-level counts for all genes in the txdb object
@@ -12,7 +13,7 @@
 #' @examples
 #'
 
-get_geneCounts <- function(txdb, bamfiles, outfile = NA) {
+get_geneCounts <- function(txdb, bamfiles, single_end = TRUE,outfile = NA) {
 
 
 	# get 500bp region around transcripts to count the reads
@@ -28,7 +29,9 @@ get_geneCounts <- function(txdb, bamfiles, outfile = NA) {
 	dm6trans_resized <- GenomicRanges::resize(dm6trans, 500, fix = "start")
 
 	# count reads
-	tsscounts <- GenomicAlignments::summarizeOverlaps(dm6trans_resized, reads = Rsamtools::BamFileList(bamfiles))
+	tsscounts <- GenomicAlignments::summarizeOverlaps(dm6trans_resized,
+							  reads = Rsamtools::BamFileList(bamfiles),
+							  singleEnd = single_end)
 	tsscounts.df <- SummarizedExperiment::assay(tsscounts)
 
 	# sum all the TSS counts to gene counts

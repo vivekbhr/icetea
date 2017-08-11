@@ -4,12 +4,14 @@
 \alias{get_geneCounts}
 \title{Get gene-level counts from TSS data}
 \usage{
-get_geneCounts(txdb, bamfiles, outfile = NA)
+get_geneCounts(txdb, bamfiles, single_end = TRUE, outfile = NA)
 }
 \arguments{
 \item{txdb}{A txdb object}
 
 \item{bamfiles}{Bam files to count the reads from}
+
+\item{single_end}{whether reads are single end}
 
 \item{outfile}{Tab-separated output file name (if required)}
 }
