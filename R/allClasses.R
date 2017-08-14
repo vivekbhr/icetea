@@ -36,7 +36,6 @@ newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleBarco
 #' @param object capset object
 #'
 #' @return boolean
-#' @export
 #'
 #' @examples
 #'
