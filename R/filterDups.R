@@ -14,65 +14,59 @@
 #'
 
 
-filterDuplicates <- function(bamFile, outFile) {
+filterDuplicates_new <- function(bamFile, outFile) {
 
-	sparam <- Rsamtools::ScanBamParam(what = c("qname", "flag", "rname", "pos", "mapq"),
-			       flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
-			       			      isFirstMateRead = TRUE) )
-	# I also want hasUnmappedMate = TRUE eventually
+	sparam <- Rsamtools::ScanBamParam(what = c("qname", "rname", "pos", "isize", "qwidth", "mapq"),
+					  flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
+					  			      isFirstMateRead = TRUE) )
+	bamdf <- scanBam("inst/extdata/test_mapped.bam", param = sparam)
+	bamdf <- do.call(as.data.frame, bamdf)
+	bamdf$qname <- as.character(bamdf$qname)
 
-	filterDups <- function(bam){
+	## assuming a bamdf available, this is what a filterfunc looks like
+	filterDups <- function(bamdf) {
+		bamdf$qname <- as.character(bamdf$qname)
+		## split the df by chromosome into multiple df
+		chroms <- factor(bamdf$rname, levels = unique(as.character(bamdf$rname)))
+		bam2 <- S4Vectors::split(bamdf, chroms)
 
-		# function to get umis from qname and bins
-		dupumi_perbin <- function(qname, bins) {
-			# Get the UMI sequence out from header
+		## get duplicate stats for a given df
+		getdupstats <- function(bamdf) {
+			## split the df by pos (get one list per pos)
+			bamdf.bypos <- split(bamdf, list(bamdf$pos))
+			## extract umis from each df
 			getumi <- function(x) {
-				hdr <- vapply(strsplit(x, "#"), "[[", character(1), 2)
+				hdr <- vapply(strsplit(x$qname, "#"), "[[", character(1), 2)
 				umi <- vapply(strsplit(hdr, ":"), "[[", character(1), 2)
 				return(umi)
 			}
-			# Do it per bin
-			umis <- lapply(split(qname, bins), getumi)
-			# Get the duplicated umis per bin -> merge
-			dupStatus <- lapply(umis, function(x) !(duplicated(x)) )
-			return(unlist(dupStatus))
+			#getfraglength <- function(x) {
+			#	fraglen <- (2*x$qwidth)  x$isize
+			#	return(fraglen)
+			#}
+			umis <- lapply(bamdf.bypos, getumi)
+			#fraglengths <- lapply(bamdf.bypos, getfraglength)
+
+			dupStats_umi <- unlist(lapply(umis, function(x) !(duplicated(x)) ))
+			#dupStats_fraglen <- unlist(lapply(fraglengths, function(x) !(duplicated(x)) ))
+
+			# final dupstats (both UMI and fragment length are same --> remove reads, else keep)
+			#dupStats <- dupStats_umi | dupStats_fraglen
+			return(dupStats_umi)
 		}
 
-		# split list by chromosome
-		chroms <- factor(bam$rname, levels = unique(as.character(bam$rname)))
-		bam2 <- S4Vectors::split(bam, chroms)
+		## run for all
+		dupstats_perchr <- lapply(bam2, getdupstats)
+		return(unlist(dupstats_perchr))
 
-		getdupstats <- function(x){
-			# round to nearest 1000th
-			getEnd <- function(b) {
-				maxp <- max(b$pos)
-				y <- round(maxp, -3)
-				z <- ifelse(maxp < y, y, y + 1000)
-				return(z)
-			}
-			getStart <- function(b) {
-				minp <- min(b$pos)
-				y <- round(minp, -3)
-				z <- ifelse(minp > y, y, y - 1000)
-				return(z)
-			}
-			chromStart <- getStart(x)
-			chromEnd <- getEnd(x)
-
-			# divide chrom into 1kb bins
-			bins <- .bincode(x$pos, seq(chromStart,chromEnd, 1000))
-			dupstats <- dupumi_perbin(as.character(x$qname), bins)
-			return(dupstats)
-		}
-
-		dupstats <- lapply(bam2, getdupstats)
-		return(unlist(dupstats))
 	}
 
+	## create rule
 	rule <- S4Vectors::FilterRules(list(filterDups))
 
-	# filter command
-	Rsamtools::filterBam(file = bamFile, destination = outFile, filter = rule, param = sparam )
+	## filter command
+	Rsamtools::filterBam(file = bamFile,
+			     destination = outFile,
+			     filter = rule, param = sparam )
 
-	return("Done!")
 }
