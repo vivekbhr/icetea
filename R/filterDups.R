@@ -1,8 +1,12 @@
 
 #' Filter PCR-duplicates from BAM file using internal UMIs
 #'
+#' @description This script considers the read mapping start posion and the UMI to determine whether a
+#'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
+#'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
+#'
 #' @param bamFile Input BAM file
-#' @param outFile Output BAM file
+#' @param outFile Output (filtered) BAM file
 #'
 #' @return Filtered BAM file (with only R1), after PCR duplicate removal
 #' @export
@@ -14,7 +18,7 @@
 #'
 
 
-filterDuplicates_new <- function(bamFile, outFile) {
+filterDuplicates <- function(bamFile, outFile) {
 
 	sparam <- Rsamtools::ScanBamParam(what = c("qname", "rname", "pos", "isize", "qwidth", "mapq"),
 					  flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,

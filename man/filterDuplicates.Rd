@@ -9,13 +9,15 @@ filterDuplicates(bamFile, outFile)
 \arguments{
 \item{bamFile}{Input BAM file}
 
-\item{outFile}{Output BAM file}
+\item{outFile}{Output (filtered) BAM file}
 }
 \value{
 Filtered BAM file (with only R1), after PCR duplicate removal
 }
 \description{
-Filter PCR-duplicates from BAM file using internal UMIs
+This script considers the read mapping start posion and the UMI to determine whether a
+             read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
+             In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 }
 \examples{
 
