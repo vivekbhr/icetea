@@ -2,7 +2,7 @@
 
 export(annotate_TSS)
 export(cage_wrapper)
-export(check_capSet)
+export(demultiplex_fastq)
 export(detect_TSS)
 export(detect_diffTSS)
 export(filterDuplicates)

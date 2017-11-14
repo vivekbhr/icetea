@@ -21,14 +21,14 @@
 #'}
 #'
 
-newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleBarcodes) {
+newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleInfo) {
 	# create an instance of CapSet
-	new("capSet",
+	new("CapSet",
 	    fastqType = fastqType,
 	    fastq_R1 = fastq_R1,
 	    fastq_R2 = fastq_R2,
 	    expMethod = expMethod,
-	    sampleBarcodes = sampleBarcodes)
+	    sampleInfo = sampleInfo)
 }
 
 #' Check capset validity
@@ -48,7 +48,7 @@ check_capSet <- function(object) {
 	R1 <- object@fastq_R1
 	R2 <- object@fastq_R2
 	exp <- object@expMethod
-	barcodeInfo <- object@sampleBarcodes
+	barcodeInfo <- object@sampleInfo
 
 	## validate slots
 	# fastq
@@ -80,5 +80,5 @@ CapSet <- setClass("CapSet",
 		   	  fastq_R1 = "character",
 		   	  fastq_R2 = "character",
 		   	  expMethod = "character",
-		   	  sampleBarcodes = "data.frame"),
+		   	  sampleInfo = "data.frame"),
 		   validity = check_capSet)
