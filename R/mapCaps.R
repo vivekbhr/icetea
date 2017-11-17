@@ -1,9 +1,24 @@
 #### ~~~~ Part of the mapcapR package for analysis of MAPCap data ~~~~ ####
 ### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
 
+.checkTrimBarcodes <- function(fastq) {
+	# test for trimmed R2 index
+	message("Checking for trimmed barcodes\n")
+	read <- gzfile(fastq)
+	data <- readLines(read,100)
+	close(read2)
+
+	# Check if the read header has "#" (which is introduced during trimming.)
+	header <- data[seq(1,100,4)]
+	if (unique(grepl("#",header)) != TRUE) {
+		stop("Stop! fastq reads seem untrimmed. Run trimFastqIndex first.")
+	}
+
+}
+
 #' Map the paired-end MAPCap data.
 #'
-#' @param index character string giving the basename of the Subread index file.
+#' @param genomeIndex character string giving the basename of the Subread index file.
 #' @param R1 forward read (R1) fastq file, output of \code{\link{trimFastqIndex}} command.
 #' @param R2 reverse read (R2) fastq file, output of \code{\link{trimFastqIndex}} command.
 #' @param outprefix output file prefix (without ".bam" extention)
@@ -22,28 +37,19 @@
 #' @export
 #'
 
-mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
+mapCaps <- function(genomeIndex, R1, R2, outprefix, nthreads, logfile = NULL, ...){
 	# open a logfile if given
 	if(!is.null(logfile)){
 		sink(logfile)
 	}
 
 	# test for trimmed R2 index
-	message("Checking for trimmed barcodes\n")
-	read2 <- gzfile(R2)
-	data <- readLines(read2,100)
-	close(read2)
-
-	# Check if the read header has "#" (which is introduced during trimming.)
-	header <- data[seq(1,100,4)]
-	if (unique(grepl("#",header)) != TRUE) {
-		stop("Stop! read R2 seems untrimmed. Run trimFastqIndex first.")
-	}
+	.checkTrimBarcodes(R2)
 
 	message("Mapping the data\n")
 	# Align using RSubread
 	tmpout <- paste0(outprefix,".tmp.bam")
-	Rsubread::subjunc(index = index,
+	Rsubread::subjunc(index = genomeIndex,
 			readfile1 = R1,
 			readfile2 = R2,
 			output_file = tmpout,
@@ -58,8 +64,83 @@ mapCaps <- function(index, R1, R2, outprefix, nthreads, logfile = NULL,...){
 	Rsamtools::indexBam(paste0(outprefix, ".bam") )
 	file.remove(tmpout)
 
+	# Get mapping stats
+	mapstat <- Rsubread::propmapped(paste0(outprefix, ".bam"))
 	# Close logfile
 	if(!is.null(logfile)){
 		sink()
 	}
+
+	return(mapstat)
 }
+
+
+## FUNCTION NOT COMPLETE : NEED TO ACCOMMODATE TO SINGLE VS MULTI SAMPLE INPUT
+mapCaps.CapSet <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
+
+	## extract info
+	R1 <- CapSet@fastq_R1
+	R2 <- CapSet@fastq_R2
+	sampleInfo <- sampleInfo(CapSet)
+	expMethod <- CapSet@expMethod
+
+	# open a logfile if given
+	if(!is.null(logfile)){
+		sink(logfile)
+	}
+
+	# test whether the CapSet object has demultiplexed fastqs
+	demult <- !(is.null(sampleInfo$demult_R1)) # TRUE/FALSE
+
+	if (demult) {
+		if(sum(sapply(sampleInfo$demult_R1, file.exists, simplify = TRUE)) != nrow(sampleInfo) ) {
+			stop("One or more demultiplxed fastq files don't exist.
+			     Please check file paths under sampleInfo(CapSet)")
+		}
+	}
+
+	# test for trimmed R2 index
+	if (expMethod %in% c("RAMPAGE", "MAPCap")) {
+		.checkTrimBarcodes(R2)
+	}
+
+	if (demult) {
+		samplelist <- sampleInfo$samples
+	} else {
+		samplelist <- list()
+	}
+
+	lapply(samplelist, function(sample) {
+
+		message("Mapping the data\n")
+		# Align using RSubread
+		tmpout <- file.path(outdir, paste0(sample, ".tmp.bam") )
+		Rsubread::subjunc(index = genomeIndex,
+				  readfile1 = R1,
+				  readfile2 = R2,
+				  output_file = tmpout,
+				  nthreads = nthreads,
+				  minFragLength=10,
+				  reportAllJunctions = TRUE,
+				  ...)
+		# Sort and Index
+		message("Sorting and Indexing")
+		Rsamtools::sortBam(file = tmpout, destination = outprefix)# adds .bam suffix
+		Rsamtools::indexBam(paste0(outprefix, ".bam") )
+		file.remove(tmpout)
+
+		# Get mapping stats
+		mapstat <- Rsubread::propmapped(paste0(outprefix, ".bam"))
+
+	}
+
+	# Close logfile
+	if(!is.null(logfile)){
+		sink()
+	}
+
+	return(mapstat)
+}
+
+
+
