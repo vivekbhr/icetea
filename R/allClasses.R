@@ -6,8 +6,8 @@
 #' @param fastqType fastq file type. Should be either 'single' or 'paired'
 #' @param fastq_R1 path for Read R1 (or file path for single end reads)
 #' @param fastq_R2 path for Read R2 (for paired end reads)
-#' @param sampleBarcodes for de-multiplexing, a data.frame with two columns. First column should have the barcodes,
-#'                       while the second column should have the corresponding sample names.
+#' @param sampleInfo data.frame with sample information, with row.names = barcode sequences,
+#'                   and first column containing corresponding sample names.
 #'
 #' @return An object of class CapSet
 #' @export
@@ -15,20 +15,25 @@
 #' @examples
 #'
 #' \dontrun{
-#' newCapSet(fastqType = "single", fastq_R1 = "out_R1.fastq.gz",
-#' fastq_R2 = "out_R2.fastq.gz" , expMethod = "RAMPAGE", sampleBarcodes = df)
-#'
+#' df <- data.frame(row.names = c("TTAGCC" ,"CAAGTG"), samples = c("one", "two") )
+#' cs <- newCapSet(fastqType = "paired",
+#'                 fastq_R1 = "inst/extdata/test_R1.fastq.gz",
+#'                 fastq_R2 = "inst/extdata/test_R2.fastq.gz",
+#'                 expMethod = "MAPCap", sampleInfo = df)
 #'}
 #'
 
 newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleInfo) {
+
+	# convert sampleInfo to a DataFrame
+	info <- S4Vectors::DataFrame(sampleInfo)
 	# create an instance of CapSet
 	new("CapSet",
 	    fastqType = fastqType,
 	    fastq_R1 = fastq_R1,
 	    fastq_R2 = fastq_R2,
 	    expMethod = expMethod,
-	    sampleInfo = sampleInfo)
+	    sampleInfo = info)
 }
 
 #' Check capset validity
@@ -48,12 +53,12 @@ check_capSet <- function(object) {
 	R1 <- object@fastq_R1
 	R2 <- object@fastq_R2
 	exp <- object@expMethod
-	barcodeInfo <- object@sampleInfo
+	info <- object@sampleInfo
 
 	## validate slots
 	# fastq
 	if(!(fqtype %in% c("single", "paired") )) {
-		msg <- paste0("Wrong fastq type : ", fqtype, " . Should be either 'single' or 'paired' ")
+		msg <- paste0("Wrong fastq type : ", fqtype, ". Should be either 'single' or 'paired' ")
 		errors <- c(errors, msg)
 
 	} else if(fqtype == "single" & !file.exists(R1) ) {
@@ -70,15 +75,54 @@ check_capSet <- function(object) {
 		errors <- c(errors, msg)
 
 	}
+	# sampleInfo
+	if (!(class(info) %in% c("data.frame", "DataFrame")) ) {
+		msg <- paste0("sampleInfo should be a data frame ")
+		errors <- c(errors, msg)
+	}
 
 	## return
 	if (length(errors) == 0) TRUE else errors
 }
 
+## Class definition
 CapSet <- setClass("CapSet",
 		   slots = c(fastqType = "character",
 		   	  fastq_R1 = "character",
 		   	  fastq_R2 = "character",
 		   	  expMethod = "character",
-		   	  sampleInfo = "data.frame"),
+		   	  sampleInfo = "DataFrame"),
 		   validity = check_capSet)
+
+## show method
+setMethod("show", "CapSet", function(object) {
+	cat("An object of class CapSet", "\n")
+	cat("---------------------------", "\n\n")
+	cat("Experiment method : ", object@expMethod, "\n")
+	cat("fastq Type : ", object@fastqType, "\n")
+	cat("fastq Read 1 : ", object@fastq_R1, "\n")
+	cat("fastq Read 2 : ", object@fastq_R2, "\n")
+	cat("sample information : ", "\n")
+	print(df)
+	} )
+
+## sampleInfo getter
+setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
+
+setMethod("sampleInfo",
+	  signature = "CapSet",
+	    function(object) {
+	    	return(object@sampleInfo)
+	    	})
+
+## sampleInfo setter
+setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))
+
+setReplaceMethod("sampleInfo",
+		 signature = "CapSet", #value = c("data.frame", "DataFrame") ),
+		 function(object, value) {
+		 	df <- S4Vectors::DataFrame(value)
+		 	object@sampleInfo <- df
+		 	validObject(object)
+		 	return(object)
+		 	})
