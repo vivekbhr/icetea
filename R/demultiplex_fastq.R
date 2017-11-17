@@ -46,7 +46,9 @@ split_fastq <- function(idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2, ma
 			break
 		}
 		# demultiplex using given sample barcodes
-		id2keep <- filter_byIDx(idx_name, fq_id = id(fq_R2), maxM = max_mismatch)
+		id2keep <- filter_byIDx(idx_name,
+					fq_id = ShortRead::id(fq_R2),
+					maxM = max_mismatch)
 		# append to destination
 		ShortRead::writeFastq(fq_R1[id2keep], outfile_R1, "a")
 		ShortRead::writeFastq(fq_R2[id2keep], outfile_R2, "a")
@@ -60,7 +62,7 @@ split_fastq <- function(idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2, ma
 
 #' Demultiplex (tagged) fastq files using sample barcodes
 #'
-#' @param CapSet CapSet object created using newCapSet function.
+#' @param CapSet CapSet object created using \code{\link{newCapSet}} function.
 #' @param max_mismatch maximum allowd mismatches
 #' @param nthreads No. of threads to use
 #'
@@ -81,9 +83,9 @@ split_fastq <- function(idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2, ma
 #' system.time(demultiplex_fastq(cs, max_mismatch = 2))
 #' }
 
-demultiplex_fastq <- function(CapSet, max_mismatch, nthreads = 1) {
+demultiplex_fastq <- function(CapSet, max_mismatch, outdir, nthreads = 1) {
 
-	barcodes_df <- CapSet@sampleInfo
+	barcodes_df <- sampleInfo(CapSet)
 	destinations <- as.character(barcodes_df[,1])
 	idx_list <- as.character(rownames(barcodes_df))
 	fastq_R1 <- CapSet@fastq_R1
@@ -93,17 +95,26 @@ demultiplex_fastq <- function(CapSet, max_mismatch, nthreads = 1) {
 
 	message("de-multiplexing the FASTQ file")
 	## filter and write
-	kept_reads <- BiocParallel::bplapply(seq_along(destinations), function(i){
-		      split_fastq(idx_list[i],
-			    paste0(destinations[i],"_R1.fastq.gz"),
-			    paste0(destinations[i],"_R2.fastq.gz"),
-			    fastq_R1, fastq_R2,
-			    max_mismatch)
-			}, BPPARAM = param)
-	## kept read info
-	CapSet@sampleInfo$demult_reads <- kept_reads
-	return(CapSet)
+	info <- BiocParallel::bplapply(seq_along(destinations), function(i){
+		split1 <- paste0(destinations[i],"_R1.fastq.gz")
+		split2 <- paste0(destinations[i],"_R2.fastq.gz")
 
+		kept <- split_fastq(idx_list[i], split1, split2,
+				    fastq_R1, fastq_R2,
+				    max_mismatch)
+
+		return(list(R1 = split1, R2 = split2, kept_reads = kept))
+		}, BPPARAM = param)
+
+	## add post-demult info to sampleInfo
+	sampleinfo <- sampleInfo(CapSet)
+	sampleinfo$demult_reads <- info$kept_reads
+	sampleinfo$demult_R1 <- info$R1
+	sampleinfo$demult_R2 <- info$R2
+
+	## return object
+	sampleInfo(CapSet) <- sampleinfo
+	return(CapSet)
 
 }
 
