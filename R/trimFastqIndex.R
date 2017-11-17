@@ -25,3 +25,25 @@ trimFastqIndex <- function(input_R1,input_R2,output_R1,output_R2){
 	names(out) <- c("Input_R1","Input_R2","Output_R1","Output_R2")
 	return(out) # Just print names on the screen
 }
+
+trimFastqIndex.CapSet <- function(CapSet, outdir){
+
+	# check if output dir exists
+	if(!dir.exists(outdir)) dir.create(outdir)
+	outfile_name <- "trimmed"
+
+	input_R1 <- CapSet@fastq_R1
+	input_R2 <- CapSet@fastq_R2
+	trimmed_R1 <- file.path(outdir, "trimmed_R1.fastq.gz")
+	trimmed_R2 <- file.path(outdir, "trimmed_R2.fastq.gz")
+
+	message("Trimming the barcodes")
+
+	# passes the arguments to the C function, which accepts two chars as double pointers
+	.C("trimFastq", input_R1, input_R2, trimmed_R1, trimmed_R2)
+
+	# output the modified CapSet object
+	CapSet@trimmed_R1 <- trimmed_R1
+	CapSet@trimmed_R2 <- trimmed_R2
+	return(CapSet) # Just print names on the screen
+}
