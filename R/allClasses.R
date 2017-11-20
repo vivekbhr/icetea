@@ -23,7 +23,7 @@
 #'}
 #'
 
-newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleInfo) {
+newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NULL, sampleInfo) {
 
 	# convert sampleInfo to a DataFrame
 	info <- S4Vectors::DataFrame(sampleInfo)
@@ -32,6 +32,8 @@ newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleInfo)
 	    fastqType = fastqType,
 	    fastq_R1 = fastq_R1,
 	    fastq_R2 = fastq_R2,
+	    trimmed_R1 = NULL,
+	    trimmed_R2 = NULL,
 	    expMethod = expMethod,
 	    sampleInfo = info)
 }
@@ -85,11 +87,16 @@ check_capSet <- function(object) {
 	if (length(errors) == 0) TRUE else errors
 }
 
+## char or NULL class
+setClassUnion("charOrNULL", c("character", "NULL"))
+
 ## Class definition
 CapSet <- setClass("CapSet",
 		   slots = c(fastqType = "character",
 		   	  fastq_R1 = "character",
-		   	  fastq_R2 = "character",
+		   	  fastq_R2 = "charOrNULL",
+		   	  trimmed_R1 = "charOrNULL",
+		   	  trimmed_R2 = "charOrNULL",
 		   	  expMethod = "character",
 		   	  sampleInfo = "DataFrame"),
 		   validity = check_capSet)
@@ -99,15 +106,30 @@ setMethod("show", "CapSet", function(object) {
 	cat("An object of class CapSet", "\n")
 	cat("---------------------------", "\n\n")
 	cat("Experiment method : ", object@expMethod, "\n")
-	cat("fastq Type : ", object@fastqType, "\n")
-	cat("fastq Read 1 : ", object@fastq_R1, "\n")
-	cat("fastq Read 2 : ", object@fastq_R2, "\n")
+
+	cat("FASTQ Type : ", object@fastqType, "\n")
+	cat("FASTQ Read 1 : ", object@fastq_R1, "\n")
+	cat("FASTQ Read 2 : ", object@fastq_R2, "\n")
+	cat("Trimmed FASTQ Read 1 : ", object@trimmed_R1, "\n")
+	cat("Trimmed FASTQ Read 2 : ", object@trimmed_R2, "\n")
+
 	cat("sample information : ", "\n")
-	print(df)
+	print(object@sampleInfo)
 	} )
 
-## sampleInfo getter
+#' sampleInfo getter
+#' @export
+#'
 setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
+
+#' get sample information data frame
+#'
+#' @param CapSet
+#'
+#' @docType methods
+#' @export
+#'
+#' @examples
 
 setMethod("sampleInfo",
 	  signature = "CapSet",
@@ -115,9 +137,14 @@ setMethod("sampleInfo",
 	    	return(object@sampleInfo)
 	    	})
 
-## sampleInfo setter
+#' sampleInfo setter
+#'
+#' @export
+#'
 setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))
 
+#' @exportMethod "sampleInfo<-"
+#'
 setReplaceMethod("sampleInfo",
 		 signature = "CapSet", #value = c("data.frame", "DataFrame") ),
 		 function(object, value) {
