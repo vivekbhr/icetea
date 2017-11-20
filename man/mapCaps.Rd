@@ -4,10 +4,10 @@
 \alias{mapCaps}
 \title{Map the paired-end MAPCap data.}
 \usage{
-mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
+mapCaps(genomeIndex, R1, R2, outprefix, nthreads, logfile = NULL, ...)
 }
 \arguments{
-\item{index}{character string giving the basename of the Subread index file.}
+\item{genomeIndex}{character string giving the basename of the Subread index file.}
 
 \item{R1}{forward read (R1) fastq file, output of \code{\link{trimFastqIndex}} command.}
 

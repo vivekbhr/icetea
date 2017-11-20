@@ -4,10 +4,10 @@
 \alias{demultiplex_fastq}
 \title{Demultiplex (tagged) fastq files using sample barcodes}
 \usage{
-demultiplex_fastq(CapSet, max_mismatch, nthreads = 1)
+demultiplex_fastq(CapSet, max_mismatch, outdir, nthreads = 1)
 }
 \arguments{
-\item{CapSet}{CapSet object created using newCapSet function.}
+\item{CapSet}{CapSet object created using \code{\link{newCapSet}} function.}
 
 \item{max_mismatch}{maximum allowd mismatches}
 
@@ -28,7 +28,7 @@ fnames <- c("GFPa","GFPb","BEAF32a","BEAF32b","BEAF32Rrp6a","BEAF32Rrp6b")
 cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
 	fastq_R1 = '../../2017_MAPCap/MAPCap_F/01_fastq/trimmed/MAPCap_F_R1.fastq.gz',
 	fastq_R2 = '../../2017_MAPCap/MAPCap_F/01_fastq/trimmed/MAPCap_F_R2.fastq.gz',
-	sampleBarcodes = data.frame(row.names = idxlist, files = fnames))
+	sampleInfo = data.frame(row.names = idxlist, files = fnames))
 
 system.time(demultiplex_fastq(cs, max_mismatch = 2))
 }

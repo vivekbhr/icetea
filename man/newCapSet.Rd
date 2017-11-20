@@ -4,7 +4,7 @@
 \alias{newCapSet}
 \title{Create a new CapSet object}
 \usage{
-newCapSet(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleBarcodes)
+newCapSet(expMethod, fastqType, fastq_R1, fastq_R2 = NULL, sampleInfo)
 }
 \arguments{
 \item{expMethod}{experiment method ('CAGE', 'RAMPAGE' or 'MAPCap')}
@@ -15,8 +15,8 @@ newCapSet(expMethod, fastqType, fastq_R1, fastq_R2 = NA, sampleBarcodes)
 
 \item{fastq_R2}{path for Read R2 (for paired end reads)}
 
-\item{sampleBarcodes}{for de-multiplexing, a data.frame with two columns. First column should have the barcodes,
-while the second column should have the corresponding sample names.}
+\item{sampleInfo}{data.frame with sample information, with row.names = barcode sequences,
+and first column containing corresponding sample names.}
 }
 \value{
 An object of class CapSet
@@ -27,9 +27,11 @@ Create a new CapSet object
 \examples{
 
 \dontrun{
-newCapSet(fastqType = "single", fastq_R1 = "out_R1.fastq.gz",
-fastq_R2 = "out_R2.fastq.gz" , expMethod = "RAMPAGE", sampleBarcodes = df)
-
+df <- data.frame(row.names = c("TTAGCC" ,"CAAGTG"), samples = c("one", "two") )
+cs <- newCapSet(fastqType = "paired",
+                fastq_R1 = "inst/extdata/test_R1.fastq.gz",
+                fastq_R2 = "inst/extdata/test_R2.fastq.gz",
+                expMethod = "MAPCap", sampleInfo = df)
 }
 
 }
