@@ -123,10 +123,10 @@ void trimFastq(char **inR1, char **inR2, char **outR1, char **outR2)
   char trimqual[50];
 
   int l;
-	while ((l = kseq_read(seq)) >= 0) {
+while ((l = kseq_read(seq)) >= 0) {
     kseq_read(seqt);
     // save data for R2
-		sequence = seq->seq.s;
+    sequence = seq->seq.s;
     name = seq->name.s;
     if (seq->qual.l) qual = seq->qual.s;//quality
     if (seq->comment.l) comment = seq->comment.s;//comment
@@ -152,13 +152,13 @@ void trimFastq(char **inR1, char **inR2, char **outR1, char **outR2)
     gzprintf(fpout,"%s\n", trimqual);//trimmed qual for R2
     gzprintf(fptout,"%s\n", tqual);//normal qual for R1:
 
-	}
+}
 
 // close the files
-	kseq_destroy(seq);
+  kseq_destroy(seq);
   kseq_destroy(seqt);
 
-	gzclose(fp);
+  gzclose(fp);
   gzclose(fpt);
 
   gzclose(fpout);
