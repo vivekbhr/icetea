@@ -8,7 +8,7 @@
 #' @return logical vector (which IDs to keep)
 #'
 filter_byIDx <- function(idx_name, fq_id, maxM){
-	idx_name = Biostrings::DNAString(idx_name)
+	idx_name <- Biostrings::DNAString(idx_name)
 	sep1 <- vapply(strsplit(as.vector(fq_id), "#"), "[[", character(1), 2)
 	sep2 <- vapply(strsplit(sep1, ":"), "[[", character(1), 1)
 	sep2 <- Biostrings::DNAStringSet(sep2)
@@ -85,32 +85,38 @@ split_fastq <- function(idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2, ma
 
 demultiplex_fastq <- function(CapSet, max_mismatch, outdir, nthreads = 1) {
 
-	barcodes_df <- sampleInfo(CapSet)
-	destinations <- as.character(barcodes_df[,1])
-	idx_list <- as.character(rownames(barcodes_df))
-	fastq_R1 <- CapSet@fastq_R1
-	fastq_R2 <- CapSet@fastq_R2
+	sampleinfo <- sampleInfo(CapSet)
+	destinations <- as.character(sampleinfo[,1])
+	idx_list <- as.character(rownames(sampleinfo))
+
+	## get the fastq to split (raise error if fastq untrimmed/not existing)
+	if (is.null(CapSet@trimmed_R1) | is.null(CapSet@trimmed_R2)) {
+		stop("FASTQ files with trimmed headers absent, can't demultiplex")
+	} else {
+		.checkTrimBarcodes(CapSet@trimmed_R1)
+		fastq_R1 <- CapSet@trimmed_R1
+		fastq_R2 <- CapSet@trimmed_R2
+	}
 
 	param = BiocParallel::MulticoreParam(workers = nthreads)
-
 	message("de-multiplexing the FASTQ file")
 	## filter and write
 	info <- BiocParallel::bplapply(seq_along(destinations), function(i){
-		split1 <- paste0(destinations[i],"_R1.fastq.gz")
-		split2 <- paste0(destinations[i],"_R2.fastq.gz")
+		split1 <- file.path(outdir, paste0(destinations[i],"_R1.fastq.gz"))
+		split2 <- file.path(outdir, paste0(destinations[i],"_R2.fastq.gz"))
 
 		kept <- split_fastq(idx_list[i], split1, split2,
 				    fastq_R1, fastq_R2,
 				    max_mismatch)
-
-		return(list(R1 = split1, R2 = split2, kept_reads = kept))
+		dfout <- data.frame(R1 = split1, R2 = split2, kept_reads = kept)
+		return(dfout)
 		}, BPPARAM = param)
 
 	## add post-demult info to sampleInfo
-	sampleinfo <- sampleInfo(CapSet)
-	sampleinfo$demult_reads <- info$kept_reads
-	sampleinfo$demult_R1 <- info$R1
-	sampleinfo$demult_R2 <- info$R2
+	keptinfo <- do.call(rbind, info)
+	sampleinfo$demult_reads <- keptinfo$kept_reads
+	sampleinfo$demult_R1 <- as.character(keptinfo$R1)
+	sampleinfo$demult_R2 <- as.character(keptinfo$R2)
 
 	## return object
 	sampleInfo(CapSet) <- sampleinfo
