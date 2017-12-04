@@ -44,8 +44,6 @@ newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NULL, sampleInf
 #'
 #' @return boolean
 #'
-#' @examples
-#'
 
 check_capSet <- function(object) {
 	errors <- character()
@@ -90,7 +88,10 @@ check_capSet <- function(object) {
 ## char or NULL class
 setClassUnion("charOrNULL", c("character", "NULL"))
 
-## Class definition
+#' CapSet object
+#'
+#' @rdname newCapSet
+#'
 CapSet <- setClass("CapSet",
 		   slots = c(fastqType = "character",
 		   	  fastq_R1 = "character",
@@ -129,7 +130,6 @@ setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 #' @docType methods
 #' @export
 #'
-#' @examples
 
 setMethod("sampleInfo",
 	  signature = "CapSet",

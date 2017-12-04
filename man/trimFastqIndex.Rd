@@ -2,29 +2,22 @@
 % Please edit documentation in R/trimFastqIndex.R
 \name{trimFastqIndex}
 \alias{trimFastqIndex}
-\title{Trim the raw fastq files and tag the read headers}
+\title{Trim the sample indexes off the fastq files (RAMPAGE/MAPCap)}
 \usage{
-trimFastqIndex(input_R1, input_R2, output_R1, output_R2)
+trimFastqIndex(CapSet, outdir)
 }
 \arguments{
-\item{input_R1}{input _R1.fastq (or _R1.fastq.gz) file.}
+\item{CapSet}{The CapSet object}
 
-\item{input_R2}{input _R2.fastq (or _R2.fastq.gz) file.}
-
-\item{output_R1}{name of the Output _R1.fastq.gz file.}
-
-\item{output_R2}{name of the Output _R2.fastq.gz file.}
+\item{outdir}{output directory to keep the trimmed fastq files}
 }
 \value{
-output_R1, output_R2 : The trimmed R1 and R2 .fastq.gz files.
+fastq files
 }
 \description{
-Trim the raw fastq files and tag the read headers
+Trim the sample indexes off the fastq files (RAMPAGE/MAPCap)
 }
 \examples{
-r1 <- system.file("extdata", "test_R1.fastq.gz", package = "mapcapR")
-r2 <- system.file("extdata", "test_R2.fastq.gz", package = "mapcapR")
-trimFastqIndex(r1, r2,"test_trimmed_R1.fastq.gz","test_trimmed_R2.fastq.gz")
 
 }
 

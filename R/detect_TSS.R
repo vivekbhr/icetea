@@ -1,5 +1,4 @@
 
-
 #' Detection of Trancription start sites based on local enrichment
 #'
 #' @param bam.files List of bam files to use
@@ -29,19 +28,31 @@
 #'
 
 
-detect_TSS <- function(bam.files, design,  outfile_prefix,
+detect_TSS <- function(CapSet, groups,  outfile_prefix,
 		       foldChange = 2, restrictChr = NULL) {
 
 	# convert group to char
-	design$group <- as.character(design$group)
+	si <- sampleInfo(CapSet)
+	design <- data.frame(row.names = si$samples, group = as.character(group = groups) )
+
+	if (is.null(si$filtered_file) ) {
+		message("Filtered files not found under sampleInfo(CapSet). Using mapped files")
+		bam.files <- si$mapped_file
+	} else {
+		bam.files <- si$filtered_file
+	}
+	if (sum(file.exists(bam.files)) != length(bam.files)) {
+		stop("One or more bam files don't exist! Check sampleInfo(CapSet) ")
+	}
+
 	# Define read params
 	frag.len <- NA
 	win.width <- 10
-	param <- csaw::readParam(minq=30, forward = NULL, restrict = restrictChr)
-	regionparam <- csaw::readParam(minq=30, restrict = restrictChr)
+	param <- csaw::readParam(minq = 2, forward = NULL, restrict = restrictChr)
+	regionparam <- csaw::readParam(minq = 2, restrict = restrictChr)
 
 	# Count reads into sliding windows
-	data <- csaw::strandedCounts(bam.files, param=param, ext=frag.len, width=win.width, bin = TRUE)
+	data <- csaw::strandedCounts(bam.files, param = param, ext = frag.len, width = win.width, bin = TRUE)
 	colnames(data) <- rownames(design)
 	SummarizedExperiment::colData(data) <- c(SummarizedExperiment::colData(data), design)
 
@@ -78,7 +89,7 @@ detect_TSS <- function(bam.files, design,  outfile_prefix,
 		return(data[keep,])
 	})
 
-	## merge nearby windows (within 50bp) to get broader TSS
+	## merge nearby windows (within 10bp) to get broader TSS
 	merged <- lapply(filtered.data, function(d) {
 		return(csaw::mergeWindows(d, tol = 10L, ignore.strand = FALSE))
 	})
@@ -95,7 +106,20 @@ detect_TSS <- function(bam.files, design,  outfile_prefix,
 	mergedall <- base::Reduce(S4Vectors::union, merged)
 	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
 
+	## Calculate prop reads in TSS per group
+
 	# return data
 	output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
 	return(output)
 }
+
+propReadsInBed <- function(regions, bams = bam.files) {
+	counts <- GenomicAlignments::summarizeOverlaps(GRangesList(regions),
+					     reads = BamFileList(as.character(bams)),
+					     mode = "Union",
+					     inter.feature = FALSE)
+	return(SummarizedExperiment::assay(counts))
+}
+
+
+

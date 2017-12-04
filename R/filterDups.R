@@ -1,9 +1,6 @@
 
 #' Filter PCR-duplicates from BAM file using internal UMIs
 #'
-#' @description This script considers the read mapping start posion and the UMI to determine whether a
-#'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
-#'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 #'
 #' @param bamFile Input BAM file
 #' @param outFile Output (filtered) BAM file
@@ -18,12 +15,13 @@
 #'
 
 
-filterDuplicates <- function(bamFile, outFile) {
+filterDups <- function(bamFile, outFile) {
+	message(paste0("Removing PCR duplicates : ", bamFile))
 
 	sparam <- Rsamtools::ScanBamParam(what = c("qname", "rname", "pos", "isize", "qwidth", "mapq"),
 					  flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
 					  			      isFirstMateRead = TRUE) )
-	bamdf <- scanBam("inst/extdata/test_mapped.bam", param = sparam)
+	bamdf <- Rsamtools::scanBam(bamFile, param = sparam)
 	bamdf <- do.call(as.data.frame, bamdf)
 	bamdf$qname <- as.character(bamdf$qname)
 
@@ -72,5 +70,46 @@ filterDuplicates <- function(bamFile, outFile) {
 	Rsamtools::filterBam(file = bamFile,
 			     destination = outFile,
 			     filter = rule, param = sparam )
+
+}
+
+
+#' Filter PCR-duplicates from mapped files using internal UMIs
+#'
+#' @description This script considers the read mapping start position and the UMI to determine whether a
+#'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
+#'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
+#' @param CapSet an object of class \code{\link{CapSet}}
+#' @param outdir output directory for filtered BAM files
+#'
+#' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
+#' @export
+#'
+#' @examples
+filterDuplicates <- function(CapSet, outdir) {
+	si <- sampleInfo(CapSet)
+	bamfiles <- si$mapped_file
+
+	# first check if the bam files exist
+	lapply(bamfiles, function(f) {
+		if (!(file.exists(f) )) stop(paste0("mapped file ", f, " doesn't exist!",
+						  "Please update your Capset object with valid file paths ",
+						  "using sampleInfo(CapSet). "))
+	})
+	# then prepare outfile list
+	outfiles <- file.path(outdir, paste0(si$samples, ".filtered.bam") )
+	# run the filter duplicates function on all files
+	mapply(filterDups, bamfiles, outfiles)
+
+	# collect post-filtering stats
+	mapstat <- sapply(outfiles, Rsubread::propmapped, simplify = TRUE)
+	# update CapSet
+	maptable <- as.data.frame(t(mapstat[c(1,3),]))
+	si$filtered_file <- as.character(maptable$Samples)
+	si$num_filtered <- as.numeric(maptable$NumMapped)
+	sampleInfo(CapSet) <- si
+
+	validObject(CapSet)
+	return(CapSet)
 
 }

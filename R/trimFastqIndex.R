@@ -1,31 +1,3 @@
-#### ~~~~ Part of the mapcapR package for analysis of MAPCap data ~~~~ ####
-### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
-
-#' Trim the raw fastq files and tag the read headers
-#'
-#' @param input_R1 input _R1.fastq (or _R1.fastq.gz) file.
-#' @param input_R2 input _R2.fastq (or _R2.fastq.gz) file.
-#' @param output_R1 name of the Output _R1.fastq.gz file.
-#' @param output_R2 name of the Output _R2.fastq.gz file.
-#' @return output_R1, output_R2 : The trimmed R1 and R2 .fastq.gz files.
-#' @examples
-#' r1 <- system.file("extdata", "test_R1.fastq.gz", package = "mapcapR")
-#' r2 <- system.file("extdata", "test_R2.fastq.gz", package = "mapcapR")
-#' trimFastqIndex(r1, r2,"test_trimmed_R1.fastq.gz","test_trimmed_R2.fastq.gz")
-#'
-#' @useDynLib mapcapR trimFastq
-#' @export
-
-trimFastqIndex <- function(input_R1,input_R2,output_R1,output_R2){
-	message("Trimming the mapcap data")
-	# passes the arguments to the C function, which accepts two chars as double pointers
-	out <- .C("trimFastq",as.character(input_R1),as.character(input_R2),
-		  as.character(output_R1),as.character(output_R2))
-	# output is a list with input filenames
-	names(out) <- c("Input_R1","Input_R2","Output_R1","Output_R2")
-	return(out) # Just print names on the screen
-}
-
 #' Trim the sample indexes off the fastq files (RAMPAGE/MAPCap)
 #'
 #' @param CapSet The CapSet object
@@ -36,7 +8,7 @@ trimFastqIndex <- function(input_R1,input_R2,output_R1,output_R2){
 #'
 #' @examples
 #'
-trimFastqIndex.CapSet <- function(CapSet, outdir){
+trimFastqIndex <- function(CapSet, outdir){
 
 	# check if output dir exists
 	if(!dir.exists(outdir)) dir.create(outdir)
@@ -64,5 +36,6 @@ trimFastqIndex.CapSet <- function(CapSet, outdir){
 	# output the modified CapSet object
 	CapSet@trimmed_R1 <- trimmed_R1
 	CapSet@trimmed_R2 <- trimmed_R2
+	validObject(CapSet)
 	return(CapSet)
 }
