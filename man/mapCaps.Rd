@@ -20,7 +20,7 @@ mapCaps(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...)
 \item{...}{additional arguments passed to the \code{\link{subjunc}} function.}
 }
 \value{
-modified CapSet object with mapping information. Mapped and sorted bam files are saved in `outdir`.
+modified CapSet object with mapping information. Mapped and sorted BAM files are saved in `outdir`.
 }
 \description{
 Map the CAGE data

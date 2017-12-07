@@ -4,15 +4,10 @@
 \alias{detect_TSS}
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
-detect_TSS(bam.files, design, outfile_prefix, foldChange = 2,
+detect_TSS(CapSet, groups, outfile_prefix, foldChange = 2,
   restrictChr = NULL)
 }
 \arguments{
-\item{bam.files}{List of bam files to use}
-
-\item{design}{A data frame with rownames = sample names and a column called 'group'
-that contains information about the sample group (see example)}
-
 \item{outfile_prefix}{Output name prefix for the .bed files}
 
 \item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
@@ -22,6 +17,11 @@ amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 samples with 500ng starting material).}
 
 \item{restrictChr}{Chromosomes to restrict the analysis to.}
+
+\item{bam.files}{List of bam files to use}
+
+\item{design}{A data frame with rownames = sample names and a column called 'group'
+that contains information about the sample group (see example)}
 }
 \value{
 .bed files containing TSS position for each group, along with a bed file for consensus
