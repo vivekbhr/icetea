@@ -19,4 +19,10 @@ This script considers the read mapping start position and the UMI to determine w
              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 }
+\examples{
+
+bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
+filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
+
+}
 
