@@ -1,8 +1,5 @@
 
-#' check for trimmed barcodes present in the fastq header (RAMPAGE/MAPCap)
-#'
-#' @param fastq fastq file path
-#'
+# check for trimmed barcodes present in the fastq header (RAMPAGE/MAPCap)
 .checkTrimBarcodes <- function(fastq) {
 	message("Checking for fastq file")
 	stopifnot(file.exists(fastq))
