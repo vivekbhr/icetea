@@ -43,12 +43,6 @@ filterdups_func <- function(bamdf) {
 #' @param outFile Output (filtered) BAM file
 #'
 #' @return Filtered BAM file (with only R1), after PCR duplicate removal
-#' @export
-#'
-#' @examples
-#'
-#' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
-#' filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
 #'
 
 filterDups <- function(bamFile, outFile) {
@@ -81,6 +75,11 @@ filterDups <- function(bamFile, outFile) {
 #' @export
 #'
 #' @examples
+#'
+#' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
+#' filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
+#'
+
 filterDuplicates <- function(CapSet, outdir) {
 	si <- sampleInfo(CapSet)
 	bamfiles <- si$mapped_file
