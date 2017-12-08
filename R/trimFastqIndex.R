@@ -5,7 +5,7 @@
 #'
 #' @return fastq files
 #' @export
-#'
+#' @useDynLib mapcapR trimFastq trimFastq_rampage
 #' @examples
 #'
 trimFastqIndex <- function(CapSet, outdir){
@@ -19,14 +19,15 @@ trimFastqIndex <- function(CapSet, outdir){
 	trimmed_R1 <- file.path(outdir, "trimmed_R1.fastq.gz")
 	trimmed_R2 <- file.path(outdir, "trimmed_R2.fastq.gz")
 
-	message("Trimming the barcodes : ")
 	# passes the arguments to the C function, which accepts two chars as double pointers
 	if (CapSet@expMethod == "MAPCap") {
-		message("MAPCap")
+		message(paste0("Trimming the barcodes : ", "MAPCap"))
 		.C("trimFastq", input_R1, input_R2, trimmed_R1, trimmed_R2)
+
 	} else if (CapSet@expMethod == "RAMPAGE") {
-		message("RAMPAGE")
+		message(paste0("Trimming the barcodes : ", "RAMPAGE"))
 		.C("trimFastq_rampage", input_R1, input_R2, trimmed_R1, trimmed_R2)
+
 	} else if (CapSet@expMethod == "CAGE") {
 		warning("No barcode positions known for the conventional CAGE protocol. No trimming performed ")
 		trimmed_R1 <- input_R1
