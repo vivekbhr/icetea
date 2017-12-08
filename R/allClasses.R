@@ -91,6 +91,7 @@ setClassUnion("charOrNULL", c("character", "NULL"))
 #' CapSet object
 #'
 #' @rdname newCapSet
+#' @importClassesFrom S4Vectors DataFrame
 #'
 CapSet <- setClass("CapSet",
 		   slots = c(fastqType = "character",
