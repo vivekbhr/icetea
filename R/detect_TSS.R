@@ -31,9 +31,13 @@
 detect_TSS <- function(CapSet, groups,  outfile_prefix,
 		       foldChange = 2, restrictChr = NULL) {
 
+	# check whether group and outfile_prefix is provided
+	if (missing(outfile_prefix)) stop("Please provide outfile_prefix!")
+	if (missing(groups)) stop("Please provide groups!")
+
 	# convert group to char
 	si <- sampleInfo(CapSet)
-	design <- data.frame(row.names = si$samples, group = as.character(group = groups) )
+	design <- data.frame(row.names = si$samples, group = as.character(groups) )
 
 	if (is.null(si$filtered_file) ) {
 		message("Filtered files not found under sampleInfo(CapSet). Using mapped files")
