@@ -4,7 +4,7 @@
 \alias{getranks}
 \title{Assign feature ranks on a VariantAnnotation output}
 \usage{
-getranks(x, rankdf = rankdf)
+getranks(x, rankdf)
 }
 \arguments{
 \item{x}{output from VariantAnnotation}

@@ -3,7 +3,7 @@
 #'
 #' @param tssFile BED file with detected TSS/differential TSS results.
 #' @param txdb A txdb object.
-#' @param plot Type of plot to make (choose from "numbers", "proportions" or NA for no plot)
+#' @param plot Type of plot to make (choose from "number", "percent" or NA for no plot)
 #'
 #' @return Annotation of detected TSS
 #' @export
@@ -17,46 +17,45 @@
 annotate_TSS <- function(tssFile, txdb, plot = NA) {
 
 	## resolve 1:many mapping issue by prioritising some features over others
-	rankdf <- data.frame(feature = c("fiveUTR","promoter", "intron","coding","spliceSite","threeUTR","intergenic"),
-		     rank = c(1,2,3,4,5,6,7))
+	rank_df <- data.frame(feature = c("fiveUTR", "promoter", "intron", "coding",
+					  "spliceSite", "threeUTR", "intergenic"),
+			      rank = c(1,2,3,4,5,6,7))
 	# import TSS file
-	x <- rtracklayer::import.bed(tssFile)
+	tssbed <- rtracklayer::import.bed(tssFile)
 	# Annotate
-	db <- VariantAnnotation::locateVariants(query = x,
+	db <- VariantAnnotation::locateVariants(query = tssbed,
 						subject = txdb,
 						VariantAnnotation::AllVariants(
-							promoter =VariantAnnotation::PromoterVariants(upstream = 500,
+							promoter = VariantAnnotation::PromoterVariants(upstream = 500,
 												      downstream = 0)))
 	## resolve 1:many mapping isues using ranks from rankdf
 	t <- data.frame(QUERYID = db$QUERYID, LOCATION = db$LOCATION)
-	tt <- getranks(t)
+	tt <- getranks(t, rankdf = rank_df)
 	ttt <- splitranks(tt)
 	## Return a table of tss counts per feature
-	final <- as.data.frame(table(ttt$LOCATION))
-
+	final_table <- as.data.frame(table(ttt$LOCATION))
+	colnames(final_table) <- c("feature", "value")
 	## plot if asked
-	if(!is.na(plot)) {
-		if(plot == "numbers") {
-			t <- as.data.frame(apply(x[-1], 1, function(x) (x/sum(x))*100 ) )
-			colnames(t) <- x$.id
-			t$Feature <- rownames(t)
-			t <- melt(t)
-			n <- "% "
-		} else if(plot == "proportions") {
-			t <- melt(x)
+	if (!is.na(plot)) {
+		if (plot == "number") {
 			n <- "Number "
+		} else if(plot == "percent") {
+			final_table$value <- (final_table$value/sum(final_table$value))*100
+			n <- "% "
 		} else {
-			warning("Plot type neither 'number' nor 'proportion'.")
+			warning("Plot type neither 'number' nor 'percent'.")
 		}
 
-		print(ggplot(t, aes(Feature, value, fill = variable)) +
+		print(ggplot(final_table, aes(feature, value, fill = feature)) +
 			geom_bar(stat = "identity", position = "dodge") +
 			scale_fill_brewer(palette = "Set1") +
-			labs(x = "Feature", y = paste0(n, "of TSS"), fill = "Sample")
+			labs(x = "Feature", y = paste0(n, "of TSS")) +
+			theme(legend.position = "none") +
+				theme_gray(base_size = 16)
 		)
 	}
 
-	return(final)
+	return(final_table)
 
 }
 
@@ -69,7 +68,7 @@ annotate_TSS <- function(tssFile, txdb, plot = NA) {
 #' @return A list of ranks
 #'
 #'
-getranks <- function(x, rankdf = rankdf) {
+getranks <- function(x, rankdf) {
 	x$rank <- sapply(x$LOCATION, function(y) {
 		return(rankdf[rankdf$feature == y, "rank"])
 	})
