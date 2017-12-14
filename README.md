@@ -1,7 +1,7 @@
 # mapcapR
-An R package for analysis of MAPCap data.
+An R package for analysis of CAGE (Cap Analysis of Gene Expression) data, focused on new, paired-end CAGE protocols (RAMPAGE and MAPCap).
 
-Alternative name proposal : 
+Alternative name proposal :
 1. capstart
 2. capspotter
 3. capcatcher
