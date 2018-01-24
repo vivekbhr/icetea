@@ -2,10 +2,9 @@
 #' Detection of Trancription start sites based on local enrichment
 #'
 #' @param bam.files List of bam files to use
-#' @param design A data frame with rownames = sample names and a column called 'group'
-#' 		that contains information about the sample group (see example)
+#' @param groups a character vector that contains group name of the sample, for replicate-based TSS
+#'               calling (see example)
 #' @param outfile_prefix Output name prefix for the .bed files
-#'
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #' 		'usual' amount of starting material and squencing depth (>=5ug starting material,
 #' 		>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
@@ -21,8 +20,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' bams <- system.file("extdata", c("test_filt1.bam", "test_filt2.bam"), package = "mapcapR")
-#' detect_TSS(bam.files = bams, design = design, outfile_prefix = "testTSS",
+#' cs <- detect_TSS(Capset = cs, group = c("wt","wt","mut","mut"), outfile_prefix = "testTSS",
 #'            foldChange = 6, restrictChr = c("2L","2R","X"))
 #'}
 #'

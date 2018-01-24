@@ -8,6 +8,9 @@ detect_TSS(CapSet, groups, outfile_prefix, foldChange = 2,
   restrictChr = NULL)
 }
 \arguments{
+\item{groups}{a character vector that contains group name of the sample, for replicate-based TSS
+calling (see example)}
+
 \item{outfile_prefix}{Output name prefix for the .bed files}
 
 \item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
@@ -19,9 +22,6 @@ samples with 500ng starting material).}
 \item{restrictChr}{Chromosomes to restrict the analysis to.}
 
 \item{bam.files}{List of bam files to use}
-
-\item{design}{A data frame with rownames = sample names and a column called 'group'
-that contains information about the sample group (see example)}
 }
 \value{
 .bed files containing TSS position for each group, along with a bed file for consensus
@@ -32,8 +32,7 @@ Detection of Trancription start sites based on local enrichment
 }
 \examples{
 \dontrun{
-bams <- system.file("extdata", c("test_filt1.bam", "test_filt2.bam"), package = "mapcapR")
-detect_TSS(bam.files = bams, design = design, outfile_prefix = "testTSS",
+cs <- detect_TSS(Capset = cs, group = c("wt","wt","mut","mut"), outfile_prefix = "testTSS",
            foldChange = 6, restrictChr = c("2L","2R","X"))
 }
 
