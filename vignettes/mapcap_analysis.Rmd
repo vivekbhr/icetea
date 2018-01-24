@@ -1,0 +1,101 @@
+---
+title: "Analysing CAGE data using cageopener"
+author: 
+- name: "Vivek Bhardwaj"
+  affiliation: 
+  - "Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany"
+  - "Faculty of Biology, University of Freiburg, Schänzlestraße 1, 79104, Freiburg, Germany"
+- name: "Thomas Manke"
+  affiliation: 
+  - "Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany"
+  email: "manke@ie-freiburg.mpg.de"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+### Abstract
+**cageopener** can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols.
+Here we show the usability of cageopener in analysis of MAPCap data.
+
+#### MAPCap protocol
+
+**MAPCap** (Multiplexed Affinity Purification of Capped RNA) is a newly developed CAGE protocol that allows fast and 
+accutate detection of transcription start sites and gene expression analysis of a set of multiplexed samples.
+
+### Quick Start
+
+Here we show a set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the 
+raw fastq files, we can either perform quality trimming using a standard program (eg. cutadapt/trimgalore) or simply 
+begin the analysis by creating a `CapSet` object. The `CapSet` object takes raw/quality trimmed fastq file paths as input,
+along with a simple dataframe (called `sampleInfo`) which contains demultiplexing barcodes as rownames and another column 
+called `samples` which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq,
+maps them, filters them and detects the TSS.
+
+```{r eval=FALSE}
+# create directories
+dir.create("01_fastq")
+dir.create("01_fastq/raw")
+dir.create("01_fastq/trimmed")
+dir.create("02_splitting")
+dir.create("03_mapping")
+dir.create("04_removedup")
+dir.create("05_tssCalling")
+
+# load the package 
+library(mapcapR)
+
+# provide demultiplexing barcodes and sample names
+idxlist <- c("TGGAAC", "GGTTAC")
+fnames <- c("wt_rep1", "wt_rep2") 
+
+# make the CapSet object
+cs <- newCapSet("MAPCap", "paired", 
+	    "01_fastq/raw/MAPCapH_R1.fastq.gz", 
+	    "01_fastq/raw/MAPCapH_R2.fastq.gz",
+	    sampleInfo = data.frame(row.names = idxlist, samples = fnames))
+
+# trim sample barcodes from sequence
+cs <- trimFastqIndex(cs, outdir = "01_fastq/trimmed")
+
+# demultiplex fastq
+cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "02_splitting", nthreads = 10)
+
+# map fastq
+cs <- mapCaps(cs, subread_idx, outdir = "03_mapping", nthreads = 20, logfile = "03_mapping/subread_mapping.log")
+
+# filter PCR duplicates
+cs <- filterDuplicates(cs, outdir = "04_removedup")
+
+# detect TSS
+cs <- detect_TSS(cs, groups = c("wt", "wt"), outfile_prefix = "05_tssCalling")
+```
+
+
+### How to get help
+
+cageopener questions could be posted to the [Bioconductor support site](https://support.bioconductor.org), which serves as a searchable knowledge base of questions and answers.
+
+Posting a question and tagging with “cageopener” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.
+
+
+### How to cite cageopener
+
+Please cite cageopener as follows:
+
+
+## Detailed description of the above workflow
+
+
+
+
