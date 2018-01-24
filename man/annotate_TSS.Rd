@@ -11,7 +11,7 @@ annotate_TSS(tssFile, txdb, plot = NA)
 
 \item{txdb}{A txdb object.}
 
-\item{plot}{Type of plot to make (choose from "numbers", "proportions" or NA for no plot)}
+\item{plot}{Type of plot to make (choose from "number", "percent" or NA for no plot)}
 }
 \value{
 Annotation of detected TSS
