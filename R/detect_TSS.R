@@ -109,13 +109,13 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix,
 	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
 
 	## Calculate prop reads in TSS per group
-
+    ## TO BE IMPLEMENTED : propReadsInBed
 	# return data
 	output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
 	return(output)
 }
 
-propReadsInBed <- function(regions, bams = bam.files) {
+propReadsInBed <- function(regions, bams = NA) {
 	counts <- GenomicAlignments::summarizeOverlaps(GenomicRanges::GRangesList(regions),
 					     reads = Rsamtools::BamFileList(as.character(bams)),
 					     mode = "Union",

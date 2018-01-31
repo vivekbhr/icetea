@@ -126,7 +126,7 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 #'
 #' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 #' @export
-#' @importFrom ggplot2 ggplot aes geom_point geom_abline scale_color_manual labs theme_gray theme
+#' @importFrom ggplot2 ggplot aes_string geom_point geom_abline scale_color_manual labs theme_gray theme
 #' @examples
 #'
 #'

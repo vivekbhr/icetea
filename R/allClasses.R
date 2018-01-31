@@ -119,14 +119,16 @@ setMethod("show", "CapSet", function(object) {
 	print(object@sampleInfo)
 	} )
 
-#' sampleInfo getter
+#' get sample information data frame
+#' @param object the \code{\link{CapSet}} object
+#' @param ... ...
 #' @export
 #'
 setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 
 #' get sample information data frame
 #'
-#' @param CapSet the CapSet object
+#' @param object the \code{\link{CapSet}} object
 #'
 #' @docType methods
 #' @export
@@ -138,12 +140,17 @@ setMethod("sampleInfo",
 	    	return(object@sampleInfo)
 	    	})
 
-#' sampleInfo setter
-#'
+#' reset sample information data frame
+#' @param object The \code{\link{CapSet}} object
+#' @param ... ...
+#' @param value new value
 #' @export
 #'
 setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))
 
+#' reset sample information data frame
+#' @param object The \code{\link{CapSet}} object
+#' @param value The replacement sampleInfo data frame
 #' @exportMethod "sampleInfo<-"
 #'
 setReplaceMethod("sampleInfo",

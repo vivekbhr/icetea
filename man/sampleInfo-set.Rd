@@ -2,11 +2,18 @@
 % Please edit documentation in R/allClasses.R
 \name{sampleInfo<-}
 \alias{sampleInfo<-}
-\title{sampleInfo setter}
+\title{reset sample information data frame}
 \usage{
 sampleInfo(object, ...) <- value
 }
+\arguments{
+\item{object}{The \code{\link{CapSet}} object}
+
+\item{...}{...}
+
+\item{value}{new value}
+}
 \description{
-sampleInfo setter
+reset sample information data frame
 }
 

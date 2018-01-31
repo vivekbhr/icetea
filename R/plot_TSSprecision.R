@@ -9,7 +9,7 @@
 #'
 #' @return A plot showing % TSS called per sample w.r.t their distance to TSS
 #' @export
-#' @importFrom ggplot2 stat_ecdf theme_light scale_x_continuous scale_color_brewer ggsave
+#' @importFrom ggplot2 aes_string stat_ecdf theme_light scale_x_continuous scale_color_brewer ggsave
 #'
 #' @examples
 #' \dontrun{
@@ -40,7 +40,7 @@ plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutof
 	colnames(tssdistances) <- c("sample","distances")
 
 	# plot ECDF with distance cutoff
-	p <- ggplot(tssdistances, aes(distances, col = sample)) +
+	p <- ggplot(tssdistances, aes_string("distances", col = "sample")) +
 		stat_ecdf(geom = "step", size = 1) +
 		theme_light(base_size = 14)  +
 		scale_x_continuous(limits = c(0,distanceCutoff)) +

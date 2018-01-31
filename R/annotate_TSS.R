@@ -7,7 +7,7 @@
 #'
 #' @return Annotation of detected TSS
 #' @export
-#' @importFrom ggplot2 ggplot aes geom_bar scale_fill_brewer labs theme theme_gray
+#' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_brewer labs theme theme_gray
 #' @importFrom stats reshape
 #'
 #' @examples
@@ -107,4 +107,3 @@ melt <- function(x) {
 	d$time <- vars[d$time]
 	colnames(d) <- c("variable", "Feature", "value")
 }
-

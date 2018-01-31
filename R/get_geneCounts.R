@@ -8,6 +8,8 @@
 #' @param outfile Tab-separated output file name (if required)
 #'
 #' @return data.frame with gene-level counts for all genes in the txdb object
+#'
+#' @importFrom GenomicFeatures transcriptsBy
 #' @export
 #'
 #' @examples
@@ -17,7 +19,7 @@ get_geneCounts <- function(txdb, bamfiles, single_end = TRUE,outfile = NA) {
 
 
 	# get 500bp region around transcripts to count the reads
-	dm6trans <- GenomicFeatures::transcriptsBy(txdb, "gene")
+	dm6trans <- transcriptsBy(txdb, "gene")
 
 	#add gene names and unlist
 	dm6trans <- mapply(function(x, name) {

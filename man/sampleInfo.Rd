@@ -2,11 +2,16 @@
 % Please edit documentation in R/allClasses.R
 \name{sampleInfo}
 \alias{sampleInfo}
-\title{sampleInfo getter}
+\title{get sample information data frame}
 \usage{
 sampleInfo(object, ...)
 }
+\arguments{
+\item{object}{the \code{\link{CapSet}} object}
+
+\item{...}{...}
+}
 \description{
-sampleInfo getter
+get sample information data frame
 }
 
