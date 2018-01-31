@@ -24,16 +24,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-### Abstract
+## Abstract
 **cageopener** can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols.
 Here we show the usability of cageopener in analysis of MAPCap data.
-
-#### MAPCap protocol
 
 **MAPCap** (Multiplexed Affinity Purification of Capped RNA) is a newly developed CAGE protocol that allows fast and 
 accutate detection of transcription start sites and gene expression analysis of a set of multiplexed samples.
 
-### Quick Start
+## Quick Start
 
 Here we show a set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the 
 raw fastq files, we can either perform quality trimming using a standard program (eg. cutadapt/trimgalore) or simply 
@@ -82,6 +80,9 @@ cs <- detect_TSS(cs, groups = c("wt", "wt"), outfile_prefix = "05_tssCalling")
 ```
 
 
+
+## Help and citations
+
 ### How to get help
 
 cageopener questions could be posted to the [Bioconductor support site](https://support.bioconductor.org), which serves as a searchable knowledge base of questions and answers.
@@ -94,7 +95,175 @@ Posting a question and tagging with “cageopener” will automatically send an 
 Please cite cageopener as follows:
 
 
+
 ## Detailed description of the above workflow
+
+### Creating a CapSet object
+
+The workflow begins by creating an object of class `CapSet` using the function `newCapSet`. This contains information about the experiment method (CAGE, RAMPAGE or MAPCap), along with fastq type (`single` or `paired` end) and the path of the fastq files. It also contains a sampleInfo dataframe.
+
+The sampleInfo is a dataframe containing the demultiplexing barcodes as rownames and the corresponding samplenames within a column 
+called `samples`.
+
+With this information, create the CapSet object as follows.
+
+```{r eval=FALSE}
+# provide demultiplexing barcodes and sample names
+idxlist <- c("TGGAAC", "GGTTAC")
+fnames <- c("wt_rep1", "wt_rep2") 
+
+# make the CapSet object
+cs <- newCapSet("MAPCap", "paired", 
+	    "01_fastq/raw/MAPCapH_R1.fastq.gz", 
+	    "01_fastq/raw/MAPCapH_R2.fastq.gz",
+	    sampleInfo = data.frame(row.names = idxlist, samples = fnames))
+
+```
+
+
+### Trimming the barcodes
+
+Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to
+the fastq sequence. The tool `trimFastqIndex` trims off these barcodes and attaches them in the header of the fastq files 
+for further processing (i.e. sample de-multiplexing and PCR duplicate removal). The output is a modified CapSet object 
+that stors informatin about the fastq file location.
+
+```{r eval=FALSE}
+cs <- trimFastqIndex(cs, outdir = "01_fastq/trimmed")
+```
+
+### demultiplexing the fastq
+
+Trimmed fastq files from previous steps can now be demultiplxed to produce fastq files corresponding to each sample,
+using the tool `demultiplex_fastq`. The result is a modified CapSet object that contains location of demultiplexed files
+along with processing statistics.
+
+```{r eval=FALSE}
+# demultiplex fastq
+cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "02_splitting", nthreads = 10)
+```
+
+Optionally, we can skip the above process and perform post-mapping de-multiplexing on the BAM files (see below).
+
+### Mapping the fastqs
+
+The demultiplexed fastqs can now be mapped using the `mapCaps` function. This function is a wrapper over the `subjunc`
+function from `Rsubread` package. It additionally performes sorting and collects mapping statistics of the mapped files, 
+stored in the modified `CapSet` object.
+
+In order to run the function we first create a subread index of our genome.
+
+```{r eval=FALSE}
+dir.create("genome_index")
+Rsubread::buildindex(basename = "genome_index/dm6", reference = "/path/to/dm6/genome.fa")
+```
+
+We can now perform the mapping.
+
+```{r eval=FALSE}
+# provide location of a subread index file
+subread_idx <- "/data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_index/dm6"
+# map fastq
+cs <- mapCaps(cs, subread_idx, outdir = "03_mapping", nthreads = 20, logfile = "03_mapping/subread_mapping.log")
+```
+
+**Note:** Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files
+and perform the de-multiplexing post-mapping using the `splitBAM_byIndex` and `splitBAM_byRepindex` functions.
+
+### (optional) Post mapping de-multiplexing
+
+```{r eval=FALSE}
+splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0, nthreads = 10)
+```
+
+### Filtering PCR duplicates
+
+Experiments like MAPCap and RAMPAGE provide us a way to remove sequencing reads which are PCR duplicates from the 
+mapped data. random UMIs are added to the read sequence for this purpose. In MAPCap, pre-designed random barcodes 
+present in the oligos serve as the UMIs, while in RAMPAGE, the sequences used as RT-PCR primers are treated as 
+pseudo-random barcodes. PCR duplicates are recognized by identifying reads that map to the same start and end site, 
+and contain the same random UMI.
+
+The function `filterDuplicates` removes these PCR duplicate sequences (keeping only one copy in these cases), and 
+creates de-duplicated BAM files. It returns the modified `CapSet` object with de-duplication statistics.
+
+```{r eval=FALSE}
+# filter PCR duplicates
+cs <- filterDuplicates(cs, outdir = "04_removedup")
+```
+
+### Detection of TSS
+
+cageopener implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the 
+windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.
+
+This method is implemented in the function `detect_TSS`, which returns a modified `CapSet` object with TSS detection statistics.
+
+```{r eval=FALSE}
+# detect TSS
+cs <- detect_TSS(cs, groups = c("wt", "wt"), outfile_prefix = "05_tssCalling")
+```
+
+
+## Plotting and QC
+
+The `sampleInfo` field of the CapSet object stores information about the read numbers kept at each step of processing, this 
+information can be easily plotted using the function ``
+
+```{r eval=FALSE}
+
+```
+
+Similar to the FRIP (Fraction of Reads In Peaks) score, the fraction of total filtered reads that fall within the 
+detected TSSs (FRIT) can be plotted using the function `plotFRIT`.
+
+```{r eval=FALSE}
+
+```
+
+In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected
+TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can 
+be used to compare samples. This can be done using the function `plotPrecision`, which takes the *known* TSS annotations as 
+a TxDB object.
+
+```{r eval=FALSE}
+
+```
+
+
+
+## Differential TSS expression analysis
+
+For the experiments with two or more groups, cageopener can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.
+
+The functions `fit_diffTSS` and `detect_diffTSS` utilize edgeR to perform differential expression analysis.
+
+```{r eval=FALSE}
+
+```
+
+
+### Using spike-In controls
+
+For the differential TSS expression analysis, the function `fit_diffTSS` shown above utilize the [TMM method]()
+for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. cageopener provides
+a way to perform spike-in normalization during differential expression analysis, through the functions ``.
+
+```{r eval=FALSE}
+
+```
+
+
+## Additional useful functions
+
+### sample information
+
+
+### getting the gene counts
+
+
+
+
 
 
 

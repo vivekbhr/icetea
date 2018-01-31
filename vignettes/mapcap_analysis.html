@@ -11,9 +11,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-01-24" />
+<meta name="date" content="2018-01-25" />
 
-<title>Analysing MAPCap data using cageopener</title>
+<title>Analysing CAGE data using cageopener</title>
 
 
 
@@ -67,27 +67,24 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Analysing MAPCap data using cageopener</h1>
+<h1 class="title toc-ignore">Analysing CAGE data using cageopener</h1>
 <h4 class="author"><em>Vivek Bhardwaj</em></h4>
 <address class="author_afil">
 Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="author"><em>Thomas Manke</em></h4>
 <address class="author_afil">
 Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><a class="author_email" href="mailto:#"><a href="mailto:manke@ie-freiburg.mpg.de">manke@ie-freiburg.mpg.de</a></a>
 </address>
-<h4 class="date"><em>2018-01-24</em></h4>
+<h4 class="date"><em>2018-01-25</em></h4>
 
 
 
-<div id="abstract" class="section level3">
-<h3>Abstract</h3>
+<div id="abstract" class="section level2">
+<h2>Abstract</h2>
 <p><strong>cageopener</strong> can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols. Here we show the usability of cageopener in analysis of MAPCap data.</p>
-<div id="mapcap-protocol" class="section level4">
-<h4>MAPCap protocol</h4>
 <p><strong>MAPCap</strong> (Multiplexed Affinity Purification of Capped RNA) is a newly developed CAGE protocol that allows fast and accutate detection of transcription start sites and gene expression analysis of a set of multiplexed samples.</p>
 </div>
-</div>
-<div id="quick-start" class="section level3">
-<h3>Quick Start</h3>
+<div id="quick-start" class="section level2">
+<h2>Quick Start</h2>
 <p>Here we show a set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the raw fastq files, we can either perform quality trimming using a standard program (eg. cutadapt/trimgalore) or simply begin the analysis by creating a <code>CapSet</code> object. The <code>CapSet</code> object takes raw/quality trimmed fastq file paths as input, along with a simple dataframe (called <code>sampleInfo</code>) which contains demultiplexing barcodes as rownames and another column called <code>samples</code> which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the TSS.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create directories</span>
 <span class="kw">dir.create</span>(<span class="st">&quot;01_fastq&quot;</span>)
@@ -126,6 +123,8 @@ cs &lt;-<span class="st"> </span><span class="kw">filterDuplicates</span>(cs, <s
 <span class="co"># detect TSS</span>
 cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;wt&quot;</span>, <span class="st">&quot;wt&quot;</span>), <span class="dt">outfile_prefix =</span> <span class="st">&quot;05_tssCalling&quot;</span>)</code></pre></div>
 </div>
+<div id="help-and-citations" class="section level2">
+<h2>Help and citations</h2>
 <div id="how-to-get-help" class="section level3">
 <h3>How to get help</h3>
 <p>cageopener questions could be posted to the <a href="https://support.bioconductor.org">Bioconductor support site</a>, which serves as a searchable knowledge base of questions and answers.</p>
@@ -135,8 +134,91 @@ cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span cl
 <h3>How to cite cageopener</h3>
 <p>Please cite cageopener as follows:</p>
 </div>
+</div>
 <div id="detailed-description-of-the-above-workflow" class="section level2">
 <h2>Detailed description of the above workflow</h2>
+<div id="creating-a-capset-object" class="section level3">
+<h3>Creating a CapSet object</h3>
+<p>The workflow begins by creating an object of class <code>CapSet</code> using the function <code>newCapSet</code>. This contains information about the experiment method (CAGE, RAMPAGE or MAPCap), along with fastq type (<code>single</code> or <code>paired</code> end) and the path of the fastq files. It also contains a sampleInfo dataframe.</p>
+<p>The sampleInfo is a dataframe containing the demultiplexing barcodes as rownames and the corresponding samplenames within a column called <code>samples</code>.</p>
+<p>With this information, create the CapSet object as follows.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># provide demultiplexing barcodes and sample names</span>
+idxlist &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;TGGAAC&quot;</span>, <span class="st">&quot;GGTTAC&quot;</span>)
+fnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;wt_rep1&quot;</span>, <span class="st">&quot;wt_rep2&quot;</span>) 
+
+<span class="co"># make the CapSet object</span>
+cs &lt;-<span class="st"> </span><span class="kw">newCapSet</span>(<span class="st">&quot;MAPCap&quot;</span>, <span class="st">&quot;paired&quot;</span>, 
+        <span class="st">&quot;01_fastq/raw/MAPCapH_R1.fastq.gz&quot;</span>, 
+        <span class="st">&quot;01_fastq/raw/MAPCapH_R2.fastq.gz&quot;</span>,
+        <span class="dt">sampleInfo =</span> <span class="kw">data.frame</span>(<span class="dt">row.names =</span> idxlist, <span class="dt">samples =</span> fnames))</code></pre></div>
+</div>
+<div id="trimming-the-barcodes" class="section level3">
+<h3>Trimming the barcodes</h3>
+<p>Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to the fastq sequence. The tool <code>trimFastqIndex</code> trims off these barcodes and attaches them in the header of the fastq files for further processing (i.e. sample de-multiplexing and PCR duplicate removal). The output is a modified CapSet object that stors informatin about the fastq file location.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cs &lt;-<span class="st"> </span><span class="kw">trimFastqIndex</span>(cs, <span class="dt">outdir =</span> <span class="st">&quot;01_fastq/trimmed&quot;</span>)</code></pre></div>
+</div>
+<div id="demultiplexing-the-fastq" class="section level3">
+<h3>demultiplexing the fastq</h3>
+<p>Trimmed fastq files from previous steps can now be demultiplxed to produce fastq files corresponding to each sample, using the tool <code>demultiplex_fastq</code>. The result is a modified CapSet object that contains location of demultiplexed files along with processing statistics.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># demultiplex fastq</span>
+cs &lt;-<span class="st"> </span><span class="kw">demultiplex_fastq</span>(cs, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">outdir =</span> <span class="st">&quot;02_splitting&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
+<p>Optionally, we can skip the above process and perform post-mapping de-multiplexing on the BAM files (see below).</p>
+</div>
+<div id="mapping-the-fastqs" class="section level3">
+<h3>Mapping the fastqs</h3>
+<p>The demultiplexed fastqs can now be mapped using the <code>mapCaps</code> function. This function is a wrapper over the <code>subjunc</code> function from <code>Rsubread</code> package. It additionally performes sorting and collects mapping statistics of the mapped files, stored in the modified <code>CapSet</code> object.</p>
+<p>In order to run the function we first create a subread index of our genome.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dir.create</span>(<span class="st">&quot;genome_index&quot;</span>)
+Rsubread<span class="op">::</span><span class="kw">buildindex</span>(<span class="dt">basename =</span> <span class="st">&quot;genome_index/dm6&quot;</span>, <span class="dt">reference =</span> <span class="st">&quot;/path/to/dm6/genome.fa&quot;</span>)</code></pre></div>
+<p>We can now perform the mapping.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># provide location of a subread index file</span>
+subread_idx &lt;-<span class="st"> &quot;/data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_index/dm6&quot;</span>
+<span class="co"># map fastq</span>
+cs &lt;-<span class="st"> </span><span class="kw">mapCaps</span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">&quot;03_mapping&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">&quot;03_mapping/subread_mapping.log&quot;</span>)</code></pre></div>
+<p><strong>Note:</strong> Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files and perform the de-multiplexing post-mapping using the <code>splitBAM_byIndex</code> and <code>splitBAM_byRepindex</code> functions.</p>
+</div>
+<div id="optional-post-mapping-de-multiplexing" class="section level3">
+<h3>(optional) Post mapping de-multiplexing</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">splitBAM_byIndex</span>(bamFile, index_list, outfile_list, <span class="dt">max_mismatch =</span> <span class="dv">0</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
+</div>
+<div id="filtering-pcr-duplicates" class="section level3">
+<h3>Filtering PCR duplicates</h3>
+<p>Experiments like MAPCap and RAMPAGE provide us a way to remove sequencing reads which are PCR duplicates from the mapped data. random UMIs are added to the read sequence for this purpose. In MAPCap, pre-designed random barcodes present in the oligos serve as the UMIs, while in RAMPAGE, the sequences used as RT-PCR primers are treated as pseudo-random barcodes. PCR duplicates are recognized by identifying reads that map to the same start and end site, and contain the same random UMI.</p>
+<p>The function <code>filterDuplicates</code> removes these PCR duplicate sequences (keeping only one copy in these cases), and creates de-duplicated BAM files. It returns the modified <code>CapSet</code> object with de-duplication statistics.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># filter PCR duplicates</span>
+cs &lt;-<span class="st"> </span><span class="kw">filterDuplicates</span>(cs, <span class="dt">outdir =</span> <span class="st">&quot;04_removedup&quot;</span>)</code></pre></div>
+</div>
+<div id="detection-of-tss" class="section level3">
+<h3>Detection of TSS</h3>
+<p>cageopener implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.</p>
+<p>This method is implemented in the function <code>detect_TSS</code>, which returns a modified <code>CapSet</code> object with TSS detection statistics.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># detect TSS</span>
+cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;wt&quot;</span>, <span class="st">&quot;wt&quot;</span>), <span class="dt">outfile_prefix =</span> <span class="st">&quot;05_tssCalling&quot;</span>)</code></pre></div>
+</div>
+</div>
+<div id="plotting-and-qc" class="section level2">
+<h2>Plotting and QC</h2>
+<p>The <code>sampleInfo</code> field of the CapSet object stores information about the read numbers kept at each step of processing, this information can be easily plotted using the function ``</p>
+<p>Similar to the FRIP (Fraction of Reads In Peaks) score, the fraction of total filtered reads that fall within the detected TSSs (FRIT) can be plotted using the function <code>plotFRIT</code>.</p>
+<p>In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can be used to compare samples. This can be done using the function <code>plotPrecision</code>, which takes the <em>known</em> TSS annotations as a TxDB object.</p>
+</div>
+<div id="differential-tss-expression-analysis" class="section level2">
+<h2>Differential TSS expression analysis</h2>
+<p>For the experiments with two or more groups, cageopener can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.</p>
+<p>The functions <code>fit_diffTSS</code> and <code>detect_diffTSS</code> utilize edgeR to perform differential expression analysis.</p>
+<div id="using-spike-in-controls" class="section level3">
+<h3>Using spike-In controls</h3>
+<p>For the differential TSS expression analysis, the function <code>fit_diffTSS</code> shown above utilize the <a href>TMM method</a> for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. cageopener provides a way to perform spike-in normalization during differential expression analysis, through the functions ``.</p>
+</div>
+</div>
+<div id="additional-useful-functions" class="section level2">
+<h2>Additional useful functions</h2>
+<div id="sample-information" class="section level3">
+<h3>sample information</h3>
+</div>
+<div id="getting-the-gene-counts" class="section level3">
+<h3>getting the gene counts</h3>
+</div>
 </div>
 
 
