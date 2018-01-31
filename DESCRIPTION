@@ -1,17 +1,17 @@
 Package: mapcapR
 Title: R package for processing and analysis of CAGE data
-Version: 0.1
+Version: 0.99.0
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
-Description: mapcapR is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection
+Description: mapcapR is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection.
 Depends:
     R (>= 3.2.2)
 Imports:
     stats, utils, methods, grDevices,
-    plyr, ggplot2,
+    plyr, ggplot2, GenomicFeatures, ShortRead,
     BiocParallel, Biostrings, S4Vectors, Rsamtools,
     GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
     VariantAnnotation,  Rsubread, limma, edgeR, csaw, CAGEr
-biocViews: CAGE, MAPCap
+biocViews: CAGE, MAPCap, RAMPAGE, RNAseq
 License: GPL-3
 LazyData: true
 RoxygenNote: 5.0.1
