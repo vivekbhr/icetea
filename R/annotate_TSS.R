@@ -46,7 +46,7 @@ annotate_TSS <- function(tssFile, txdb, plot = NA) {
 			warning("Plot type neither 'number' nor 'percent'.")
 		}
 
-		print(ggplot(final_table, aes(feature, value, fill = feature)) +
+		print(ggplot(final_table, aes_string("feature", "value", fill = "feature")) +
 			geom_bar(stat = "identity", position = "dodge") +
 			scale_fill_brewer(palette = "Set1") +
 			labs(x = "Feature", y = paste0(n, "of TSS")) +

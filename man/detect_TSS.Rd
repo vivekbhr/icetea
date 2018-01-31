@@ -8,6 +8,8 @@ detect_TSS(CapSet, groups, outfile_prefix, foldChange = 2,
   restrictChr = NULL)
 }
 \arguments{
+\item{CapSet}{CapSet object created using \code{\link{newCapSet}} function}
+
 \item{groups}{a character vector that contains group name of the sample, for replicate-based TSS
 calling (see example)}
 
@@ -20,8 +22,6 @@ amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 samples with 500ng starting material).}
 
 \item{restrictChr}{Chromosomes to restrict the analysis to.}
-
-\item{bam.files}{List of bam files to use}
 }
 \value{
 .bed files containing TSS position for each group, along with a bed file for consensus

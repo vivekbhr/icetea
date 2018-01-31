@@ -8,7 +8,7 @@
 \S4method{sampleInfo}{CapSet}(object)
 }
 \arguments{
-\item{CapSet}{}
+\item{CapSet}{the CapSet object}
 }
 \description{
 get sample information data frame

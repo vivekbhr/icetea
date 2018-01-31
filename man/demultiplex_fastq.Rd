@@ -7,9 +7,11 @@
 demultiplex_fastq(CapSet, max_mismatch, outdir, nthreads = 1)
 }
 \arguments{
-\item{CapSet}{CapSet object created using \code{\link{newCapSet}} function.}
+\item{CapSet}{CapSet object created using \code{\link{newCapSet}} function}
 
 \item{max_mismatch}{maximum allowd mismatches}
+
+\item{outdir}{path to output directory}
 
 \item{nthreads}{No. of threads to use}
 }

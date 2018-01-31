@@ -72,13 +72,14 @@ filterDups <- function(bamFile, outFile) {
 #' @param outdir output directory for filtered BAM files
 #'
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
+#' @importFrom methods validObject
 #' @export
 #'
 #' @examples
-#'
+#' \dontrun{
 #' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
 #' filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
-#'
+#' }
 
 filterDuplicates <- function(CapSet, outdir) {
 	si <- sampleInfo(CapSet)

@@ -4,6 +4,8 @@
 #' @param outdir output directory to keep the trimmed fastq files
 #'
 #' @return fastq files
+#'
+#' @importFrom methods validObject
 #' @export
 #' @useDynLib mapcapR trimFastq trimFastq_rampage
 #' @examples

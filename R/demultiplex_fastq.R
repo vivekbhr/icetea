@@ -62,8 +62,9 @@ split_fastq <- function(idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2, ma
 
 #' Demultiplex (tagged) fastq files using sample barcodes
 #'
-#' @param CapSet CapSet object created using \code{\link{newCapSet}} function.
+#' @param CapSet CapSet object created using \code{\link{newCapSet}} function
 #' @param max_mismatch maximum allowd mismatches
+#' @param outdir path to output directory
 #' @param nthreads No. of threads to use
 #'
 #' @return de-multiplxed fastq files corresponding to each barcode. The files are written
@@ -123,4 +124,3 @@ demultiplex_fastq <- function(CapSet, max_mismatch, outdir, nthreads = 1) {
 	return(CapSet)
 
 }
-

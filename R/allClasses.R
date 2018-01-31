@@ -126,7 +126,7 @@ setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 
 #' get sample information data frame
 #'
-#' @param CapSet
+#' @param CapSet the CapSet object
 #'
 #' @docType methods
 #' @export

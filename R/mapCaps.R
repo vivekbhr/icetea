@@ -27,6 +27,8 @@
 #' @param ... additional arguments passed to the \code{\link{subjunc}} function.
 #'
 #' @return modified CapSet object with mapping information. Mapped and sorted BAM files are saved in `outdir`.
+#'
+#' @importFrom utils capture.output
 #' @export
 #'
 #' @examples

@@ -1,7 +1,7 @@
 
 #' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 #'
-#' @param bam.files List of bam files to use
+#' @param bam.files Character vector with paths of bam files to use
 #' @param TSSfile A .bed file with TS sites to test. Normally it would be the *merged.bed file
 #' 		  (output of \code{\link{detect_TSS}} command)
 #'
@@ -18,6 +18,7 @@
 #' @importFrom graphics abline par plot smoothScatter
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats model.matrix
+#' @importFrom methods as
 #'
 #' @examples
 #'
@@ -151,7 +152,7 @@ detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA) 
 
 	# MA plot
 	if(!(is.na(MAplot_fdr)) ) {
-	p <- ggplot(top, aes(logCPM, logFC, col = factor(top$FDR < MAplot_fdr))) +
+	p <- ggplot(top, aes_string("logCPM", "logFC", col = factor(top$FDR < MAplot_fdr))) +
 			geom_point(alpha = 0.5) +
 			geom_abline(slope = 0, intercept = 0) +
 			scale_color_manual(values = c("grey40", "darkred")) +
@@ -163,4 +164,3 @@ detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA) 
 
 	return(difftss)
 }
-

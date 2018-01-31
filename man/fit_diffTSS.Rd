@@ -7,7 +7,7 @@
 fit_diffTSS(bam.files, TSSfile, design, outplots, plotref)
 }
 \arguments{
-\item{bam.files}{List of bam files to use}
+\item{bam.files}{Character vector with paths of bam files to use}
 
 \item{TSSfile}{A .bed file with TS sites to test. Normally it would be the *merged.bed file
 (output of \code{\link{detect_TSS}} command)}

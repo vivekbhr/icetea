@@ -1,7 +1,7 @@
 
 #' Detection of Trancription start sites based on local enrichment
 #'
-#' @param bam.files List of bam files to use
+#' @param CapSet CapSet object created using \code{\link{newCapSet}} function
 #' @param groups a character vector that contains group name of the sample, for replicate-based TSS
 #'               calling (see example)
 #' @param outfile_prefix Output name prefix for the .bed files
@@ -116,12 +116,9 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix,
 }
 
 propReadsInBed <- function(regions, bams = bam.files) {
-	counts <- GenomicAlignments::summarizeOverlaps(GRangesList(regions),
-					     reads = BamFileList(as.character(bams)),
+	counts <- GenomicAlignments::summarizeOverlaps(GenomicRanges::GRangesList(regions),
+					     reads = Rsamtools::BamFileList(as.character(bams)),
 					     mode = "Union",
 					     inter.feature = FALSE)
 	return(SummarizedExperiment::assay(counts))
 }
-
-
-

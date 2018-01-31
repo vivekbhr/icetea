@@ -20,9 +20,9 @@ This script considers the read mapping start position and the UMI to determine w
              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 }
 \examples{
-
+\dontrun{
 bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
 filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
-
+}
 }
 
