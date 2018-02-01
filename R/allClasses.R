@@ -1,5 +1,3 @@
-
-
 #' Create a new CapSet object
 #'
 #' @param expMethod experiment method ('CAGE', 'RAMPAGE' or 'MAPCap')
@@ -35,7 +33,11 @@ newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NULL, sampleInf
 	    trimmed_R1 = NULL,
 	    trimmed_R2 = NULL,
 	    expMethod = expMethod,
-	    sampleInfo = info)
+	    sampleInfo = info,  # sample Information
+	    counts.windows = NULL, # TSS : window counts
+	    counts.background = NULL, # TSS : background counts
+	    filter.stats = NULL) # TSS : filter stats
+
 }
 
 #' Check capset validity
@@ -54,6 +56,10 @@ check_capSet <- function(object) {
 	R2 <- object@fastq_R2
 	exp <- object@expMethod
 	info <- object@sampleInfo
+
+	wincounts <- object@counts.windows
+	bgcounts <- object@counts.background
+	filtstats <- object@filter.stats
 
 	## validate slots
 	# fastq
@@ -80,6 +86,18 @@ check_capSet <- function(object) {
 		msg <- paste0("sampleInfo should be a data frame ")
 		errors <- c(errors, msg)
 	}
+        # TSS info
+	if(!(class(wincounts) %in% c("RangedSummarizedExperiment", "NULL")) |
+	   !(class(bgcounts) %in% c("RangedSummarizedExperiment", "NULL")) ) {
+		msg <- paste0("window counts and background counts should either be or a
+			      RangedSummarizedExperiment object")
+		errors <- c(errors, msg)
+	}
+
+	if (!(class(filtstats) %in% c("data.frame", "DataFrame")) ) {
+		msg <- paste0("sampleInfo should be a data frame ")
+		errors <- c(errors, msg)
+	}
 
 	## return
 	if (length(errors) == 0) TRUE else errors
@@ -87,11 +105,16 @@ check_capSet <- function(object) {
 
 ## char or NULL class
 setClassUnion("charOrNULL", c("character", "NULL"))
+## RSE or NULL class
+setClassUnion("RSEorNULL", c("RangedSummarizedExperiment", "NULL"))
+## DataFrame or NULL class
+setClassUnion("DForNULL", c("DataFrame", "NULL"))
 
 #' CapSet object
 #'
 #' @rdname newCapSet
 #' @importClassesFrom S4Vectors DataFrame
+#' @import SummarizedExperiment
 #'
 CapSet <- setClass("CapSet",
 		   slots = c(fastqType = "character",
@@ -100,64 +123,9 @@ CapSet <- setClass("CapSet",
 		   	  trimmed_R1 = "charOrNULL",
 		   	  trimmed_R2 = "charOrNULL",
 		   	  expMethod = "character",
-		   	  sampleInfo = "DataFrame"),
+		   	  sampleInfo = "DataFrame",
+		   	  counts.windows = "RSEorNULL", # TSS : window counts
+		   	  counts.background = "RSEorNULL", # TSS : background counts
+		   	  filter.stats = "DForNULL" # TSS : filter stats
+		   	  ),
 		   validity = check_capSet)
-
-## show method
-setMethod("show", "CapSet", function(object) {
-	cat("An object of class CapSet", "\n")
-	cat("---------------------------", "\n\n")
-	cat("Experiment method : ", object@expMethod, "\n")
-
-	cat("FASTQ Type : ", object@fastqType, "\n")
-	cat("FASTQ Read 1 : ", object@fastq_R1, "\n")
-	cat("FASTQ Read 2 : ", object@fastq_R2, "\n")
-	cat("Trimmed FASTQ Read 1 : ", object@trimmed_R1, "\n")
-	cat("Trimmed FASTQ Read 2 : ", object@trimmed_R2, "\n")
-
-	cat("sample information : ", "\n")
-	print(object@sampleInfo)
-	} )
-
-#' get sample information data frame
-#' @param object the \code{\link{CapSet}} object
-#' @param ... ...
-#' @export
-#'
-setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
-
-#' get sample information data frame
-#'
-#' @param object the \code{\link{CapSet}} object
-#'
-#' @docType methods
-#' @export
-#'
-
-setMethod("sampleInfo",
-	  signature = "CapSet",
-	    function(object) {
-	    	return(object@sampleInfo)
-	    	})
-
-#' reset sample information data frame
-#' @param object The \code{\link{CapSet}} object
-#' @param ... ...
-#' @param value new value
-#' @export
-#'
-setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))
-
-#' reset sample information data frame
-#' @param object The \code{\link{CapSet}} object
-#' @param value The replacement sampleInfo data frame
-#' @exportMethod "sampleInfo<-"
-#'
-setReplaceMethod("sampleInfo",
-		 signature = "CapSet", #value = c("data.frame", "DataFrame") ),
-		 function(object, value) {
-		 	df <- S4Vectors::DataFrame(value)
-		 	object@sampleInfo <- df
-		 	validObject(object)
-		 	return(object)
-		 	})

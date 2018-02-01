@@ -109,10 +109,16 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix,
 	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
 
 	## Calculate prop reads in TSS per group
-    ## TO BE IMPLEMENTED : propReadsInBed
-	# return data
-	output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
-	return(output)
+	message("Counting reads within detected TSS")
+	reads_intss <- propReadsInBed(mergedall, bam.files)
+
+	# Add the results as slots in CapSet
+	Capset@counts.windows <- data
+	Capset@counts.background <- wider
+	CapSet@filter.stats <- S4Vectors::DataFrame(filterstat[[1]])
+
+	#output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
+	return(CapSet)
 }
 
 propReadsInBed <- function(regions, bams = NA) {
@@ -120,5 +126,6 @@ propReadsInBed <- function(regions, bams = NA) {
 					     reads = Rsamtools::BamFileList(as.character(bams)),
 					     mode = "Union",
 					     inter.feature = FALSE)
-	return(SummarizedExperiment::assay(counts))
+	numreads <- SummarizedExperiment::assay(counts)
+	return(t(numreads))
 }
