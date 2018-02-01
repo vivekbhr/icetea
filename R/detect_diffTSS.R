@@ -30,7 +30,7 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	if(length(bam.files) != nrow(design)) {
 		stop("Number of rows in design data frame doesn't match the number of bam files")
 	} else {
-		c <- design$sample
+		samples <- rownames(design)
 	}
 
 	## Normalize for composition bias : TMM
@@ -39,18 +39,18 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	regionparam <- csaw::readParam(minq=30, restrict = restrictChr)
 	binned <- csaw::windowCounts(bam.files, bin = TRUE, width = 10000, param = regionparam)
 	normfacs <- csaw::normOffsets(binned) # close to unity
-	names(normfacs) <- c
+	names(normfacs) <- samples
 
 	## visualize Effect of TMM normalization on composition bias
 	y.bin <- csaw::asDGEList(binned)
 	bin.ab <- edgeR::aveLogCPM(y.bin)
 	adjc <- edgeR::cpm(y.bin, log=TRUE)
-	colnames(adjc) <- c
+	colnames(adjc) <- samples
 
 	# plot ref sample vs all other samples
 	message("plotting the composition effect")
 	sampnumber <- ncol(adjc) - 1
-	cols_toplot <- c[!(grepl(plotref, c))]
+	cols_toplot <- c[!(grepl(plotref, samples))]
 	n <- ceiling(sampnumber/3) #roundup to make divisible by 3
 
 	par(cex.lab=1.5, mfrow=c(n,3))
