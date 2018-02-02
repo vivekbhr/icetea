@@ -34,7 +34,7 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	}
 
 	## Normalize for composition bias : TMM
-	# important to try different bin sizes and see if the values are close to unity (low composition effect)
+	# useful to try different bin sizes and see if the values are close to unity (low composition effect)
 	restrictChr <- NULL
 	regionparam <- csaw::readParam(minq=30, restrict = restrictChr)
 	binned <- csaw::windowCounts(bam.files, bin = TRUE, width = 10000, param = regionparam)

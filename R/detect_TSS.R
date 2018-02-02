@@ -110,11 +110,12 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix,
 
 	## Calculate prop reads in TSS per group
 	message("Counting reads within detected TSS")
-	reads_intss <- propReadsInBed(mergedall, bam.files)
+	si$num_intss <- propReadsInBed(mergedall, bam.files)
+	sampleInfo(CapSet) <- si
 
 	# Add the results as slots in CapSet
-	Capset@counts.windows <- data
-	Capset@counts.background <- wider
+	CapSet@counts.windows <- data
+	CapSet@counts.background <- wider
 	CapSet@filter.stats <- S4Vectors::DataFrame(filterstat[[1]])
 
 	#output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)

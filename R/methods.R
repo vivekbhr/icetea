@@ -11,12 +11,20 @@ setMethod("show", "CapSet", function(object) {
 	cat("Trimmed FASTQ Read 2 : ", object@trimmed_R2, "\n")
 
 	cat("\n", "Sample information : ", "\n")
+	cat("-------------------------","\n")
 	print(object@sampleInfo)
+
 	cat("\n", "TSS enrichment information : ", "\n")
 	cat("-----------------------------","\n")
+	cat("Window counts", "\n")
 	print(object@counts.windows)
+	cat("\n")
+	cat("Background counts", "\n")
 	print(object@counts.background)
+	cat("\n")
+	cat("Filter statistics", "\n")
 	print(object@filter.stats)
+	cat("\n")
 } )
 
 #' get sample information data frame

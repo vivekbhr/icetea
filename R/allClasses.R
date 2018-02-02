@@ -21,19 +21,19 @@
 #'}
 #'
 
-newCapSet <- function(expMethod, fastqType, fastq_R1, fastq_R2 = NULL, sampleInfo) {
-
+newCapSet <- function(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL) {
+	stopifnot(!(class(sampleInfo) %in% c("data.frame", "DataFrame")))
 	# convert sampleInfo to a DataFrame
 	info <- S4Vectors::DataFrame(sampleInfo)
 	# create an instance of CapSet
 	new("CapSet",
+	    sampleInfo = info,  # sample Information
 	    fastqType = fastqType,
 	    fastq_R1 = fastq_R1,
 	    fastq_R2 = fastq_R2,
 	    trimmed_R1 = NULL,
 	    trimmed_R2 = NULL,
 	    expMethod = expMethod,
-	    sampleInfo = info,  # sample Information
 	    counts.windows = NULL, # TSS : window counts
 	    counts.background = NULL, # TSS : background counts
 	    filter.stats = NULL) # TSS : filter stats
@@ -94,7 +94,7 @@ check_capSet <- function(object) {
 		errors <- c(errors, msg)
 	}
 
-	if (!(class(filtstats) %in% c("data.frame", "DataFrame")) ) {
+	if (!(class(filtstats) %in% c("NULL", "DataFrame")) ) {
 		msg <- paste0("sampleInfo should be a data frame ")
 		errors <- c(errors, msg)
 	}
@@ -106,9 +106,9 @@ check_capSet <- function(object) {
 ## char or NULL class
 setClassUnion("charOrNULL", c("character", "NULL"))
 ## RSE or NULL class
-setClassUnion("RSEorNULL", c("RangedSummarizedExperiment", "NULL"))
+#setClassUnion("RSEorNULL", c("RangedSummarizedExperiment", "NULL"))
 ## DataFrame or NULL class
-setClassUnion("DForNULL", c("DataFrame", "NULL"))
+#setClassUnion("DForNULL", c("DataFrame", "NULL"))
 
 #' CapSet object
 #'
@@ -117,6 +117,7 @@ setClassUnion("DForNULL", c("DataFrame", "NULL"))
 #' @import SummarizedExperiment
 #'
 CapSet <- setClass("CapSet",
+		   #contains = "DataFrame",
 		   slots = c(fastqType = "character",
 		   	  fastq_R1 = "character",
 		   	  fastq_R2 = "charOrNULL",
@@ -124,8 +125,8 @@ CapSet <- setClass("CapSet",
 		   	  trimmed_R2 = "charOrNULL",
 		   	  expMethod = "character",
 		   	  sampleInfo = "DataFrame",
-		   	  counts.windows = "RSEorNULL", # TSS : window counts
-		   	  counts.background = "RSEorNULL", # TSS : background counts
-		   	  filter.stats = "DForNULL" # TSS : filter stats
+		   	  counts.windows = "ANY", # TSS : window counts
+		   	  counts.background = "ANY", # TSS : background counts
+		   	  filter.stats = "ANY" # TSS : filter stats
 		   	  ),
 		   validity = check_capSet)

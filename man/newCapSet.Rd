@@ -7,9 +7,12 @@
 \alias{newCapSet}
 \title{Create a new CapSet object}
 \usage{
-newCapSet(expMethod, fastqType, fastq_R1, fastq_R2 = NULL, sampleInfo)
+newCapSet(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL)
 }
 \arguments{
+\item{sampleInfo}{data.frame with sample information, with row.names = barcode sequences,
+and first column containing corresponding sample names.}
+
 \item{expMethod}{experiment method ('CAGE', 'RAMPAGE' or 'MAPCap')}
 
 \item{fastqType}{fastq file type. Should be either 'single' or 'paired'}
@@ -17,9 +20,6 @@ newCapSet(expMethod, fastqType, fastq_R1, fastq_R2 = NULL, sampleInfo)
 \item{fastq_R1}{path for Read R1 (or file path for single end reads)}
 
 \item{fastq_R2}{path for Read R2 (for paired end reads)}
-
-\item{sampleInfo}{data.frame with sample information, with row.names = barcode sequences,
-and first column containing corresponding sample names.}
 }
 \value{
 An object of class CapSet
