@@ -34,10 +34,7 @@ newCapSet <- function(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NUL
 	    trimmed_R1 = NULL,
 	    trimmed_R2 = NULL,
 	    expMethod = expMethod,
-	    counts.windows = NULL, # TSS : window counts
-	    counts.background = NULL, # TSS : background counts
-	    filter.stats = NULL) # TSS : filter stats
-
+	    tss_detected = NULL)
 }
 
 #' Check capset validity
@@ -56,10 +53,7 @@ check_capSet <- function(object) {
 	R2 <- object@fastq_R2
 	exp <- object@expMethod
 	info <- object@sampleInfo
-
-	wincounts <- object@counts.windows
-	bgcounts <- object@counts.background
-	filtstats <- object@filter.stats
+	tss <- object@tss_detected
 
 	## validate slots
 	# fastq
@@ -82,22 +76,15 @@ check_capSet <- function(object) {
 
 	}
 	# sampleInfo
-	if (!(class(info) %in% c("data.frame", "DataFrame")) ) {
+	if(!(class(info) %in% c("data.frame", "DataFrame")) ) {
 		msg <- paste0("sampleInfo should be a data frame ")
 		errors <- c(errors, msg)
 	}
         # TSS info
-	if(!(class(wincounts) %in% c("RangedSummarizedExperiment", "NULL")) |
-	   !(class(bgcounts) %in% c("RangedSummarizedExperiment", "NULL")) ) {
-		msg <- paste0("window counts and background counts should either be or a
-			      RangedSummarizedExperiment object")
-		errors <- c(errors, msg)
-	}
-
-	if (!(class(filtstats) %in% c("NULL", "DataFrame")) ) {
-		msg <- paste0("sampleInfo should be a data frame ")
-		errors <- c(errors, msg)
-	}
+        if(!(class(tss) %in% c("NULL", "GRangesList")) ) {
+        	msg <- paste0("tss_detected should be a GRangesList object ")
+        	errors <- c(errors, msg)
+        }
 
 	## return
 	if (length(errors) == 0) TRUE else errors
@@ -105,19 +92,13 @@ check_capSet <- function(object) {
 
 ## char or NULL class
 setClassUnion("charOrNULL", c("character", "NULL"))
-## RSE or NULL class
-#setClassUnion("RSEorNULL", c("RangedSummarizedExperiment", "NULL"))
-## DataFrame or NULL class
-#setClassUnion("DForNULL", c("DataFrame", "NULL"))
 
 #' CapSet object
 #'
 #' @rdname newCapSet
 #' @importClassesFrom S4Vectors DataFrame
-#' @import SummarizedExperiment
 #'
 CapSet <- setClass("CapSet",
-		   #contains = "DataFrame",
 		   slots = c(fastqType = "character",
 		   	  fastq_R1 = "character",
 		   	  fastq_R2 = "charOrNULL",
@@ -125,8 +106,6 @@ CapSet <- setClass("CapSet",
 		   	  trimmed_R2 = "charOrNULL",
 		   	  expMethod = "character",
 		   	  sampleInfo = "DataFrame",
-		   	  counts.windows = "ANY", # TSS : window counts
-		   	  counts.background = "ANY", # TSS : background counts
-		   	  filter.stats = "ANY" # TSS : filter stats
+		   	  tss_detected = "ANY"
 		   	  ),
 		   validity = check_capSet)

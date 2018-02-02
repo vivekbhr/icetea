@@ -4,7 +4,7 @@
 \alias{detect_TSS}
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
-detect_TSS(CapSet, groups, outfile_prefix, foldChange = 2,
+detect_TSS(CapSet, groups, outfile_prefix = NULL, foldChange = 2,
   restrictChr = NULL)
 }
 \arguments{
@@ -13,7 +13,8 @@ detect_TSS(CapSet, groups, outfile_prefix, foldChange = 2,
 \item{groups}{a character vector that contains group name of the sample, for replicate-based TSS
 calling (see example)}
 
-\item{outfile_prefix}{Output name prefix for the .bed files}
+\item{outfile_prefix}{Output name prefix for the .Rdata file containing window counts, background counts
+and filtering statistics calculated during TSS detection.}
 
 \item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
 'usual' amount of starting material and squencing depth (>=5ug starting material,

@@ -16,15 +16,8 @@ setMethod("show", "CapSet", function(object) {
 
 	cat("\n", "TSS enrichment information : ", "\n")
 	cat("-----------------------------","\n")
-	cat("Window counts", "\n")
-	print(object@counts.windows)
-	cat("\n")
-	cat("Background counts", "\n")
-	print(object@counts.background)
-	cat("\n")
-	cat("Filter statistics", "\n")
-	print(object@filter.stats)
-	cat("\n")
+	cat("Detected TSS per group", "\n")
+	print(object@tss_detected)
 } )
 
 #' get sample information data frame

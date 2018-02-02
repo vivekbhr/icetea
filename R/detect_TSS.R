@@ -4,7 +4,8 @@
 #' @param CapSet CapSet object created using \code{\link{newCapSet}} function
 #' @param groups a character vector that contains group name of the sample, for replicate-based TSS
 #'               calling (see example)
-#' @param outfile_prefix Output name prefix for the .bed files
+#' @param outfile_prefix Output name prefix for the .Rdata file containing window counts, background counts
+#'                       and filtering statistics calculated during TSS detection.
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #' 		'usual' amount of starting material and squencing depth (>=5ug starting material,
 #' 		>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
@@ -26,7 +27,7 @@
 #'
 
 
-detect_TSS <- function(CapSet, groups,  outfile_prefix,
+detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 		       foldChange = 2, restrictChr = NULL) {
 
 	# check whether group and outfile_prefix is provided
@@ -95,38 +96,77 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix,
 	merged <- lapply(filtered.data, function(d) {
 		return(csaw::mergeWindows(d, tol = 10L, ignore.strand = FALSE))
 	})
-
-	## write merged output for each group
-	message("Writing output .bed files per group")
-	mapply(function(bedfile, group) {
-		rtracklayer::export.bed(object = bedfile$region, con = group)
-	}, bedfile = merged, group = paste0(outfile_prefix, "_" , unique(design$group), ".bed") )
-
-	## write out the union of merges
-	message("Writing merged .bed files")
+	# update the Capset object
 	merged <- lapply(merged, function(x) return(x$region))
-	mergedall <- base::Reduce(S4Vectors::union, merged)
-	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
+	names(merged) <- unique(as.character(groups))
+	CapSet@tss_detected <- GenomicRanges::GRangesList(merged)
 
 	## Calculate prop reads in TSS per group
 	message("Counting reads within detected TSS")
-	si$num_intss <- propReadsInBed(mergedall, bam.files)
+	mergedall <- base::Reduce(S4Vectors::union, merged)
+	si$num_intss <- numReadsInBed(mergedall, bam.files)
 	sampleInfo(CapSet) <- si
 
-	# Add the results as slots in CapSet
-	CapSet@counts.windows <- data
-	CapSet@counts.background <- wider
-	CapSet@filter.stats <- S4Vectors::DataFrame(filterstat[[1]])
+	# Add the results as a list and save as .Rdata
+	output <- list(counts.windows = data,
+		       counts.background = wider,
+		       filter.stats = S4Vectors::DataFrame(filterstat[[1]]) )
+	if(!(is.null(outfile_prefix))) {
+		message("Writing filtering information as .Rdata")
+		save(output, file = paste0(outfile_prefix, ".Rdata"))
+	}
 
-	#output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
 	return(CapSet)
 }
 
-propReadsInBed <- function(regions, bams = NA) {
+#' Count the number of reads in a given GRanges
+#'
+#' @param regions The GRanges object
+#' @param bams path to bam files from where the reads have to be counted
+#'
+#' @return Total counts within given ranges per BAM file.
+#'
+numReadsInBed <- function(regions, bams = NA) {
 	counts <- GenomicAlignments::summarizeOverlaps(GenomicRanges::GRangesList(regions),
 					     reads = Rsamtools::BamFileList(as.character(bams)),
 					     mode = "Union",
 					     inter.feature = FALSE)
 	numreads <- SummarizedExperiment::assay(counts)
 	return(t(numreads))
+}
+
+
+#' Export the detected TSS from CapSet object as .bed files
+#'
+#' @param CapSet The modified CapSet object after running \code{\link{detect_TSS}} function
+#' @param pergroup If TRUE, write output per group of samples
+#' @param merged If TRUE, write merged bed file (union of all groups)
+#' @param outfile_prefix Prefix (with path) for output .bed files
+#'
+#' @return .bed file(s) containing detected TSS.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' export_tss(cs, merged = TRUE, outfile_prefix = "outfolder/wt")
+#' }
+#'
+export_tss <- function(CapSet, pergroup = FALSE, merged = TRUE, outfile_prefix) {
+
+	merged <- CapSet@tss_detected
+	if(isTRUE(pergroup)) {
+		## write merged output for each group
+		message("Writing output .bed files per group")
+		mapply(function(bedfile, group) {
+			rtracklayer::export.bed(object = bedfile, con = group)
+		}, bedfile = merged, group = paste0(outfile_prefix, "_" , names(merged), ".bed") )
+
+	}
+	if (isTRUE(merged)) {
+		## write out the union of GRanges
+		message("Writing merged .bed files")
+		mergedall <- base::Reduce(S4Vectors::union, merged)
+		rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
+	}
+
 }
