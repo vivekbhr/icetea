@@ -4,16 +4,16 @@
 \alias{export_tss}
 \title{Export the detected TSS from CapSet object as .bed files}
 \usage{
-export_tss(CapSet, pergroup = FALSE, merged = TRUE, outfile_prefix)
+export_tss(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE)
 }
 \arguments{
 \item{CapSet}{The modified CapSet object after running \code{\link{detect_TSS}} function}
 
+\item{outfile_prefix}{Prefix (with path) for output .bed files}
+
 \item{pergroup}{If TRUE, write output per group of samples}
 
 \item{merged}{If TRUE, write merged bed file (union of all groups)}
-
-\item{outfile_prefix}{Prefix (with path) for output .bed files}
 }
 \value{
 .bed file(s) containing detected TSS.

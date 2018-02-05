@@ -104,7 +104,7 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 	## Calculate prop reads in TSS per group
 	message("Counting reads within detected TSS")
 	mergedall <- base::Reduce(S4Vectors::union, merged)
-	si$num_intss <- numReadsInBed(mergedall, bam.files)
+	si$num_intss <- as.numeric(numReadsInBed(mergedall, bam.files))
 	sampleInfo(CapSet) <- si
 
 	# Add the results as a list and save as .Rdata
@@ -139,9 +139,9 @@ numReadsInBed <- function(regions, bams = NA) {
 #' Export the detected TSS from CapSet object as .bed files
 #'
 #' @param CapSet The modified CapSet object after running \code{\link{detect_TSS}} function
+#' @param outfile_prefix Prefix (with path) for output .bed files
 #' @param pergroup If TRUE, write output per group of samples
 #' @param merged If TRUE, write merged bed file (union of all groups)
-#' @param outfile_prefix Prefix (with path) for output .bed files
 #'
 #' @return .bed file(s) containing detected TSS.
 #' @export
@@ -151,7 +151,7 @@ numReadsInBed <- function(regions, bams = NA) {
 #' export_tss(cs, merged = TRUE, outfile_prefix = "outfolder/wt")
 #' }
 #'
-export_tss <- function(CapSet, pergroup = FALSE, merged = TRUE, outfile_prefix) {
+export_tss <- function(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE) {
 
 	merged <- CapSet@tss_detected
 	if(isTRUE(pergroup)) {
