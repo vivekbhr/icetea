@@ -4,13 +4,16 @@
 \alias{plot_readStats}
 \title{Plot read statistics from the CapSet object}
 \usage{
-plot_readStats(CapSet, plotType = c("numbers", "proportions"),
-  outfile = NULL)
+plot_readStats(CSobject, plotType = c("stack", "dodge"),
+  plotValue = c("numbers", "proportions"), outFile = NULL)
 }
 \arguments{
-\item{CapSet}{The \code{\link{CapSet}} object}
+\item{CSobject}{The \code{\link{CapSet}} object}
 
-\item{plotType}{The type of plot to make. Choose from "numbers" or "proportions". If "proportions"
+\item{plotType}{The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
+or a bar chart with "dodged" positions (analogous to ggplot)}
+
+\item{plotValue}{What values to plot. Choose from "numbers" or "proportions". If "proportions"
 is selected, the proportion of reads w.r.t total demultiplexed reads per sample
 would be plotted}
 
