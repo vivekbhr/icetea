@@ -4,14 +4,15 @@
 \alias{get_geneCounts}
 \title{Get gene-level counts from TSS data}
 \usage{
-get_geneCounts(txdb, bamfiles, single_end = TRUE, outfile = NA)
+get_geneCounts(transcriptGRL, bamfiles, regionAroundTSS = 500,
+  single_end = TRUE, outfile = NA)
 }
 \arguments{
-\item{txdb}{A txdb object}
+\item{transcriptGRL}{A GRangesList object containing transcripts, created using transcriptsBy(txdb)}
 
 \item{bamfiles}{Bam files to count the reads from}
 
-\item{single_end}{whether reads are single end}
+\item{single_end}{Logical, indicating whether reads are single end}
 
 \item{outfile}{Tab-separated output file name (if required)}
 }
@@ -22,6 +23,15 @@ data.frame with gene-level counts for all genes in the txdb object
 Get gene-level counts from TSS data
 }
 \examples{
+\dontrun{
+
+ # load a txdb object
+ dm6gtf <- loadDB("dm6gtf.DB")
+ # get transcripts by gene
+	dm6trans <- transcriptsBy(dm6gtf, "gene")
+ # get gene counts, counting reads around 500 bp of the TSS
+ gcounts <- get_geneCounts(dm6trans, bamfiles)
+}
 
 }
 
