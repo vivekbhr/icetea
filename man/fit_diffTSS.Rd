@@ -4,21 +4,22 @@
 \alias{fit_diffTSS}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
-fit_diffTSS(bam.files, TSSfile, design, outplots, plotref)
+fit_diffTSS(CSobject, TSSfile, groups, outplots = NULL, plotref)
 }
 \arguments{
-\item{bam.files}{Character vector with paths of bam files to use}
+\item{CSobject}{An object of class \code{\link{CapSet}}}
 
-\item{TSSfile}{A .bed file with TS sites to test. Normally it would be the *merged.bed file
-(output of \code{\link{detect_TSS}} command)}
+\item{TSSfile}{A .bed file with TSS positions to test for differential TSS analysis. If left empty,
+the union of detected TSS present within the provided CSobject would be plotted.}
 
-\item{design}{A data frame with rownames = sample names and a column called 'group'
-that contains information about the sample group (see example)}
-
-\item{outplots}{Output pdf filename for plots}
+\item{outplots}{Output pdf filename for plots. If provided, the plots for BCV, dispersion and
+MDS plot is created and saved in this file.}
 
 \item{plotref}{Name of reference sample to plot for detection of composition bias in the
 data. Data is normalized using the TMM method to avoid composition bias.}
+
+\item{design}{A data frame with rownames = sample names and a column called 'group'
+that contains information about the sample group (see example)}
 }
 \value{
 Returns an object of class DGEGLM.

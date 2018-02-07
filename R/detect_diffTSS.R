@@ -1,14 +1,12 @@
-
 #' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 #'
-#' @param bam.files Character vector with paths of bam files to use
-#' @param TSSfile A .bed file with TS sites to test. Normally it would be the *merged.bed file
-#' 		  (output of \code{\link{detect_TSS}} command)
-#'
+#' @param CSobject An object of class \code{\link{CapSet}}
+#' @param TSSfile A .bed file with TSS positions to test for differential TSS analysis. If left empty,
+#'                the union of detected TSS present within the provided CSobject would be plotted.
 #' @param design A data frame with rownames = sample names and a column called 'group'
 #' 		that contains information about the sample group (see example)
-#' @param outplots Output pdf filename for plots
-#'
+#' @param outplots Output pdf filename for plots. If provided, the plots for BCV, dispersion and
+#'                 MDS plot is created and saved in this file.
 #' @param plotref Name of reference sample to plot for detection of composition bias in the
 #' 		  data. Data is normalized using the TMM method to avoid composition bias.
 #'
@@ -24,47 +22,56 @@
 #'
 #'
 
-fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
+fit_diffTSS <- function(CSobject, TSSfile, groups, outplots = NULL, plotref) {
 
-	# first check if design df and bam files are accurate
-	if(length(bam.files) != nrow(design)) {
-		stop("Number of rows in design data frame doesn't match the number of bam files")
-	} else {
-		samples <- rownames(design)
+	## assert the input
+	stopifnot(is(CSobject, "CapSet"))
+
+	# get bam files and design
+	si <- sampleInfo(CSobject)
+	bam.files <- si$filtered_file
+	samples <- si$samples
+	merged <- CapSet@tss_detected
+	design <- data.frame(row.names = samples, group = groups)
+
+	if(normalization == "internal") {
+		## Internal normalization for composition bias : TMM
+		# useful to try different bin sizes and see if the values are close to unity (low composition effect)
+		regionparam <- csaw::readParam(minq=30, restrict = NULL)
+		binned <- csaw::windowCounts(bam.files, bin = TRUE, width = 10000, param = regionparam)
+		normfacs <- csaw::normOffsets(binned) # close to unity
+		names(normfacs) <- samples
+
+		## visualize Effect of TMM normalization on composition bias
+		y.bin <- csaw::asDGEList(binned)
+		bin.ab <- edgeR::aveLogCPM(y.bin)
+		adjc <- edgeR::cpm(y.bin, log=TRUE)
+		colnames(adjc) <- samples
+
+		# plot ref sample vs all other samples
+		message("plotting the composition effect")
+		sampnumber <- ncol(adjc) - 1
+		cols_toplot <- c[!(grepl(plotref, samples))]
+		n <- ceiling(sampnumber/3) #roundup to make divisible by 3
+
+		par(cex.lab=1.5, mfrow=c(n,3))
+		lapply(cols_toplot, function(x) {
+			smoothScatter(bin.ab, adjc[,plotref] - adjc[,x], ylim = c(-6, 6),
+				      xlab = "Average abundance",
+				      ylab = paste0("Log-ratio (", plotref," vs ", x,")") )
+
+			abline(h = log2(normfacs[plotref]/normfacs[x]), col = "red")
+
+		})
+
 	}
 
-	## Normalize for composition bias : TMM
-	# useful to try different bin sizes and see if the values are close to unity (low composition effect)
-	restrictChr <- NULL
-	regionparam <- csaw::readParam(minq=30, restrict = restrictChr)
-	binned <- csaw::windowCounts(bam.files, bin = TRUE, width = 10000, param = regionparam)
-	normfacs <- csaw::normOffsets(binned) # close to unity
-	names(normfacs) <- samples
-
-	## visualize Effect of TMM normalization on composition bias
-	y.bin <- csaw::asDGEList(binned)
-	bin.ab <- edgeR::aveLogCPM(y.bin)
-	adjc <- edgeR::cpm(y.bin, log=TRUE)
-	colnames(adjc) <- samples
-
-	# plot ref sample vs all other samples
-	message("plotting the composition effect")
-	sampnumber <- ncol(adjc) - 1
-	cols_toplot <- c[!(grepl(plotref, samples))]
-	n <- ceiling(sampnumber/3) #roundup to make divisible by 3
-
-	par(cex.lab=1.5, mfrow=c(n,3))
-	lapply(cols_toplot, function(x) {
-		smoothScatter(bin.ab, adjc[,plotref] - adjc[,x], ylim = c(-6, 6),
-			      xlab = "Average abundance",
-			      ylab = paste0("Log-ratio (", plotref," vs ", x,")") )
-
-		abline(h = log2(normfacs[plotref]/normfacs[x]), col = "red")
-
-	})
-
 	# Import tss locations to test
-	mergedall <- rtracklayer::import.bed(TSSfile)
+	if(is.null(TSSfile)) {
+		mergedall <- base::Reduce(S4Vectors::union, merged)
+	} else {
+		mergedall <- rtracklayer::import.bed(TSSfile)
+	}
 
 	## get 5' read counts on the locations from the bam.files
 	# function to resize reads
@@ -88,26 +95,28 @@ fit_diffTSS <- function(bam.files, TSSfile, design, outplots, plotref) {
 	message("Prior degrees of freedom : ")
 	print(summary(fit$df.prior))
 
-	pdf(outplots)
+	## make plots if asked
+	if(!is.null(outplots)) {
+		pdf(outplots)
+		## check that the Fit is good
+		par(mfrow=c(1,2))
+		# BCV plot
+		o <- order(y$AveLogCPM)
+		plot(y$AveLogCPM[o], sqrt(y$trended.dispersion[o]), type = "l", lwd = 2,
+		     ylim = c(0, 1), xlab = expression("Ave."~ Log[2] ~ "CPM"),
+		     ylab = ("Biological coefficient of variation"))
+		# dispersion plot
+		edgeR::plotQLDisp(fit)
 
-	## check that the Fit is good
-	par(mfrow=c(1,2))
-	# BCV plot
-	o <- order(y$AveLogCPM)
-	plot(y$AveLogCPM[o], sqrt(y$trended.dispersion[o]), type = "l", lwd = 2,
-	     ylim = c(0, 1), xlab = expression("Ave."~ Log[2] ~ "CPM"),
-	     ylab = ("Biological coefficient of variation"))
-	# dispersion plot
-	edgeR::plotQLDisp(fit)
+		## check with MDSplot if there is batch effect
+		par(mfrow = c(2,2), mar = c(5,4,2,2))
+		for (top in c(100, 500, 1000, 5000)) {
+			out <- limma::plotMDS(edgeR::cpm(y, log = TRUE), main = top,
+					      labels = design$group, top = top)
+		}
 
-	## check with MDSplot if there is batch effect
-	par(mfrow = c(2,2), mar = c(5,4,2,2))
-	for (top in c(100, 500, 1000, 5000)) {
-		out <- limma::plotMDS(edgeR::cpm(y, log = TRUE), main = top,
-				      labels = design$group, top = top)
+		dev.off()
 	}
-
-	dev.off()
 
 	## return the fit
 	return(fit)
