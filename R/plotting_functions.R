@@ -1,4 +1,3 @@
-
 #' Plot read statistics from the CapSet object
 #'
 #' @param CSobject The \code{\link{CapSet}} object
@@ -92,13 +91,13 @@ get_stackedNum <- function(df) {
 #' @description Plot precision of TSS detection from multiple samples (bed files) with respect to
 #' a given reference annotation.
 #'
-#' @param TSSbedFiles BED files with TSS called by the CAGE wrapper
-#' @param sampleNames Labels for Input samples
 #' @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
+#' @param detectedTSS Either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
+#'                    or a character vector with paths to the BED files containing detcted TSSs
 #' @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
-#' @param outFile Output file name (filename extention would be used to determine type).
+#' @param outFile Output file name (filename extention would be used to determine type)
 #'                If outfile not specified, the plot would be retured on the screen
-#'
+#' @param sampleNames Labels for input samples (in the same order as the input bed files)
 #' @rdname plot_TSSprecision
 #' @return A ggplot object, or a file. Plot showing perent of TSS detected per sample with respect to
 #'         their cumulative distance to TSS of the provided reference
@@ -112,14 +111,21 @@ get_stackedNum <- function(df) {
 #' Plotting the precision using a pre computed set of TSS (.bed files) :
 #'
 #' files <- system.file("extdata", "testTSS.bed", package = "mapcapR")
-#' plot_TSSprecision(TSSbedFiles = files, sampleNames = "testTSS",
-#' 		reference = transcripts , distanceCutoff = 500,
+#' plot_TSSprecision(reference = transcripts, detectedTSS = files,
+#' 		sampleNames = "testTSS", distanceCutoff = 500,
 #' 		outFile = "TSS_detection_precision.png")
 #' }
 
-plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutoff = 500 , outFile = NULL) {
+setMethod(plot_TSSprecision,
+	  signature = signature("GRanges","character"),
+	  definition =
+	  	function(reference,
+	  		 detectedTSS,
+	  		 distanceCutoff = 500,
+	  		 outFile = NULL,
+	  		 sampleNames) {
 	# read bed files
-	tssData <- lapply(TSSbedFiles, rtracklayer::import.bed)
+	tssData <- lapply(detectedTSS, rtracklayer::import.bed)
 	names(tssData) <- sampleNames
 	# get plot
 	plt <- plotPrecision(ref = reference, tssData = tssData, distCut = distanceCutoff)
@@ -129,19 +135,16 @@ plot_TSSprecision <- function(TSSbedFiles, sampleNames, reference, distanceCutof
 	} else {
 		return(plt)
 	}
-}
-
-#' @rdname plot_TSSprecision
-#' @export
-setGeneric("plot_TSSprecision", function(CSobject,...) standardGeneric("plot_TSSprecision"))
+})
 
 #' Compare the precision of TSS detection between multiple samples
 #'
 #' @description Plot precision of TSS detection from multiple samples present within a \
 #' code{\link{CapSet}} object, with respect to a given reference annotation.
 #'
-#' @param object An object of class \code{\link{CapSet}}
 #' @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
+#' @param detectedTSS either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
+#'                    or a character vector with paths to the BED files containing detcted TSSs
 #' @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
 #' @param outFile Output file name (filename extention would be used to determine type).
 #'                If outfile not specified, the plot would be retured on the screen
@@ -156,26 +159,27 @@ setGeneric("plot_TSSprecision", function(CSobject,...) standardGeneric("plot_TSS
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' transcripts <- transcripts(dm6GTF)
 #'
-#' plot_TSSprecision(CapSet = cs, reference = transcripts, outFile = "TSS_detection_precision.png")
+#' plot_TSSprecision(reference = transcripts, detectedTSS = cs,  outFile = "TSS_detection_precision.png")
 #' }
 #'
+
 setMethod(plot_TSSprecision,
-	  signature = "CapSet",
+	  signature = signature("GRanges", "CapSet"),
 	  definition =
-	  function(CSobject,
-	  	   reference,
-	  	   distanceCutoff = 500,
-	  	   outFile = NULL) {
+	  	function(reference,
+	  		 detectedTSS,
+	  		 distanceCutoff = 500,
+	  		 outFile = NULL, ...) {
 
 	# evaluate expressions
-	stopifnot(is(CSobject, "CapSet"))
-	stopifnot(is(reference, "GRanges"))
+	#stopifnot(is(CSobject, "CapSet"))
+	#stopifnot(is(reference, "GRanges"))
 
 	# get the data out
-	if(is.null(CSobject@tss_detected)) {
+       tssData <- detectedTSS@tss_detected
+
+       if(is.null(tssData)) {
 		stop("CapSet object does not contain the detected TSS information")
-	} else {
-		tssData <- CSobject@tss_detected
 	}
 	# get plot
 	plt <- plotPrecision(ref = reference, tssData = tssData, distCut = distanceCutoff)
