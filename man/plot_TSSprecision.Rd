@@ -19,18 +19,20 @@ plot_TSSprecision(reference, detectedTSS, distanceCutoff = 500,
 \arguments{
 \item{reference}{Reference Transcrips/Genes as a \code{\link{GRanges}} object}
 
+\item{detectedTSS}{Either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
+or a character vector with paths to the BED files containing detcted TSSs}
+
 \item{distanceCutoff}{Maximum distance (in base pairs) from reference TSS to plot}
 
-\item{outFile}{Output file name (filename extention would be used to determine type).
+\item{outFile}{Output file name (filename extention would be used to determine type)
 If outfile not specified, the plot would be retured on the screen}
 
-\item{sampleNames}{Labels for Input samples}
-
-\item{TSSbedFiles}{BED files with TSS called by the CAGE wrapper}
-
-\item{object}{An object of class \code{\link{CapSet}}}
+\item{sampleNames}{Labels for input samples (in the same order as the input bed files)}
 
 \item{reference}{Reference Transcrips/Genes as a \code{\link{GRanges}} object}
+
+\item{detectedTSS}{either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
+or a character vector with paths to the BED files containing detcted TSSs}
 
 \item{distanceCutoff}{Maximum distance (in base pairs) from reference TSS to plot}
 
@@ -45,8 +47,8 @@ A ggplot object, or a file. Plot showing perent of TSS detected per sample with 
 Plot precision of TSS detection from multiple samples (bed files) with respect to
 a given reference annotation.
 
-Plot precision of TSS detection from multiple samples present within a \
-code{\link{CapSet}} object, with respect to a given reference annotation.
+Plot precision of TSS detection from multiple samples present within a
+\code{\link{CapSet}} object, with respect to a given reference annotation.
 }
 \examples{
 \dontrun{
@@ -56,8 +58,8 @@ transcripts <- transcripts(dm6GTF)
 Plotting the precision using a pre computed set of TSS (.bed files) :
 
 files <- system.file("extdata", "testTSS.bed", package = "mapcapR")
-plot_TSSprecision(TSSbedFiles = files, sampleNames = "testTSS",
-		reference = transcripts , distanceCutoff = 500,
+plot_TSSprecision(reference = transcripts, detectedTSS = files,
+		sampleNames = "testTSS", distanceCutoff = 500,
 		outFile = "TSS_detection_precision.png")
 }
 \dontrun{
@@ -66,7 +68,7 @@ Plotting the precision using a CapSet object :
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 transcripts <- transcripts(dm6GTF)
 
-plot_TSSprecision(CapSet = cs, reference = transcripts, outFile = "TSS_detection_precision.png")
+plot_TSSprecision(reference = transcripts, detectedTSS = cs,  outFile = "TSS_detection_precision.png")
 }
 
 }

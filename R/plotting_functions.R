@@ -139,8 +139,8 @@ setMethod(plot_TSSprecision,
 
 #' Compare the precision of TSS detection between multiple samples
 #'
-#' @description Plot precision of TSS detection from multiple samples present within a \
-#' code{\link{CapSet}} object, with respect to a given reference annotation.
+#' @description Plot precision of TSS detection from multiple samples present within a
+#' \code{\link{CapSet}} object, with respect to a given reference annotation.
 #'
 #' @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
 #' @param detectedTSS either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
