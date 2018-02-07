@@ -4,7 +4,8 @@
 \alias{fit_diffTSS}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
-fit_diffTSS(CSobject, TSSfile, groups, outplots = NULL, plotref)
+fit_diffTSS(CSobject, TSSfile, groups, normalization = "internal",
+  CSobjectSpikeIn, outplots = NULL, plotref)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
@@ -12,14 +13,23 @@ fit_diffTSS(CSobject, TSSfile, groups, outplots = NULL, plotref)
 \item{TSSfile}{A .bed file with TSS positions to test for differential TSS analysis. If left empty,
 the union of detected TSS present within the provided CSobject would be plotted.}
 
+\item{groups}{Character vector indicating the group into which each sample within the CSobject falls.
+the groups would be use to create a design matrix. As an example, replicates for one
+condition could be in the same group.}
+
+\item{normalization}{Either a character indicating the type of normalization to perform ("internal",
+"external" or "none"), or a numeric vector vector with pre-computed normalization factors.
+If internal normalization is chosen, the normalization factors are calculated using the TMM
+method on large windows of the genome. For "external" normalization, the normalization factors
+from the provided spike-in samples are used. "none" performs no normalization.}
+
+\item{CSobjectSpikeIn}{Another CapSet object produced using the spike-in mapping.}
+
 \item{outplots}{Output pdf filename for plots. If provided, the plots for BCV, dispersion and
 MDS plot is created and saved in this file.}
 
 \item{plotref}{Name of reference sample to plot for detection of composition bias in the
 data. Data is normalized using the TMM method to avoid composition bias.}
-
-\item{design}{A data frame with rownames = sample names and a column called 'group'
-that contains information about the sample group (see example)}
 }
 \value{
 Returns an object of class DGEGLM.

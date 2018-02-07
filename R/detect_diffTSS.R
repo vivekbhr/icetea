@@ -3,8 +3,17 @@
 #' @param CSobject An object of class \code{\link{CapSet}}
 #' @param TSSfile A .bed file with TSS positions to test for differential TSS analysis. If left empty,
 #'                the union of detected TSS present within the provided CSobject would be plotted.
-#' @param design A data frame with rownames = sample names and a column called 'group'
-#' 		that contains information about the sample group (see example)
+#' @param groups Character vector indicating the group into which each sample within the CSobject falls.
+#'               the groups would be use to create a design matrix. As an example, replicates for one
+#'               condition could be in the same group.
+#' @param normalization Either a character indicating the type of normalization to perform ("internal",
+#'                 "external" or "none"), or a numeric vector vector with pre-computed normalization factors.
+#'                 If internal normalization is chosen, the normalization factors are calculated using the TMM
+#'                 method on large windows of the genome. For "external" normalization, the normalization factors
+#'                 from the provided spike-in samples are used. "none" performs no normalization.
+#'
+#' @param CSobjectSpikeIn Another CapSet object produced using the spike-in mapping.
+#'
 #' @param outplots Output pdf filename for plots. If provided, the plots for BCV, dispersion and
 #'                 MDS plot is created and saved in this file.
 #' @param plotref Name of reference sample to plot for detection of composition bias in the
@@ -22,7 +31,8 @@
 #'
 #'
 
-fit_diffTSS <- function(CSobject, TSSfile, groups, outplots = NULL, plotref) {
+fit_diffTSS <- function(CSobject, TSSfile, groups, normalization = "internal",
+			CSobjectSpikeIn, outplots = NULL, plotref) {
 
 	## assert the input
 	stopifnot(is(CSobject, "CapSet"))
@@ -31,7 +41,7 @@ fit_diffTSS <- function(CSobject, TSSfile, groups, outplots = NULL, plotref) {
 	si <- sampleInfo(CSobject)
 	bam.files <- si$filtered_file
 	samples <- si$samples
-	merged <- CapSet@tss_detected
+	merged <- CSobject@tss_detected
 	design <- data.frame(row.names = samples, group = groups)
 
 	if(normalization == "internal") {
@@ -64,6 +74,8 @@ fit_diffTSS <- function(CSobject, TSSfile, groups, outplots = NULL, plotref) {
 
 		})
 
+	} else {
+		normfacs <- NULL
 	}
 
 	# Import tss locations to test
