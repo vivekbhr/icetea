@@ -3,12 +3,12 @@
 #include "kseq.h"
 #include <string.h>
 //
-#include <Rversion.h>
-#if (R_VERSION >= R_Version(2,3,0))
-#define R_INTERFACE_PTRS 1
-#define CSTACK_DEFNS 1
-#include <Rinterface.h>
-#endif
+//#include <Rversion.h>
+//#if (R_VERSION >= R_Version(2,3,0))
+//#define R_INTERFACE_PTRS 1
+//#define CSTACK_DEFNS 1
+//#include <Rinterface.h>
+//#endif
 #include "trimFastq.h"
 #include <R.h>
 
