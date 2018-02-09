@@ -44,7 +44,7 @@ void trim_seq2(char * trimmed, char s[], int pos) { // idx = 6 for R1 and 15 for
 
 void make_header2(char * output, char s[], char readtype[]) {
   output[0] = '\0';
-  if (strncmp(readtype,"r1") == 0) {
+  if (strncmp(readtype,"r1", 2) == 0) {
       char index[7]; // to save the index
       copy_barcode2(index,s, 6);// copy pos 1 to 6
       strcat(output,index);
