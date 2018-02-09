@@ -149,12 +149,12 @@ typedef struct __kstring_t {
 		s->f = ks_init(fd);												\
 		return s;														\
 	}																	\
-	static inline void kseq_rewind(kseq_t *ks)							\
+	/*static inline void kseq_rewind(kseq_t *ks)							\
 	{																	\
 		ks->last_char = 0;												\
 		ks->f->is_eof = ks->f->begin = ks->f->end = 0;					\
 	}																	\
-	static inline void kseq_destroy(kseq_t *ks)							\
+	*/static inline void kseq_destroy(kseq_t *ks)							\
 	{																	\
 		if (!ks) return;												\
 		free(ks->name.s); free(ks->comment.s); free(ks->seq.s);	free(ks->qual.s); \
