@@ -40,11 +40,13 @@ fit_diffTSS <- function(CSobject, TSSfile, groups, normalization = "internal",
 	# get bam files and design
 	si <- sampleInfo(CSobject)
 	bam.files <- si$filtered_file
-	samples <- si$samples
+	samples <- as.character(si$samples)
 	merged <- CSobject@tss_detected
 	design <- data.frame(row.names = samples, group = groups)
 
 	if(normalization == "internal") {
+		# fail early if plotref is not given
+		if(is.null(plotref)) stop("Please indicate reference sample for plotting of composition bias!")
 		## Internal normalization for composition bias : TMM
 		# useful to try different bin sizes and see if the values are close to unity (low composition effect)
 		regionparam <- csaw::readParam(minq=30, restrict = NULL)
@@ -61,7 +63,7 @@ fit_diffTSS <- function(CSobject, TSSfile, groups, normalization = "internal",
 		# plot ref sample vs all other samples
 		message("plotting the composition effect")
 		sampnumber <- ncol(adjc) - 1
-		cols_toplot <- c[!(grepl(plotref, samples))]
+		cols_toplot <- grep(plotref, samples, invert = TRUE)
 		n <- ceiling(sampnumber/3) #roundup to make divisible by 3
 
 		par(cex.lab=1.5, mfrow=c(n,3))
