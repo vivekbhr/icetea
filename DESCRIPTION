@@ -10,7 +10,7 @@ Imports:
     plyr, ggplot2, GenomicFeatures, ShortRead,
     BiocParallel, Biostrings, S4Vectors, Rsamtools,
     GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
-    VariantAnnotation,  Rsubread, limma, edgeR, csaw, CAGEr
+    VariantAnnotation,  Rsubread, limma, edgeR, csaw
 biocViews: CAGE, MAPCap, RAMPAGE, RNAseq
 License: GPL-3
 LazyData: true
