@@ -45,13 +45,49 @@ split_fastq <- function(idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2, ma
 		if (length(fq_R1) == 0) {
 			break
 		}
+
+		# get R1 and R2 reads and quality
+		fq_R1read <- ShortRead::sread(fq_R1)
+		fq_R1qual <- Biostrings::quality(fq_R1)
+		fq_R2read <- ShortRead::sread(fq_R2)
+		fq_R2qual <- Biostrings::quality(fq_R2)
+
+		# trim barcodes from R2 and prepare header
+		# copy the index sequence (position 6 to 12)
+		sample_idx <- IRanges::narrow(fq_R2read, 6, 12)
+		# copy pcr barcode (pos 1 to 5 + pos 12 to 13)
+		umi_barcodes <- Biostrings::DNAStringSet(paste0(IRanges::narrow(fq_R2read, 1, 5),
+								IRanges::narrow(fq_R2read, 12, 13) ) )
+		#copy replicate demultiplexing barcode  (pos 3 to 4)
+		rep_idx <- IRanges::narrow(fq_R2read, 3, 4)
+
+		barcode_string <- paste(sample_idx, umi_barcodes, rep_idx, sep = ":")
+		# now trim the first 13 bp off the read and quality
+		fq_R2read <- IRanges::narrow(fq_R2read, 14, width(fq_R2) )
+		fq_R2qual <- IRanges::narrow(fq_R2qual, 14, width(fq_R2) )
+
+		## make a new ShortReadQ object with new header and trimmed reads
+		# new fastq R2
+		fq_R2new <- ShortRead::ShortReadQ(fq_R2read,
+						  fq_R2qual,
+						  Biostrings::BStringSet(paste(id(fq_R2), barcode_string, sep = "#")) )
+
+		# new fastq R1 (seq/qual not modified, just barcodes copied from R2)
+		fq_R1new <- ShortRead::ShortReadQ(fq_R1read,
+						  fq_R1qual,
+						  Biostrings::BStringSet(paste(id(fq_R1), barcode_string, sep = "#")) )
+
 		# demultiplex using given sample barcodes
-		id2keep <- filter_byIDx(idx_name,
-					fq_id = ShortRead::id(fq_R2),
-					maxM = max_mismatch)
+		idx_name <- Biostrings::DNAString(idx_name)
+		sample_idx <- Biostrings::DNAStringSet(sample_idx)
+		id2keep <- as.logical(Biostrings::vcountPattern(idx_name, sample_idx, max.mismatch = max_mismatch))
+
+		#id2keep <- filter_byIDx(idx_name,
+		#			fq_id = ShortRead::id(fq_R2),
+		#			maxM = max_mismatch)
 		# append to destination
-		ShortRead::writeFastq(fq_R1[id2keep], outfile_R1, "a")
-		ShortRead::writeFastq(fq_R2[id2keep], outfile_R2, "a")
+		ShortRead::writeFastq(fq_R1new[id2keep], outfile_R1, "a")
+		ShortRead::writeFastq(fq_R2new[id2keep], outfile_R2, "a")
 		# add to count
 		kept_reads <- kept_reads + sum(id2keep)
 	}
