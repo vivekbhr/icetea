@@ -12,7 +12,7 @@
 #include "trimFastq.h"
 #include <R.h>
 
-//copy the index sequence (position 6 to 12)
+//copy the index sequence (position 6 to 11)
 void copy_index(char d[], char s[]) {
    int strt = 0;
    int idx = 5;

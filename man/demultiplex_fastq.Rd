@@ -4,7 +4,7 @@
 \alias{demultiplex_fastq}
 \title{Demultiplex (tagged) fastq files using sample barcodes}
 \usage{
-demultiplex_fastq(CapSet, max_mismatch, outdir, nthreads = 1)
+demultiplex_fastq(CapSet, max_mismatch, outdir, ncores = 1)
 }
 \arguments{
 \item{CapSet}{CapSet object created using \code{\link{newCapSet}} function}
@@ -13,7 +13,7 @@ demultiplex_fastq(CapSet, max_mismatch, outdir, nthreads = 1)
 
 \item{outdir}{path to output directory}
 
-\item{nthreads}{No. of threads to use}
+\item{ncores}{No. of cores to use}
 }
 \value{
 de-multiplxed fastq files corresponding to each barcode. The files are written

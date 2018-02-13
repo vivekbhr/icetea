@@ -144,6 +144,9 @@ along with processing statistics.
 cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "02_splitting", nthreads = 10)
 ```
 
+It takes about 6 min (342 sec) to trim and de-multiplex 1M PE reads into 12 sampels (12 pair of fastqs), using 1 thread. 
+
+
 Optionally, we can skip the above process and perform post-mapping de-multiplexing on the BAM files (see below).
 
 ### Mapping the fastqs
