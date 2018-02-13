@@ -37,8 +37,7 @@ Here we show a set of minimal steps for the processing of MAPCap data for the de
 raw fastq files, we can either perform quality trimming using a standard program (eg. cutadapt/trimgalore) or simply 
 begin the analysis by creating a `CapSet` object. The `CapSet` object takes raw/quality trimmed fastq file paths as input,
 along with a simple dataframe (called `sampleInfo`) which contains demultiplexing barcodes as rownames and another column 
-called `samples` which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq,
-maps them, filters them and detects the TSS.
+called `samples` which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the TSS.
 
 ```{r eval=FALSE}
 # create directories
@@ -58,6 +57,8 @@ idxlist <- c("TGGAAC", "GGTTAC")
 fnames <- c("wt_rep1", "wt_rep2") 
 
 # make the CapSet object
+
+
 cs <- newCapSet("MAPCap", "paired", 
 	    "01_fastq/raw/MAPCapH_R1.fastq.gz", 
 	    "01_fastq/raw/MAPCapH_R2.fastq.gz",
