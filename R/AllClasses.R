@@ -22,7 +22,7 @@
 #'
 
 newCapSet <- function(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL) {
-	stopifnot(!(class(sampleInfo) %in% c("data.frame", "DataFrame")))
+	stopifnot(class(sampleInfo) %in% c("data.frame", "DataFrame"))
 	# convert sampleInfo to a DataFrame
 	info <- S4Vectors::DataFrame(sampleInfo)
 	# create an instance of CapSet
