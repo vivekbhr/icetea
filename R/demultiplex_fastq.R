@@ -7,16 +7,25 @@
 #'
 #' @return logical vector (which IDs to keep)
 #'
-filter_byIDx <- function(idx_name, fq_id, maxM){
-	idx_name <- Biostrings::DNAString(idx_name)
-	sep1 <- vapply(strsplit(as.vector(fq_id), "#"), "[[", character(1), 2)
-	sep2 <- vapply(strsplit(sep1, ":"), "[[", character(1), 1)
-	sep2 <- Biostrings::DNAStringSet(sep2)
-	keep <- as.logical(Biostrings::vcountPattern(idx_name, sep2, max.mismatch = maxM))
-	return(keep)
-}
+
+#filter_byIDx <- function(idx_name, fq_id, maxM){
+#	idx_name <- Biostrings::DNAString(idx_name)
+#	sep1 <- vapply(strsplit(as.vector(fq_id), "#"), "[[", character(1), 2)
+#	sep2 <- vapply(strsplit(sep1, ":"), "[[", character(1), 1)
+#	sep2 <- Biostrings::DNAStringSet(sep2)
+#	keep <- as.logical(Biostrings::vcountPattern(idx_name, sep2, max.mismatch = maxM))
+#	return(keep)
+#}
 
 
+#' Get data to create new ShortReadQ object after barcode trimming
+#'
+#' @param type expType of the CapSet object
+#' @param fq_R1 fastq Read 1
+#' @param fq_R2 fastq Read 2
+#'
+#' @return A list with new R1 and R2 sequence, quality, barcode string and sample id
+#'
 get_newfastq <- function(type, fq_R1, fq_R2) {
 
 	# get R1 and R2 reads and quality
@@ -35,8 +44,8 @@ get_newfastq <- function(type, fq_R1, fq_R2) {
 		rep_idx <- IRanges::narrow(fq_R2read, 3, 4)
 		barcode_string <- paste(sample_idx, umi_barcodes, rep_idx, sep = ":")
 		# now trim the first 13 bp off the read and quality
-		fq_R2read <- IRanges::narrow(fq_R2read, 14, width(fq_R2) )
-		fq_R2qual <- IRanges::narrow(fq_R2qual, 14, width(fq_R2) )
+		fq_R2read <- IRanges::narrow(fq_R2read, 14, BiocGenerics::width(fq_R2) )
+		fq_R2qual <- IRanges::narrow(fq_R2qual, 14, BiocGenerics::width(fq_R2) )
 
 	} else if(type == "RAMPAGE") {
 		# trim barcodes first 15 bases from R2 and first 6 bases from R1 and prepare header
@@ -48,10 +57,10 @@ get_newfastq <- function(type, fq_R1, fq_R2) {
 		barcode_string <- paste(sample_idx, umi_barcodes, sep = ":")
 
 		# now trim the first 15 bp off the read and quality of R2
-		fq_R2read <- IRanges::narrow(fq_R2read, 16, width(fq_R2) )
-		fq_R2qual <- IRanges::narrow(fq_R2qual, 16, width(fq_R2) )
-		fq_R1read <- IRanges::narrow(fq_R1read, 7, width(fq_R1read) )
-		fq_R1qual <- IRanges::narrow(fq_R1qual, 7, width(fq_R1qual) )
+		fq_R2read <- IRanges::narrow(fq_R2read, 16, BiocGenerics::width(fq_R2) )
+		fq_R2qual <- IRanges::narrow(fq_R2qual, 16, BiocGenerics::width(fq_R2) )
+		fq_R1read <- IRanges::narrow(fq_R1read, 7, BiocGenerics::width(fq_R1read) )
+		fq_R1qual <- IRanges::narrow(fq_R1qual, 7, BiocGenerics::width(fq_R1qual) )
 	} else {
 		message("type of protocol not MAPCap or RAMPAGE. Reads are not being trimmed.")
 		barcode_string <- NA
@@ -101,15 +110,20 @@ split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2, fastq_R1, fas
 
 		## make a new ShortReadQ object with new header and trimmed reads
 		# new fastq R2
+		fqid_R2 <- ShortRead::id(fq_R2)
+		fqid_R2 <- sub(" ", "_", fqid_R2) # replace space by underscore in readName
 		fq_R2new <- ShortRead::ShortReadQ(outlist$fq_R2read,
 						  outlist$fq_R2qual,
-						  Biostrings::BStringSet(paste(ShortRead::id(fq_R2),
+						  Biostrings::BStringSet(paste(fqid_R2,
 						  			     outlist$barcode_string, sep = "#")) )
 
 		# new fastq R1 (seq/qual not modified, just barcodes copied from R2)
+		fqid_R1 <- ShortRead::id(fq_R1)
+		fqid_R1 <- sub(" ", "_", fqid_R1) # replace space by underscore in readName
+
 		fq_R1new <- ShortRead::ShortReadQ(outlist$fq_R1read,
 						  outlist$fq_R1qual,
-						  Biostrings::BStringSet(paste(ShortRead::id(fq_R1),
+						  Biostrings::BStringSet(paste(fqid_R1,
 						  			     outlist$barcode_string, sep = "#")) )
 
 		# demultiplex using given sample barcodes
@@ -173,10 +187,15 @@ demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
 
 	param = BiocParallel::MulticoreParam(workers = ncores)
 	message("de-multiplexing the FASTQ file")
+
 	## filter and write
 	info <- BiocParallel::bplapply(seq_along(destinations), function(i){
 		split1 <- file.path(outdir, paste0(destinations[i],"_R1.fastq.gz"))
 		split2 <- file.path(outdir, paste0(destinations[i],"_R2.fastq.gz"))
+		## stop if the outfiles already exist (otherwise the output would be appended)
+		if(file.exists(split1) | file.exists(split2)) stop("Output files already exist!")
+
+		## split files and save kept read number
 		kept <- split_fastq(expType = protocol, idx_name = idx_list[i],
 				    outfile_R1 = split1, outfile_R2 = split2,
 				    fastq_R1, fastq_R2,
