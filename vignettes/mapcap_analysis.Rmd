@@ -1,5 +1,5 @@
 ---
-title: "Analysing CAGE data using cageopener"
+title: "Analysing CAGE data using ICETEA"
 author: 
 - name: "Vivek Bhardwaj"
   affiliation: 
@@ -25,8 +25,8 @@ knitr::opts_chunk$set(
 ```
 
 ## Abstract
-**cageopener** can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols.
-Here we show the usability of cageopener in analysis of MAPCap data.
+**ICETEA** can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols.
+Here we show the usability of ICETEA in analysis of MAPCap data.
 
 **MAPCap** (Multiplexed Affinity Purification of Capped RNA) is a newly developed CAGE protocol that allows fast and 
 accutate detection of transcription start sites and gene expression analysis of a set of multiplexed samples.
@@ -86,14 +86,14 @@ cs <- detect_TSS(cs, groups = c("wt", "wt"), outfile_prefix = "05_tssCalling")
 
 ### How to get help
 
-cageopener questions could be posted to the [Bioconductor support site](https://support.bioconductor.org), which serves as a searchable knowledge base of questions and answers.
+ICETEA questions could be posted to the [Bioconductor support site](https://support.bioconductor.org), which serves as a searchable knowledge base of questions and answers.
 
-Posting a question and tagging with “cageopener” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.
+Posting a question and tagging with “ICETEA” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.
 
 
-### How to cite cageopener
+### How to cite ICETEA
 
-Please cite cageopener as follows:
+Please cite ICETEA as follows:
 
 
 
@@ -133,7 +133,7 @@ that stors informatin about the fastq file location.
 cs <- trimFastqIndex(cs, outdir = "01_fastq/trimmed")
 ```
 
-### demultiplexing the fastq
+### De-multiplexing the fastq
 
 Trimmed fastq files from previous steps can now be demultiplxed to produce fastq files corresponding to each sample,
 using the tool `demultiplex_fastq`. The result is a modified CapSet object that contains location of demultiplexed files
@@ -171,13 +171,17 @@ subread_idx <- "/data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_inde
 cs <- mapCaps(cs, subread_idx, outdir = "03_mapping", nthreads = 20, logfile = "03_mapping/subread_mapping.log")
 ```
 
+**Note:** The package Rsubread is not available for windows. Windows users would need to map their demultiplexed files on their own.
+
 **Note:** Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files
-and perform the de-multiplexing post-mapping using the `splitBAM_byIndex` and `splitBAM_byRepindex` functions.
+and perform the de-multiplexing afterwards (see below).
 
 ### (optional) Post mapping de-multiplexing
 
+Demultiplxeing can also be performed on the BAM files after mapping, using the `splitBAM_byIndex` and `splitBAM_byRepindex` functions.
+
 ```{r eval=FALSE}
-splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0, nthreads = 10)
+splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 1, nthreads = 10)
 ```
 
 ### Filtering PCR duplicates
@@ -198,7 +202,7 @@ cs <- filterDuplicates(cs, outdir = "04_removedup")
 
 ### Detection of TSS
 
-cageopener implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the 
+ICETEA implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the 
 windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.
 
 This method is implemented in the function `detect_TSS`, which returns a modified `CapSet` object with TSS detection statistics.
@@ -212,17 +216,15 @@ cs <- detect_TSS(cs, groups = c("wt", "wt"), outfile_prefix = "05_tssCalling")
 ## Plotting and QC
 
 The `sampleInfo` field of the CapSet object stores information about the read numbers kept at each step of processing, this 
-information can be easily plotted using the function ``
+information can be easily plotted using the function `plot_readStats`
+
+We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.
 
 ```{r eval=FALSE}
-
-```
-
-Similar to the FRIP (Fraction of Reads In Peaks) score, the fraction of total filtered reads that fall within the 
-detected TSSs (FRIT) can be plotted using the function `plotFRIT`.
-
-```{r eval=FALSE}
-
+# separate barchart for numbers
+plot_readStats(CapSet = cs, plotValue = "numbers", plotType = "dodge" )
+# stacked barchart for proportions
+plot_readStats(CapSet = cs, plotValue = "proportions", plotType = "stack" )
 ```
 
 In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected
@@ -238,7 +240,7 @@ a TxDB object.
 
 ## Differential TSS expression analysis
 
-For the experiments with two or more groups, cageopener can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.
+For the experiments with two or more groups, ICETEA can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.
 
 The functions `fit_diffTSS` and `detect_diffTSS` utilize edgeR to perform differential expression analysis.
 
@@ -250,7 +252,7 @@ The functions `fit_diffTSS` and `detect_diffTSS` utilize edgeR to perform differ
 ### Using spike-In controls
 
 For the differential TSS expression analysis, the function `fit_diffTSS` shown above utilize the [TMM method]()
-for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. cageopener provides
+for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides
 a way to perform spike-in normalization during differential expression analysis, through the functions ``.
 
 ```{r eval=FALSE}
@@ -262,13 +264,30 @@ a way to perform spike-in normalization during differential expression analysis,
 
 ### sample information
 
+Sample Information correspondng to the CapSet object can be obtained as a data.frame using the `sampleInfo` function.
+
+```{r eval=FALSE}
+si <- sampleInfo(cs)
+```
+
+In case of underlying files being deleted or moved to another folder, we can reset the sample information.
+
+```{r eval=FALSE}
+sampleInfo(cs) <- newsi
+```
 
 ### getting the gene counts
 
+Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.
 
+```{r eval=FALSE}
+# load a txdb object
+dm6gtf <- loadDB("dm6gtf.DB")
+# get transcripts by gene
+dm6trans <- transcriptsBy(dm6gtf, "gene")
 
-
-
-
-
+# get gene counts, counting reads around 500 bp of the TSS
+bamfiles <- sampleInfo(cs)$mapped_file
+gcounts <- get_geneCounts(dm6trans, bamfiles, regionAroundTSS = 500)
+```
 

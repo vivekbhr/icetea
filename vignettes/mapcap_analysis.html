@@ -11,9 +11,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 
-<meta name="date" content="2018-01-25" />
+<meta name="date" content="2018-02-14" />
 
-<title>Analysing CAGE data using cageopener</title>
+<title>Analysing CAGE data using ICETEA</title>
 
 
 
@@ -67,20 +67,20 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Analysing CAGE data using cageopener</h1>
+<h1 class="title toc-ignore">Analysing CAGE data using ICETEA</h1>
 <h4 class="author"><em>Vivek Bhardwaj</em></h4>
 <address class="author_afil">
 Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="author"><em>Thomas Manke</em></h4>
 <address class="author_afil">
 Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><a class="author_email" href="mailto:#"><a href="mailto:manke@ie-freiburg.mpg.de">manke@ie-freiburg.mpg.de</a></a>
 </address>
-<h4 class="date"><em>2018-01-25</em></h4>
+<h4 class="date"><em>2018-02-14</em></h4>
 
 
 
 <div id="abstract" class="section level2">
 <h2>Abstract</h2>
-<p><strong>cageopener</strong> can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols. Here we show the usability of cageopener in analysis of MAPCap data.</p>
+<p><strong>ICETEA</strong> can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols. Here we show the usability of ICETEA in analysis of MAPCap data.</p>
 <p><strong>MAPCap</strong> (Multiplexed Affinity Purification of Capped RNA) is a newly developed CAGE protocol that allows fast and accutate detection of transcription start sites and gene expression analysis of a set of multiplexed samples.</p>
 </div>
 <div id="quick-start" class="section level2">
@@ -103,6 +103,8 @@ idxlist &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st"
 fnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;wt_rep1&quot;</span>, <span class="st">&quot;wt_rep2&quot;</span>) 
 
 <span class="co"># make the CapSet object</span>
+
+
 cs &lt;-<span class="st"> </span><span class="kw">newCapSet</span>(<span class="st">&quot;MAPCap&quot;</span>, <span class="st">&quot;paired&quot;</span>, 
         <span class="st">&quot;01_fastq/raw/MAPCapH_R1.fastq.gz&quot;</span>, 
         <span class="st">&quot;01_fastq/raw/MAPCapH_R2.fastq.gz&quot;</span>,
@@ -127,12 +129,12 @@ cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span cl
 <h2>Help and citations</h2>
 <div id="how-to-get-help" class="section level3">
 <h3>How to get help</h3>
-<p>cageopener questions could be posted to the <a href="https://support.bioconductor.org">Bioconductor support site</a>, which serves as a searchable knowledge base of questions and answers.</p>
-<p>Posting a question and tagging with “cageopener” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.</p>
+<p>ICETEA questions could be posted to the <a href="https://support.bioconductor.org">Bioconductor support site</a>, which serves as a searchable knowledge base of questions and answers.</p>
+<p>Posting a question and tagging with “ICETEA” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.</p>
 </div>
-<div id="how-to-cite-cageopener" class="section level3">
-<h3>How to cite cageopener</h3>
-<p>Please cite cageopener as follows:</p>
+<div id="how-to-cite-icetea" class="section level3">
+<h3>How to cite ICETEA</h3>
+<p>Please cite ICETEA as follows:</p>
 </div>
 </div>
 <div id="detailed-description-of-the-above-workflow" class="section level2">
@@ -162,6 +164,7 @@ cs &lt;-<span class="st"> </span><span class="kw">newCapSet</span>(<span class="
 <p>Trimmed fastq files from previous steps can now be demultiplxed to produce fastq files corresponding to each sample, using the tool <code>demultiplex_fastq</code>. The result is a modified CapSet object that contains location of demultiplexed files along with processing statistics.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># demultiplex fastq</span>
 cs &lt;-<span class="st"> </span><span class="kw">demultiplex_fastq</span>(cs, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">outdir =</span> <span class="st">&quot;02_splitting&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
+<p>It takes about 6 min (340 sec) to trim and de-multiplex 1M PE reads into 12 sampels (12 pair of fastqs), using 1 thread. This can be done under 45 seconds if 10 threads are used.</p>
 <p>Optionally, we can skip the above process and perform post-mapping de-multiplexing on the BAM files (see below).</p>
 </div>
 <div id="mapping-the-fastqs" class="section level3">
@@ -175,11 +178,13 @@ Rsubread<span class="op">::</span><span class="kw">buildindex</span>(<span class
 subread_idx &lt;-<span class="st"> &quot;/data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_index/dm6&quot;</span>
 <span class="co"># map fastq</span>
 cs &lt;-<span class="st"> </span><span class="kw">mapCaps</span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">&quot;03_mapping&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">&quot;03_mapping/subread_mapping.log&quot;</span>)</code></pre></div>
-<p><strong>Note:</strong> Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files and perform the de-multiplexing post-mapping using the <code>splitBAM_byIndex</code> and <code>splitBAM_byRepindex</code> functions.</p>
+<p><strong>Note:</strong> The package Rsubread is not available for windows. Windows users would need to map their demultiplexed files on their own.</p>
+<p><strong>Note:</strong> Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files and perform the de-multiplexing afterwards (see below).</p>
 </div>
 <div id="optional-post-mapping-de-multiplexing" class="section level3">
 <h3>(optional) Post mapping de-multiplexing</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">splitBAM_byIndex</span>(bamFile, index_list, outfile_list, <span class="dt">max_mismatch =</span> <span class="dv">0</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
+<p>Demultiplxeing can also be performed on the BAM files after mapping, using the <code>splitBAM_byIndex</code> and <code>splitBAM_byRepindex</code> functions.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">splitBAM_byIndex</span>(bamFile, index_list, outfile_list, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
 </div>
 <div id="filtering-pcr-duplicates" class="section level3">
 <h3>Filtering PCR duplicates</h3>
@@ -190,7 +195,7 @@ cs &lt;-<span class="st"> </span><span class="kw">filterDuplicates</span>(cs, <s
 </div>
 <div id="detection-of-tss" class="section level3">
 <h3>Detection of TSS</h3>
-<p>cageopener implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.</p>
+<p>ICETEA implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.</p>
 <p>This method is implemented in the function <code>detect_TSS</code>, which returns a modified <code>CapSet</code> object with TSS detection statistics.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># detect TSS</span>
 cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;wt&quot;</span>, <span class="st">&quot;wt&quot;</span>), <span class="dt">outfile_prefix =</span> <span class="st">&quot;05_tssCalling&quot;</span>)</code></pre></div>
@@ -198,26 +203,43 @@ cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span cl
 </div>
 <div id="plotting-and-qc" class="section level2">
 <h2>Plotting and QC</h2>
-<p>The <code>sampleInfo</code> field of the CapSet object stores information about the read numbers kept at each step of processing, this information can be easily plotted using the function ``</p>
-<p>Similar to the FRIP (Fraction of Reads In Peaks) score, the fraction of total filtered reads that fall within the detected TSSs (FRIT) can be plotted using the function <code>plotFRIT</code>.</p>
+<p>The <code>sampleInfo</code> field of the CapSet object stores information about the read numbers kept at each step of processing, this information can be easily plotted using the function <code>plot_readStats</code></p>
+<p>We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># separate barchart for numbers</span>
+<span class="kw">plot_readStats</span>(<span class="dt">CapSet =</span> cs, <span class="dt">plotValue =</span> <span class="st">&quot;numbers&quot;</span>, <span class="dt">plotType =</span> <span class="st">&quot;dodge&quot;</span> )
+<span class="co"># stacked barchart for proportions</span>
+<span class="kw">plot_readStats</span>(<span class="dt">CapSet =</span> cs, <span class="dt">plotValue =</span> <span class="st">&quot;proportions&quot;</span>, <span class="dt">plotType =</span> <span class="st">&quot;stack&quot;</span> )</code></pre></div>
 <p>In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can be used to compare samples. This can be done using the function <code>plotPrecision</code>, which takes the <em>known</em> TSS annotations as a TxDB object.</p>
 </div>
 <div id="differential-tss-expression-analysis" class="section level2">
 <h2>Differential TSS expression analysis</h2>
-<p>For the experiments with two or more groups, cageopener can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.</p>
+<p>For the experiments with two or more groups, ICETEA can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.</p>
 <p>The functions <code>fit_diffTSS</code> and <code>detect_diffTSS</code> utilize edgeR to perform differential expression analysis.</p>
 <div id="using-spike-in-controls" class="section level3">
 <h3>Using spike-In controls</h3>
-<p>For the differential TSS expression analysis, the function <code>fit_diffTSS</code> shown above utilize the <a href>TMM method</a> for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. cageopener provides a way to perform spike-in normalization during differential expression analysis, through the functions ``.</p>
+<p>For the differential TSS expression analysis, the function <code>fit_diffTSS</code> shown above utilize the <a href>TMM method</a> for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides a way to perform spike-in normalization during differential expression analysis, through the functions ``.</p>
 </div>
 </div>
 <div id="additional-useful-functions" class="section level2">
 <h2>Additional useful functions</h2>
 <div id="sample-information" class="section level3">
 <h3>sample information</h3>
+<p>Sample Information correspondng to the CapSet object can be obtained as a data.frame using the <code>sampleInfo</code> function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">si &lt;-<span class="st"> </span><span class="kw">sampleInfo</span>(cs)</code></pre></div>
+<p>In case of underlying files being deleted or moved to another folder, we can reset the sample information.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sampleInfo</span>(cs) &lt;-<span class="st"> </span>newsi</code></pre></div>
 </div>
 <div id="getting-the-gene-counts" class="section level3">
 <h3>getting the gene counts</h3>
+<p>Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load a txdb object</span>
+dm6gtf &lt;-<span class="st"> </span><span class="kw">loadDB</span>(<span class="st">&quot;dm6gtf.DB&quot;</span>)
+<span class="co"># get transcripts by gene</span>
+dm6trans &lt;-<span class="st"> </span><span class="kw">transcriptsBy</span>(dm6gtf, <span class="st">&quot;gene&quot;</span>)
+
+<span class="co"># get gene counts, counting reads around 500 bp of the TSS</span>
+bamfiles &lt;-<span class="st"> </span><span class="kw">sampleInfo</span>(cs)<span class="op">$</span>mapped_file
+gcounts &lt;-<span class="st"> </span><span class="kw">get_geneCounts</span>(dm6trans, bamfiles, <span class="dt">regionAroundTSS =</span> <span class="dv">500</span>)</code></pre></div>
 </div>
 </div>
 
