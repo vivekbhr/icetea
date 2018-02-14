@@ -2,7 +2,7 @@
 % Please edit documentation in R/mapCaps.R
 \name{mapCaps}
 \alias{mapCaps}
-\title{Map the CAGE data}
+\title{Map the data from 5' profiling techniques}
 \usage{
 mapCaps(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...)
 }
@@ -23,7 +23,7 @@ mapCaps(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...)
 modified CapSet object with mapping information. Mapped and sorted BAM files are saved in `outdir`.
 }
 \description{
-Map the CAGE data
+Map the data from 5' profiling techniques
 }
 \examples{
 

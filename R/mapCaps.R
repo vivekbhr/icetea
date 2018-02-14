@@ -17,7 +17,7 @@
 
 }
 
-#' Map the CAGE data
+#' Map the data from 5' profiling techniques
 #'
 #' @param CapSet An object of class \code{\link{CapSet}}
 #' @param genomeIndex path to the Subread index file. Should end with the basename of the index.
@@ -51,25 +51,19 @@ mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
 		}
 	}
 
-	# test for trimmed R2 index
-	if (expMethod %in% c("RAMPAGE", "MAPCap")) {
-		.checkTrimBarcodes(CapSet@trimmed_R2)
-	}
-
 	if (demult) {
 		samplelist <- sampleInfo$samples
 		R1_list <- as.character(sampleInfo$demult_R1)
 		R2_list <- as.character(sampleInfo$demult_R2)
 	} else {
 		samplelist <- list("trimmed")
+		# test for trimmed R2 index
+		#	if (expMethod %in% c("RAMPAGE", "MAPCap")) {
+		#		.checkTrimBarcodes(CapSet@trimmed_R2)
+		#	}
 		R1_list <- CapSet@trimmed_R1
 		R2_list <- CapSet@trimmed_R2
 	}
-
-	# open a logfile if given
-#	if(!is.null(logfile)){
-#		log_con <- file(logfile)
-#	} else log_con <- NULL
 
 	mapstat <- mapply(function(sample, R1, R2) {
 
@@ -99,9 +93,6 @@ mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
 		return(stat)
 
 	}, samplelist, R1_list, R2_list)
-
-	# Close logfile
-	#if (!is.null(logfile)) close(log_con)
 
 	# edit sampleinfo of CapSet
 	si <- sampleInfo(CapSet)
