@@ -1,23 +1,3 @@
-
-#' Filter a read using the borcode in the header
-#'
-#' @param idx_name barcode ID (character)
-#' @param fq_id fastq read header
-#' @param maxM max allowd mismatches
-#'
-#' @return logical vector (which IDs to keep)
-#'
-
-#filter_byIDx <- function(idx_name, fq_id, maxM){
-#	idx_name <- Biostrings::DNAString(idx_name)
-#	sep1 <- vapply(strsplit(as.vector(fq_id), "#"), "[[", character(1), 2)
-#	sep2 <- vapply(strsplit(sep1, ":"), "[[", character(1), 1)
-#	sep2 <- Biostrings::DNAStringSet(sep2)
-#	keep <- as.logical(Biostrings::vcountPattern(idx_name, sep2, max.mismatch = maxM))
-#	return(keep)
-#}
-
-
 #' Get data to create new ShortReadQ object after barcode trimming
 #'
 #' @param type expType of the CapSet object
@@ -177,14 +157,8 @@ demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
 	idx_list <- as.character(rownames(sampleinfo))
 
 	## get the fastq to split (raise error if fastq untrimmed/not existing)
-#	if (is.null(CapSet@trimmed_R1) | is.null(CapSet@trimmed_R2)) {
-#		stop("FASTQ files with trimmed headers absent, can't demultiplex")
-#	} else {
-#		.checkTrimBarcodes(CapSet@trimmed_R1)
-	fastq_R1 <- CapSet@trimmed_R1
-	fastq_R2 <- CapSet@trimmed_R2
-#	}
-
+	fastq_R1 <- CapSet@fastq_R1
+	fastq_R2 <- CapSet@fastq_R1
 	param = BiocParallel::MulticoreParam(workers = ncores)
 	message("de-multiplexing the FASTQ file")
 
