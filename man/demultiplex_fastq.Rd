@@ -32,7 +32,7 @@ cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
 	fastq_R2 = '../../2017_MAPCap/MAPCap_F/01_fastq/trimmed/MAPCap_F_R2.fastq.gz',
 	sampleInfo = data.frame(row.names = idxlist, files = fnames))
 
-system.time(demultiplex_fastq(cs, max_mismatch = 2))
+cs <- demultiplex_fastq(cs, max_mismatch = 2)
 }
 }
 

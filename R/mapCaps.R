@@ -1,22 +1,3 @@
-
-# check for trimmed barcodes present in the fastq header (RAMPAGE/MAPCap)
-.checkTrimBarcodes <- function(fastq) {
-	message("Checking for fastq file")
-	stopifnot(file.exists(fastq))
-	# test for trimmed R2 index
-	message("Checking for trimmed barcodes")
-	read <- gzfile(fastq)
-	data <- readLines(read,100)
-	close(read)
-
-	# Check if the read header has "#" (which is introduced during trimming.)
-	header <- data[seq(1,100,4)]
-	if (unique(grepl("#",header)) != TRUE) {
-		stop("Stop! fastq reads seem untrimmed. Run trimFastqIndex first.")
-	}
-
-}
-
 #' Map the data from 5' profiling techniques
 #'
 #' @param CapSet An object of class \code{\link{CapSet}}
@@ -103,6 +84,3 @@ mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
 
 	return(CapSet)
 }
-
-
-

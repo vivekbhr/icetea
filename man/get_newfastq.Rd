@@ -2,7 +2,7 @@
 % Please edit documentation in R/demultiplex_fastq.R
 \name{get_newfastq}
 \alias{get_newfastq}
-\title{Filter a read using the borcode in the header}
+\title{Get data to create new ShortReadQ object after barcode trimming}
 \usage{
 get_newfastq(type, fq_R1, fq_R2)
 }
@@ -12,21 +12,11 @@ get_newfastq(type, fq_R1, fq_R2)
 \item{fq_R1}{fastq Read 1}
 
 \item{fq_R2}{fastq Read 2}
-
-\item{idx_name}{barcode ID (character)}
-
-\item{fq_id}{fastq read header}
-
-\item{maxM}{max allowd mismatches}
 }
 \value{
-logical vector (which IDs to keep)
-
-Get data to create new ShortReadQ object after barcode trimming
-
 A list with new R1 and R2 sequence, quality, barcode string and sample id
 }
 \description{
-Filter a read using the borcode in the header
+Get data to create new ShortReadQ object after barcode trimming
 }
 

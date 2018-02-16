@@ -146,7 +146,7 @@ split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2, fastq_R1, fas
 #'		fastq_R2 = '../../2017_MAPCap/MAPCap_F/01_fastq/trimmed/MAPCap_F_R2.fastq.gz',
 #'		sampleInfo = data.frame(row.names = idxlist, files = fnames))
 #'
-#' system.time(demultiplex_fastq(cs, max_mismatch = 2))
+#' cs <- demultiplex_fastq(cs, max_mismatch = 2)
 #' }
 
 demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
