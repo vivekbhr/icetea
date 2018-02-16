@@ -43,7 +43,7 @@ dir <- system.file("extdata", package="icetea")
 cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
 	fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
 	fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
-	sampleInfo = data.frame(row.names = idxlist, files = fnames))
+	sampleInfo = data.frame(row.names = idxlist, samples = fnames))
 
 save(cs, file = file.path(dir, "CSobject.Rdata") )
 

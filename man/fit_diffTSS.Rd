@@ -44,6 +44,7 @@ Detect differentially expressed Transcription Start Sites between two conditions
 3. map them
 4. filter duplicate reads from mapped BAM
 5. detect TSS
+6. fit the diffTSS model
 \dontrun{
 # load a previously saved CapSet object
 dir <- system.file("extdata", package="icetea")

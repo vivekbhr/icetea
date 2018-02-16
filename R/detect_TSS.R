@@ -163,19 +163,19 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 #'
 export_tss <- function(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE) {
 
-	merged <- CapSet@tss_detected
+	mergedBED <- CapSet@tss_detected
 	if(isTRUE(pergroup)) {
 		## write merged output for each group
 		message("Writing output .bed files per group")
 		mapply(function(bedfile, group) {
 			rtracklayer::export.bed(object = bedfile, con = group)
-		}, bedfile = merged, group = paste0(outfile_prefix, "_" , names(merged), ".bed") )
+		}, bedfile = mergedBED, group = paste0(outfile_prefix, "_" , names(mergedBED), ".bed") )
 
 	}
 	if (isTRUE(merged)) {
 		## write out the union of GRanges
 		message("Writing merged .bed files")
-		mergedall <- base::Reduce(S4Vectors::union, merged)
+		mergedall <- base::Reduce(S4Vectors::union, mergedBED)
 		rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
 	}
 
