@@ -28,10 +28,25 @@
 #' @importFrom methods as
 #'
 #' @examples
+#' # before running this
+#' 1. Create a CapSet object
+#' 2. de-multiplex the fastqs
+#' 3. map them
+#' 4. filter duplicate reads from mapped BAM
+#' 5. detect TSS
+#' \dontrun{
+#' # load a previously saved CapSet object
+#' dir <- system.file("extdata", package="icetea")
+#' cs <- load(file.path(dir, "CSobject.Rdata"))
 #'
+#' # count reads on all TSS (union) and fit a model using replicates within groups
+#' csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 3), normalization = "internal",
+#'                      outplots = NULL, plotref = "WTa")
+#' save(csfit, file = "diffTSS_fit.Rdata")
+#' }
 #'
 
-fit_diffTSS <- function(CSobject, TSSfile, groups, normalization = "internal",
+fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "internal",
 			CSobjectSpikeIn, outplots = NULL, plotref) {
 
 	## assert the input
@@ -152,6 +167,23 @@ fit_diffTSS <- function(CSobject, TSSfile, groups, normalization = "internal",
 #' @importFrom ggplot2 ggplot aes_string geom_point geom_abline scale_color_manual labs theme_gray theme
 #' @examples
 #'
+#' # before running this
+#' 1. Create a CapSet object
+#' 2. de-multiplex the fastqs
+#' 3. map them
+#' 4. filter duplicate reads from mapped BAM
+#' 5. detect TSS
+#' 6. fit the diff TSS model.
+#'
+#' \dontrun{
+#' # load a previously saved DGEGLM object from step 5
+#' csfit <- load("diffTSS_fit.Rdata")
+#'
+#' # detect differentially expressed TSS between groups (return MA plot)
+#' detect_diffTSS(csfit, testGroup = "mut", controlGroup = "wt",
+#'                tssFile = "testTSS_merged.bed", MAplot_fdr = 0.05)
+#'
+#' }
 #'
 
 detect_diffTSS <- function(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA) {

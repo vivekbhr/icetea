@@ -51,13 +51,9 @@ mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
 		R1_list <- as.character(sampleInfo$demult_R1)
 		R2_list <- as.character(sampleInfo$demult_R2)
 	} else {
-		samplelist <- list("trimmed")
-		# test for trimmed R2 index
-		#	if (expMethod %in% c("RAMPAGE", "MAPCap")) {
-		#		.checkTrimBarcodes(CapSet@trimmed_R2)
-		#	}
-		R1_list <- CapSet@trimmed_R1
-		R2_list <- CapSet@trimmed_R2
+		samplelist <- list("raw")
+		R1_list <- CapSet@fastq_R1
+		R2_list <- CapSet@fastq_R2
 	}
 
 	mapstat <- mapply(function(sample, R1, R2) {
