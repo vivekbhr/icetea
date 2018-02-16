@@ -23,7 +23,7 @@ Export the detected TSS from CapSet object as .bed files
 }
 \examples{
 \dontrun{
-export_tss(cs, merged = TRUE, outfile_prefix = "outfolder/wt")
+export_tss(cs, merged = TRUE, outfile_prefix = "testdata")
 }
 
 }

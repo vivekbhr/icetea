@@ -4,7 +4,7 @@
 \alias{fit_diffTSS}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
-fit_diffTSS(CSobject, TSSfile, groups, normalization = "internal",
+fit_diffTSS(CSobject, TSSfile = NULL, groups, normalization = "internal",
   CSobjectSpikeIn, outplots = NULL, plotref)
 }
 \arguments{
@@ -38,7 +38,22 @@ Returns an object of class DGEGLM.
 Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 }
 \examples{
+# before running this
+1. Create a CapSet object
+2. de-multiplex the fastqs
+3. map them
+4. filter duplicate reads from mapped BAM
+5. detect TSS
+\dontrun{
+# load a previously saved CapSet object
+dir <- system.file("extdata", package="icetea")
+cs <- load(file.path(dir, "CSobject.Rdata"))
 
+# count reads on all TSS (union) and fit a model using replicates within groups
+csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 3), normalization = "internal",
+                     outplots = NULL, plotref = "WTa")
+save(csfit, file = "diffTSS_fit.Rdata")
+}
 
 }
 

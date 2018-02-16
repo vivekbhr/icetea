@@ -24,13 +24,15 @@
 #' cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
 #'		fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
 #'		fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
-#'		sampleInfo = data.frame(row.names = idxlist, files = fnames))
+#'		sampleInfo = data.frame(row.names = idxlist, samples = fnames))
 #'
 #' save(cs, file = file.path(dir, "CSobject.Rdata") )
 #'
 
 newCapSet <- function(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL) {
 	stopifnot(class(sampleInfo) %in% c("data.frame", "DataFrame"))
+	# rename columns
+	colnames(sampleInfo) <- "samples"
 	# convert sampleInfo to a DataFrame
 	info <- S4Vectors::DataFrame(sampleInfo)
 	# create an instance of CapSet
