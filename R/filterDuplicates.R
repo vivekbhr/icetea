@@ -76,10 +76,19 @@ filterDups <- function(bamFile, outFile) {
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
-#' filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
-#' }
+#'
+#' # before running this
+#' 1. Create a CapSet object
+#' 2. de-multiplex the fastqs
+#' 3. map them
+#'
+#' # load a previously saved CapSet object
+#' dir <- system.file("extdata", package="icetea")
+#' cs <- load(file.path(dir, "CSobject.Rdata"))
+#'
+#' # filter duplicate reads from mapped BAM files
+#' cs <- filterDuplicates(cs, outdir = dir)
+#'
 
 filterDuplicates <- function(CapSet, outdir) {
 	si <- sampleInfo(CapSet)

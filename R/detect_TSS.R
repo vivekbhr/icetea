@@ -1,3 +1,19 @@
+#' Count the number of reads in a given GRanges
+#'
+#' @param regions The GRanges object
+#' @param bams path to bam files from where the reads have to be counted
+#'
+#' @return Total counts within given ranges per BAM file.
+#'
+numReadsInBed <- function(regions, bams = NA) {
+	counts <- GenomicAlignments::summarizeOverlaps(GenomicRanges::GRangesList(regions),
+						       reads = Rsamtools::BamFileList(as.character(bams)),
+						       mode = "Union",
+						       inter.feature = FALSE)
+	numreads <- SummarizedExperiment::assay(counts)
+	return(t(numreads))
+}
+
 
 #' Detection of Trancription start sites based on local enrichment
 #'
@@ -20,12 +36,22 @@
 #' @importFrom utils write.table
 #'
 #' @examples
-#' \dontrun{
-#' cs <- detect_TSS(Capset = cs, group = c("wt","wt","mut","mut"), outfile_prefix = "testTSS",
-#'            foldChange = 6, restrictChr = c("2L","2R","X"))
-#'}
 #'
-
+#' # before running this
+#' 1. Create a CapSet object
+#' 2. de-multiplex the fastqs
+#' 3. map them
+#' 4. filter duplicate reads from mapped BAM
+#'
+#' # load a previously saved CapSet object
+#' dir <- system.file("extdata", package="icetea")
+#' cs <- load(file.path(dir, "CSobject.Rdata"))
+#'
+#' # detect TSS (samples in same group are treated as replicates)
+#'
+#' cs <- detect_TSS(cs, group = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
+#'            foldChange = 6, restrictChr = "X")
+#'
 
 detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 		       foldChange = 2, restrictChr = NULL) {
@@ -118,23 +144,6 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 
 	return(CapSet)
 }
-
-#' Count the number of reads in a given GRanges
-#'
-#' @param regions The GRanges object
-#' @param bams path to bam files from where the reads have to be counted
-#'
-#' @return Total counts within given ranges per BAM file.
-#'
-numReadsInBed <- function(regions, bams = NA) {
-	counts <- GenomicAlignments::summarizeOverlaps(GenomicRanges::GRangesList(regions),
-					     reads = Rsamtools::BamFileList(as.character(bams)),
-					     mode = "Union",
-					     inter.feature = FALSE)
-	numreads <- SummarizedExperiment::assay(counts)
-	return(t(numreads))
-}
-
 
 #' Export the detected TSS from CapSet object as .bed files
 #'

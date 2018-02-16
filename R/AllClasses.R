@@ -12,13 +12,21 @@
 #'
 #' @examples
 #'
-#' \dontrun{
-#' df <- data.frame(row.names = c("TTAGCC" ,"CAAGTG"), samples = c("one", "two") )
-#' cs <- newCapSet(fastqType = "paired",
-#'                 fastq_R1 = "inst/extdata/test_R1.fastq.gz",
-#'                 fastq_R2 = "inst/extdata/test_R2.fastq.gz",
-#'                 expMethod = "MAPCap", sampleInfo = df)
-#'}
+#' # list of barcode IDs
+#' idxlist <- c("CAAGTG", "AGATGC", "TGTGAG",
+#' 		 "GGTTAC", "TTAGCC", "AGTCGA")
+#' # corresponding sample names
+#' fnames <-  c("WTa", "WTb", "WTc",
+#' 		 "MLEa", "MLEb", "MLEc")
+#'
+#' # create a new capset object and save
+#' dir <- system.file("extdata", package="icetea")
+#' cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
+#'		fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
+#'		fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
+#'		sampleInfo = data.frame(row.names = idxlist, files = fnames))
+#'
+#' save(cs, file = file.path(dir, "CSobject.Rdata") )
 #'
 
 newCapSet <- function(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL) {
