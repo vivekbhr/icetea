@@ -31,8 +31,6 @@ newCapSet <- function(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NUL
 	    fastqType = fastqType,
 	    fastq_R1 = fastq_R1,
 	    fastq_R2 = fastq_R2,
-	    trimmed_R1 = NULL,
-	    trimmed_R2 = NULL,
 	    expMethod = expMethod,
 	    tss_detected = NULL)
 }
@@ -102,8 +100,6 @@ CapSet <- setClass("CapSet",
 		   slots = c(fastqType = "character",
 		   	  fastq_R1 = "character",
 		   	  fastq_R2 = "charOrNULL",
-		   	  trimmed_R1 = "charOrNULL",
-		   	  trimmed_R2 = "charOrNULL",
 		   	  expMethod = "character",
 		   	  sampleInfo = "DataFrame",
 		   	  tss_detected = "ANY"
