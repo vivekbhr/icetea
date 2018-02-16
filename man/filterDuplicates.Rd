@@ -20,9 +20,18 @@ This script considers the read mapping start position and the UMI to determine w
              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 }
 \examples{
-\dontrun{
-bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
-filterDuplicates(bamFile = bam, outFile = "test_rmDup.bam")
-}
+
+# before running this
+1. Create a CapSet object
+2. de-multiplex the fastqs
+3. map them
+
+# load a previously saved CapSet object
+dir <- system.file("extdata", package="icetea")
+cs <- load(file.path(dir, "CSobject.Rdata"))
+
+# filter duplicate reads from mapped BAM files
+cs <- filterDuplicates(cs, outdir = dir)
+
 }
 

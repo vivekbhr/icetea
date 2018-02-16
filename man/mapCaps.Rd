@@ -26,7 +26,21 @@ modified CapSet object with mapping information. Mapped and sorted BAM files are
 Map the data from 5' profiling techniques
 }
 \examples{
+\dontrun{
+# before mapping :
+# 1. Create a CapSet object
+# 2. de-multiplex the fastqs
 
+# load a previously saved CapSet object
+dir <- system.file("extdata", package="icetea")
+cs <- load(file.path(dir, "CSobject.Rdata"))
+
+# map the data (not available on windows)
+library(Rsubread)
+buildindex(basename = "dm6", reference = "/path/to/dm6genome.fa")
+cs <- mapCaps(cs, genomeIndex = "dm6", outdir = dir, nthreads = 10)
+
+}
 
 }
 

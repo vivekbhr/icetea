@@ -24,15 +24,11 @@ Demultiplex (tagged) fastq files using sample barcodes
 }
 \examples{
 \dontrun{
-idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "GGTTAC", "TGTGAG", "CATCAC")
-fnames <- c("GFPa","GFPb","BEAF32a","BEAF32b","BEAF32Rrp6a","BEAF32Rrp6b")
-
-cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
-	fastq_R1 = '../../2017_MAPCap/MAPCap_F/01_fastq/trimmed/MAPCap_F_R1.fastq.gz',
-	fastq_R2 = '../../2017_MAPCap/MAPCap_F/01_fastq/trimmed/MAPCap_F_R2.fastq.gz',
-	sampleInfo = data.frame(row.names = idxlist, files = fnames))
-
-cs <- demultiplex_fastq(cs, max_mismatch = 2)
+# load the previously saved CapSet object
+dir <- system.file("extdata", package="icetea")
+cs <- load(file.path(dir, "CSobject.Rdata"))
+# demltiplex allowing one mismatch in sample indexes
+cs <- demultiplex_fastq(cs, outdir = dir, max_mismatch = 1)
 }
 }
 
