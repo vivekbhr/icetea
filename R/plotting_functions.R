@@ -6,7 +6,7 @@
 #' @param plotValue What values to plot. Choose from "numbers" or "proportions". If "proportions"
 #'                  is selected, the proportion of reads w.r.t total demultiplexed reads per sample
 #'                  would be plotted
-#' @param outfile Output file name. (filename extention would be used to determine type).
+#' @param outFile Output file name. (filename extention would be used to determine type).
 #'                If outfile not specified, the plot would be retured on the screen
 #'
 #' @return A ggplot object, or a file. Plot showing the number/proportion of reads in each category, per sample
@@ -142,14 +142,9 @@ setMethod(plot_TSSprecision,
 #' @description Plot precision of TSS detection from multiple samples present within a
 #' \code{\link{CapSet}} object, with respect to a given reference annotation.
 #'
-#' @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
-#' @param detectedTSS either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
-#'                    or a character vector with paths to the BED files containing detcted TSSs
-#' @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
-#' @param outFile Output file name (filename extention would be used to determine type).
-#'                If outfile not specified, the plot would be retured on the screen
 #' @docType methods
 #' @rdname plot_TSSprecision
+#' @param ... Additional arguments 
 #'
 #' @export
 #' @examples
@@ -159,7 +154,8 @@ setMethod(plot_TSSprecision,
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' transcripts <- transcripts(dm6GTF)
 #'
-#' plot_TSSprecision(reference = transcripts, detectedTSS = cs,  outFile = "TSS_detection_precision.png")
+#' plot_TSSprecision(reference = transcripts, detectedTSS = cs,
+#'                   outFile = "TSS_detection_precision.png")
 #' }
 #'
 
@@ -170,10 +166,6 @@ setMethod(plot_TSSprecision,
 	  		 detectedTSS,
 	  		 distanceCutoff = 500,
 	  		 outFile = NULL, ...) {
-
-	# evaluate expressions
-	#stopifnot(is(CSobject, "CapSet"))
-	#stopifnot(is(reference, "GRanges"))
 
 	# get the data out
        tssData <- detectedTSS@tss_detected
@@ -199,7 +191,7 @@ setMethod(plot_TSSprecision,
 #' @param tssData GRangesList object with TSS detected per sample
 #' @param distCut max distance cutoff
 #'
-#' @importFrom ggplot2 aes_string stat_ecdf theme_light scale_x_continuous scale_color_brewer ggsave
+#' @importFrom ggplot2 aes_string stat_ecdf theme_light scale_x_continuous scale_color_brewer ggsave coord_flip
 #' @return ggplot object
 #'
 
@@ -230,4 +222,9 @@ plotPrecision <- function(ref, tssData, distCut) {
 
 }
 
-
+# @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
+# @param detectedTSS either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
+#                    or a character vector with paths to the BED files containing detcted TSSs
+# @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
+# @param outFile Output file name (filename extention would be used to determine type).
+#                If outfile not specified, the plot would be retured on the screen

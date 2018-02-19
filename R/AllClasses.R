@@ -20,7 +20,8 @@
 #' 		 "MLEa", "MLEb", "MLEc")
 #'
 #' # create a new capset object and save
-#' dir <- system.file("extdata", package="icetea")
+#' dir <- system.file("extdata", package="mapcapR")
+#' library(mapcapR)
 #' cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
 #'		fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
 #'		fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),

@@ -12,6 +12,8 @@ get_geneCounts(transcriptGRL, bamfiles, regionAroundTSS = 500,
 
 \item{bamfiles}{Bam files to count the reads from}
 
+\item{regionAroundTSS}{How many bases downstream of TSS to count}
+
 \item{single_end}{Logical, indicating whether reads are single end}
 
 \item{outfile}{Tab-separated output file name (if required)}

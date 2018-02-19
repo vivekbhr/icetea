@@ -2,6 +2,7 @@
 #'
 #' @param transcriptGRL A GRangesList object containing transcripts, created using transcriptsBy(txdb)
 #' @param bamfiles Bam files to count the reads from
+#' @param regionAroundTSS How many bases downstream of TSS to count
 #' @param single_end Logical, indicating whether reads are single end
 #' @param outfile Tab-separated output file name (if required)
 #'
@@ -35,7 +36,7 @@ get_geneCounts <- function(transcriptGRL, bamfiles, regionAroundTSS = 500, singl
 	transcriptGR <- GenomicRanges::resize(transcriptGR, regionAroundTSS, fix = "start")
 
 	# count reads
-	tsscounts <- GenomicAlignments::summarizeOverlaps(dm6trans_resized,
+	tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
 							  reads = Rsamtools::BamFileList(bamfiles),
 							  singleEnd = single_end)
 	tsscounts.df <- SummarizedExperiment::assay(tsscounts)

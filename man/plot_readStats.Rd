@@ -17,7 +17,7 @@ or a bar chart with "dodged" positions (analogous to ggplot)}
 is selected, the proportion of reads w.r.t total demultiplexed reads per sample
 would be plotted}
 
-\item{outfile}{Output file name. (filename extention would be used to determine type).
+\item{outFile}{Output file name. (filename extention would be used to determine type).
 If outfile not specified, the plot would be retured on the screen}
 }
 \value{

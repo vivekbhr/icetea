@@ -1,4 +1,3 @@
-
 #' @rdname plot_TSSprecision
 #' @export
 setGeneric("plot_TSSprecision",
@@ -6,4 +5,3 @@ setGeneric("plot_TSSprecision",
 	   	 distanceCutoff = 500, outFile = NULL, ...) {
 	   	standardGeneric("plot_TSSprecision")
 	   })
-

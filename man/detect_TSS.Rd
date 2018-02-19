@@ -34,10 +34,10 @@ Detection of Trancription start sites based on local enrichment
 \examples{
 
 # before running this
-1. Create a CapSet object
-2. de-multiplex the fastqs
-3. map them
-4. filter duplicate reads from mapped BAM
+# 1. Create a CapSet object
+# 2. de-multiplex the fastqs
+# 3. map them
+# 4. filter duplicate reads from mapped BAM
 \dontrun{
 # load a previously saved CapSet object
 dir <- system.file("extdata", package="icetea")

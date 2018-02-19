@@ -20,7 +20,12 @@ Annotation of detected TSS
 Annotate detected Transcription Start Sites
 }
 \examples{
-
-
+\dontrun{
+ # load a txdb object
+ dm6gtf <- loadDB("dm6gtf.DB")
+ # annotate a given TSS bed file
+ library(mapcapR)
+ annotate_TSS(tssFile, dm6gtf, plot = NA)
+}
 }
 

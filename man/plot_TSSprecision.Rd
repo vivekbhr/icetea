@@ -27,17 +27,9 @@ or a character vector with paths to the BED files containing detcted TSSs}
 \item{outFile}{Output file name (filename extention would be used to determine type)
 If outfile not specified, the plot would be retured on the screen}
 
+\item{...}{Additional arguments}
+
 \item{sampleNames}{Labels for input samples (in the same order as the input bed files)}
-
-\item{reference}{Reference Transcrips/Genes as a \code{\link{GRanges}} object}
-
-\item{detectedTSS}{either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
-or a character vector with paths to the BED files containing detcted TSSs}
-
-\item{distanceCutoff}{Maximum distance (in base pairs) from reference TSS to plot}
-
-\item{outFile}{Output file name (filename extention would be used to determine type).
-If outfile not specified, the plot would be retured on the screen}
 }
 \value{
 A ggplot object, or a file. Plot showing perent of TSS detected per sample with respect to
@@ -68,7 +60,8 @@ Plotting the precision using a CapSet object :
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 transcripts <- transcripts(dm6GTF)
 
-plot_TSSprecision(reference = transcripts, detectedTSS = cs,  outFile = "TSS_detection_precision.png")
+plot_TSSprecision(reference = transcripts, detectedTSS = cs,
+                  outFile = "TSS_detection_precision.png")
 }
 
 }

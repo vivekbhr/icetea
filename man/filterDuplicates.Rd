@@ -22,9 +22,9 @@ This script considers the read mapping start position and the UMI to determine w
 \examples{
 
 # before running this
-1. Create a CapSet object
-2. de-multiplex the fastqs
-3. map them
+# 1. Create a CapSet object
+# 2. de-multiplex the fastqs
+# 3. map them
 \dontrun{
 # load a previously saved CapSet object
 dir <- system.file("extdata", package="icetea")

@@ -11,8 +11,13 @@
 #' @importFrom stats reshape
 #'
 #' @examples
-#'
-#'
+#' \dontrun{
+#'  # load a txdb object
+#'  dm6gtf <- loadDB("dm6gtf.DB")
+#'  # annotate a given TSS bed file
+#'  library(mapcapR)
+#'  annotate_TSS(tssFile, dm6gtf, plot = NA)
+#' }
 
 annotate_TSS <- function(tssFile, txdb, plot = NA) {
 
@@ -92,15 +97,7 @@ splitranks <- function(x) {
 }
 
 
-#' Melt the output df from splitranks
-#'
-#' @param x df to melt
-#'
-#' @return
-#'
-#' @examples
-#'
-#'
+# Melt the output df from splitranks
 melt <- function(x) {
 	vars <- colnames(x[2:ncol(x)])
 	d <- plyr::unrowname(reshape(x, direction = "long", idvar = ".id", varying = vars) )

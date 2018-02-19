@@ -26,12 +26,12 @@ Detect differentially expressed Transcription Start Sites between two conditions
 \examples{
 
 # before running this
-1. Create a CapSet object
-2. de-multiplex the fastqs
-3. map them
-4. filter duplicate reads from mapped BAM
-5. detect TSS
-6. fit the diff TSS model.
+# 1. Create a CapSet object
+# 2. de-multiplex the fastqs
+# 3. map them
+# 4. filter duplicate reads from mapped BAM
+# 5. detect TSS
+# 6. fit the diff TSS model.
 
 \dontrun{
 # load a previously saved DGEGLM object from step 5

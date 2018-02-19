@@ -7,10 +7,10 @@ Depends:
     R (>= 3.2.2)
 Imports:
     stats, utils, methods, grDevices,
-    plyr, ggplot2, GenomicFeatures, ShortRead,
-    BiocParallel, Biostrings, S4Vectors, Rsamtools,
+    plyr, reshape2, ggplot2, GenomicFeatures, ShortRead,
+    BiocParallel, Biostrings, S4Vectors, Rsamtools, BiocGenerics, IRanges,
     GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
-    VariantAnnotation, limma, edgeR, csaw
+    VariantAnnotation, limma, edgeR, csaw, Rsubread
 biocViews: CAGE, MAPCap, RAMPAGE, RNAseq
 License: GPL-3
 LazyData: true
