@@ -19,7 +19,14 @@ setMethod("show", "CapSet", function(object) {
 #' get sample information data frame
 #' @param object the \code{\link{CapSet}} object
 #' @param ... ...
+#' @return sample information data.frame
 #' @export
+#' @examples
+#'
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # get sampleinfo
+#' si <- sampleInfo(cs)
 #'
 setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 
@@ -31,9 +38,11 @@ setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 #' @return sample information data.frame
 #' @export
 #' @examples
-#' \dontrun{
+#'
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # get sampleinfo
 #' si <- sampleInfo(cs)
-#' }
 #'
 
 setMethod("sampleInfo",
@@ -48,6 +57,17 @@ setMethod("sampleInfo",
 #' @param value new value
 #' @export
 #'
+#' @return None
+#' @examples
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # get sampleinfo
+#' si <- sampleInfo(cs)
+#' # modify
+#' si$samples <- paste0("sample_", 1:6)
+#' # replace
+#' sampleInfo(cs) <- si
+#'
 setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))
 
 #' reset sample information data frame
@@ -57,11 +77,15 @@ setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInf
 #' @exportMethod "sampleInfo<-"
 #'
 #' @examples
-#' \dontrun{
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # get sampleinfo
 #' si <- sampleInfo(cs)
-#' si$mapped_file <- c("new", "files")
+#' # modify
+#' si$samples <- paste0("sample_", 1:6)
+#' # replace
 #' sampleInfo(cs) <- si
-#' }
+#'
 #'
 setReplaceMethod("sampleInfo",
 		 signature = "CapSet", #value = c("data.frame", "DataFrame") ),

@@ -23,12 +23,10 @@ de-multiplxed fastq files corresponding to each barcode. The files are written
 Demultiplex (tagged) fastq files using sample barcodes
 }
 \examples{
-\dontrun{
-# load the previously saved CapSet object
-dir <- system.file("extdata", package="icetea")
-cs <- load(file.path(dir, "CSobject.Rdata"))
-# demltiplex allowing one mismatch in sample indexes
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# demultiplex allowing one mismatch in sample indexes
 cs <- demultiplex_fastq(cs, outdir = dir, max_mismatch = 1)
-}
+
 }
 

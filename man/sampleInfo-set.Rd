@@ -13,7 +13,21 @@ sampleInfo(object, ...) <- value
 
 \item{value}{new value}
 }
+\value{
+None
+}
 \description{
 reset sample information data frame
+}
+\examples{
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# get sampleinfo
+si <- sampleInfo(cs)
+# modify
+si$samples <- paste0("sample_", 1:6)
+# replace
+sampleInfo(cs) <- si
+
 }
 

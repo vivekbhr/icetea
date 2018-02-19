@@ -11,13 +11,12 @@
 #' @importFrom stats reshape
 #'
 #' @examples
-#' \dontrun{
-#'  # load a txdb object
-#'  dm6gtf <- loadDB("dm6gtf.DB")
-#'  # annotate a given TSS bed file
-#'  library(icetea)
-#'  annotate_TSS(tssFile, dm6gtf, plot = NA)
-#' }
+#' # load a txdb object
+#'  dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
+#' # annotate a given TSS bed file
+#' tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
+#' annotate_TSS(tssFile = tssfile, dm6gtf, plot = "testplot.pdf")
+#'
 
 annotate_TSS <- function(tssFile, txdb, plot = NA) {
 

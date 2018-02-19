@@ -17,9 +17,11 @@ sample information data.frame
 get sample information data frame
 }
 \examples{
-\dontrun{
+
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# get sampleinfo
 si <- sampleInfo(cs)
-}
 
 }
 

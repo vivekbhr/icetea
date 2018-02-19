@@ -25,15 +25,13 @@ data.frame with gene-level counts for all genes in the txdb object
 Get gene-level counts from TSS data
 }
 \examples{
-\dontrun{
 
  # load a txdb object
- dm6gtf <- loadDB("dm6gtf.DB")
+ dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
  # get transcripts by gene
-	dm6trans <- transcriptsBy(dm6gtf, "gene")
+ dm6trans <- transcriptsBy(dm6gtf, "gene")
  # get gene counts, counting reads around 500 bp of the TSS
  gcounts <- get_geneCounts(dm6trans, bamfiles)
-}
 
 }
 

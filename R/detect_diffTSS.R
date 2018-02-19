@@ -1,8 +1,8 @@
 #' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 #'
 #' @param CSobject An object of class \code{\link{CapSet}}
-#' @param TSSfile A .bed file with TSS positions to test for differential TSS analysis. If left empty,
-#'                the union of detected TSS present within the provided CSobject would be plotted.
+#' @param TSSfile A .bed file with TSS positions to test for differential TSS analysis. If left
+#'                empty, the union of detected TSS present within the provided CSobject would be plotted.
 #' @param groups Character vector indicating the group into which each sample within the CSobject falls.
 #'               the groups would be use to create a design matrix. As an example, replicates for one
 #'               condition could be in the same group.
@@ -37,8 +37,7 @@
 #' # 6. fit the diffTSS model
 #' \dontrun{
 #' # load a previously saved CapSet object
-#' dir <- system.file("extdata", package="icetea")
-#' cs <- load(file.path(dir, "CSobject.Rdata"))
+#' cs <- exampleCSobject()
 #'
 #' # count reads on all TSS (union) and fit a model using replicates within groups
 #' csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 3), normalization = "internal",

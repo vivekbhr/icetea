@@ -25,11 +25,12 @@ Filtered files
 Split the composite BAM file using internal indexes
 }
 \examples{
-\dontrun{
-bam <- system.file("extdata", "test_mapped.bam", package = "icetea")
+
+bam <- system.file("extdata", "bam/WTa.bam", package = "icetea")
 splitBAM_byIndex(bamFile = bam,
- 	   index_list = c("TTAGCC" ,"CAAGTG"),
- 	    	   outfile_list = c("test_filt1.bam","test_filt2.bam"), nthreads = 10)
-}
+ 	   index_list = c("CAAGTG", "CAAGTT"),
+ 	    	   outfile_list = c("test_filt1.bam","test_filt2.bam"),
+ 	    	   nthreads = 10)
+
 }
 

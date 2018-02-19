@@ -10,8 +10,8 @@ fit_diffTSS(CSobject, TSSfile = NULL, groups, normalization = "internal",
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
 
-\item{TSSfile}{A .bed file with TSS positions to test for differential TSS analysis. If left empty,
-the union of detected TSS present within the provided CSobject would be plotted.}
+\item{TSSfile}{A .bed file with TSS positions to test for differential TSS analysis. If left
+empty, the union of detected TSS present within the provided CSobject would be plotted.}
 
 \item{groups}{Character vector indicating the group into which each sample within the CSobject falls.
 the groups would be use to create a design matrix. As an example, replicates for one

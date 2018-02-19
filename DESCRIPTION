@@ -12,7 +12,7 @@ Imports:
     GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
     VariantAnnotation, limma, edgeR, csaw, Rsubread
 biocViews: Transcription, GeneExpression, Sequencing, RNASeq, Transcriptomics,
-            DifferentialExpression, Annotation, SequencingData, ExpressionData
+            DifferentialExpression
 URL: https://github.com/vivekbhr/icetea
 License: GPL-3
 LazyData: true

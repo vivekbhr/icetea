@@ -11,7 +11,18 @@ sampleInfo(object, ...)
 
 \item{...}{...}
 }
+\value{
+sample information data.frame
+}
 \description{
 get sample information data frame
+}
+\examples{
+
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# get sampleinfo
+si <- sampleInfo(cs)
+
 }
 

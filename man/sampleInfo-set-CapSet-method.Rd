@@ -19,11 +19,15 @@ None
 reset sample information data frame
 }
 \examples{
-\dontrun{
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# get sampleinfo
 si <- sampleInfo(cs)
-si$mapped_file <- c("new", "files")
+# modify
+si$samples <- paste0("sample_", 1:6)
+# replace
 sampleInfo(cs) <- si
-}
+
 
 }
 

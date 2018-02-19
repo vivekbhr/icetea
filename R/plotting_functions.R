@@ -13,9 +13,11 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' plot_readStats(CapSet = cs, plotType = "numbers")
-#' }
+#'
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' plot_readStats(cs, plotType = "numbers", outFile = "test_numbers.pdf")
+#'
 
 plot_readStats <- function(CSobject,
 			   plotType = c("stack", "dodge"),
@@ -104,17 +106,19 @@ get_stackedNum <- function(df) {
 #'
 #' @export
 #' @examples
-#' \dontrun{
-#' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # load a txdb object
+#' dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
 #' transcripts <- transcripts(dm6GTF)
 #'
-#' Plotting the precision using a pre computed set of TSS (.bed files) :
+#' # Plotting the precision using a pre computed set of TSS (.bed files) :
 #'
-#' files <- system.file("extdata", "testTSS.bed", package = "icetea")
-#' plot_TSSprecision(reference = transcripts, detectedTSS = files,
+#' tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
+#' plot_TSSprecision(reference = transcripts, detectedTSS = tssfile,
 #' 		sampleNames = "testTSS", distanceCutoff = 500,
 #' 		outFile = "TSS_detection_precision.png")
-#' }
+#'
 
 setMethod(plot_TSSprecision,
 	  signature = signature("GRanges","character"),
@@ -144,19 +148,17 @@ setMethod(plot_TSSprecision,
 #'
 #' @docType methods
 #' @rdname plot_TSSprecision
-#' @param ... Additional arguments 
+#' @param ... Additional arguments
 #'
 #' @export
 #' @examples
-#' \dontrun{
-#' Plotting the precision using a CapSet object :
+#' # Plotting the precision using a CapSet object :
 #'
-#' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
-#' transcripts <- transcripts(dm6GTF)
+#' dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
+#' transcripts <- transcripts(dm6gtf)
 #'
 #' plot_TSSprecision(reference = transcripts, detectedTSS = cs,
 #'                   outFile = "TSS_detection_precision.png")
-#' }
 #'
 
 setMethod(plot_TSSprecision,

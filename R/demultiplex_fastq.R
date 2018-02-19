@@ -19,7 +19,8 @@ get_newfastq <- function(type, fq_R1, fq_R2) {
 		sample_idx <- IRanges::narrow(fq_R2read, 6, 11)
 		# copy pcr barcode (pos 1 to 5 + pos 12 to 13)
 		umi_barcodes <- Biostrings::DNAStringSet(paste0(IRanges::narrow(fq_R2read, 1, 5),
-								IRanges::narrow(fq_R2read, 12, 13) ) )
+								IRanges::narrow(fq_R2read, 12, 13)
+								))
 		#copy replicate demultiplexing barcode  (pos 3 to 4)
 		rep_idx <- IRanges::narrow(fq_R2read, 3, 4)
 		barcode_string <- paste(sample_idx, umi_barcodes, rep_idx, sep = ":")
@@ -68,7 +69,8 @@ get_newfastq <- function(type, fq_R1, fq_R2) {
 #' @return split fastq files
 #'
 
-split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2, max_mismatch) {
+split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2,
+			fastq_R1, fastq_R2, max_mismatch) {
 
 	## open input stream
 	stream_R1 <- ShortRead::FastqStreamer(fastq_R1)
@@ -95,7 +97,8 @@ split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2, fastq_R1, fas
 		fq_R2new <- ShortRead::ShortReadQ(outlist$fq_R2read,
 						  outlist$fq_R2qual,
 						  Biostrings::BStringSet(paste(fqid_R2,
-						  			     outlist$barcode_string, sep = "#")) )
+						  			     outlist$barcode_string,
+						  			     sep = "#")) )
 
 		# new fastq R1 (seq/qual not modified, just barcodes copied from R2)
 		fqid_R1 <- ShortRead::id(fq_R1)
@@ -104,12 +107,14 @@ split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2, fastq_R1, fas
 		fq_R1new <- ShortRead::ShortReadQ(outlist$fq_R1read,
 						  outlist$fq_R1qual,
 						  Biostrings::BStringSet(paste(fqid_R1,
-						  			     outlist$barcode_string, sep = "#")) )
+						  			     outlist$barcode_string,
+						  			     sep = "#")) )
 
 		# demultiplex using given sample barcodes
 		idx_name <- Biostrings::DNAString(idx_name)
 		sample_idx <- Biostrings::DNAStringSet(outlist$sample_idx)
-		id2keep <- as.logical(Biostrings::vcountPattern(idx_name, outlist$sample_idx, max.mismatch = max_mismatch))
+		id2keep <- as.logical(Biostrings::vcountPattern(idx_name, outlist$sample_idx,
+								max.mismatch = max_mismatch))
 
 		#id2keep <- filter_byIDx(idx_name,
 		#			fq_id = ShortRead::id(fq_R2),
@@ -137,13 +142,11 @@ split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2, fastq_R1, fas
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' # load the previously saved CapSet object
-#' dir <- system.file("extdata", package="icetea")
-#' cs <- load(file.path(dir, "CSobject.Rdata"))
-#' # demltiplex allowing one mismatch in sample indexes
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # demultiplex allowing one mismatch in sample indexes
 #' cs <- demultiplex_fastq(cs, outdir = dir, max_mismatch = 1)
-#' }
+#'
 
 demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
 
@@ -154,7 +157,7 @@ demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
 
 	## get the fastq to split (raise error if fastq untrimmed/not existing)
 	fastq_R1 <- CapSet@fastq_R1
-	fastq_R2 <- CapSet@fastq_R1
+	fastq_R2 <- CapSet@fastq_R2
 	param = BiocParallel::MulticoreParam(workers = ncores)
 	message("de-multiplexing the FASTQ file")
 
@@ -163,7 +166,11 @@ demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
 		split1 <- file.path(outdir, paste0(destinations[i],"_R1.fastq.gz"))
 		split2 <- file.path(outdir, paste0(destinations[i],"_R2.fastq.gz"))
 		## stop if the outfiles already exist (otherwise the output would be appended)
-		if(file.exists(split1) | file.exists(split2)) stop("Output files already exist!")
+		if(file.exists(split1) | file.exists(split2)) {
+			warning("Output files already exist! Overwriting..")
+			if(file.exists(split1)) file.remove(split1)
+			if(file.exists(split1)) file.remove(split2)
+		}
 
 		## split files and save kept read number
 		kept <- split_fastq(expType = protocol, idx_name = idx_list[i],

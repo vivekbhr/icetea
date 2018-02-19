@@ -22,9 +22,11 @@ export_tss(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE)
 Export the detected TSS from CapSet object as .bed files
 }
 \examples{
-\dontrun{
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# export tss
 export_tss(cs, merged = TRUE, outfile_prefix = "testdata")
-}
+
 
 }
 

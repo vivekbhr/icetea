@@ -81,14 +81,12 @@ filterDups <- function(bamFile, outFile) {
 #' # 1. Create a CapSet object
 #' # 2. de-multiplex the fastqs
 #' # 3. map them
-#' \dontrun{
-#' # load a previously saved CapSet object
-#' dir <- system.file("extdata", package="icetea")
-#' cs <- load(file.path(dir, "CSobject.Rdata"))
 #'
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
 #' # filter duplicate reads from mapped BAM files
 #' cs <- filterDuplicates(cs, outdir = dir)
-#' }
+#'
 
 filterDuplicates <- function(CapSet, outdir) {
 	si <- sampleInfo(CapSet)

@@ -27,8 +27,10 @@ A ggplot object, or a file. Plot showing the number/proportion of reads in each 
 Plot read statistics from the CapSet object
 }
 \examples{
-\dontrun{
-plot_readStats(CapSet = cs, plotType = "numbers")
-}
+
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+plot_readStats(cs, plotType = "numbers", outFile = "test_numbers.pdf")
+
 }
 

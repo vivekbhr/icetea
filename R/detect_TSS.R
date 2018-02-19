@@ -42,16 +42,12 @@ numReadsInBed <- function(regions, bams = NA) {
 #' # 2. de-multiplex the fastqs
 #' # 3. map them
 #' # 4. filter duplicate reads from mapped BAM
-#' \dontrun{
+#'
 #' # load a previously saved CapSet object
-#' dir <- system.file("extdata", package="icetea")
-#' cs <- load(file.path(dir, "CSobject.Rdata"))
-#'
+#' cs <- exampleCSobject()
 #' # detect TSS (samples in same group are treated as replicates)
-#'
-#' cs <- detect_TSS(cs, group = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
+#' cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
 #'            foldChange = 6, restrictChr = "X")
-#' }
 #'
 
 detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
@@ -157,9 +153,11 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 #' @export
 #'
 #' @examples
-#' \dontrun{
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # export tss
 #' export_tss(cs, merged = TRUE, outfile_prefix = "testdata")
-#' }
+#'
 #'
 export_tss <- function(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE) {
 

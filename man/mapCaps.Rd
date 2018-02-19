@@ -32,8 +32,7 @@ Map the data from 5' profiling techniques
 # 2. de-multiplex the fastqs
 
 # load a previously saved CapSet object
-dir <- system.file("extdata", package="icetea")
-cs <- load(file.path(dir, "CSobject.Rdata"))
+cs <- exampleCSobject()
 
 # map the data (not available on windows)
 library(Rsubread)

@@ -12,12 +12,10 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' bam <- system.file("extdata", "test_mapped.bam", package = "icetea")
-#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
-#' }
 #'
-
+#' bam <- system.file("extdata", "bam/WTa.bam", package = "icetea")
+#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
+#'
 
 splitBAM_byRepindex <- function(bamFile, outfile_prefix, nthreads = 1) {
 
@@ -27,9 +25,11 @@ splitBAM_byRepindex <- function(bamFile, outfile_prefix, nthreads = 1) {
 
 		function(df){
 			df$qname <- as.character(df$qname)
-			df_sep <- data.frame(idx = vapply(strsplit(df$qname, "#"), "[[", character(1), 2),
+			df_sep <- data.frame(idx = vapply(strsplit(df$qname, "#"), "[[",
+							  character(1), 2),
 						   stringsAsFactors = FALSE)
-			df_sep3 <- data.frame(idx = vapply(strsplit(df_sep$idx, ":"), "[[", character(1), 3),
+			df_sep3 <- data.frame(idx = vapply(strsplit(df_sep$idx, ":"), "[[",
+							   character(1), 3),
 							stringsAsFactors = FALSE)
 
 			return(grepl(rep_name,df_sep3$idx))
@@ -55,8 +55,10 @@ splitBAM_byRepindex <- function(bamFile, outfile_prefix, nthreads = 1) {
 	destinations <- paste0(outfile_prefix,"_", names(repindex_list),".bam")
 
 	param = BiocParallel::MulticoreParam(workers = nthreads)
-	BiocParallel::bplapply(seq_along(destinations), function(i, file, destinations, filtrules) {
-							Rsamtools::filterBam(file, destinations[i], filter = filtrules[[i]])
+	BiocParallel::bplapply(seq_along(destinations),
+			       function(i, file, destinations, filtrules) {
+							Rsamtools::filterBam(file, destinations[i],
+									     filter = filtrules[[i]])
 							}, bamFile, destinations, filtrules,
 				BPPARAM = param)
 
