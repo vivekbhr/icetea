@@ -1,4 +1,4 @@
-#### ~~~~ Part of the mapcapR package for analysis of MAPCap data ~~~~ ####
+#### ~~~~ Part of the icetea package for analysis of MAPCap data ~~~~ ####
 ### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
 
 
@@ -13,7 +13,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
+#' bam <- system.file("extdata", "test_mapped.bam", package = "icetea")
 #' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
 #' }
 #'

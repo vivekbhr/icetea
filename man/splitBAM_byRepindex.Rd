@@ -21,7 +21,7 @@ Split the composite BAM file using replicate indexes
 }
 \examples{
 \dontrun{
-bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
+bam <- system.file("extdata", "test_mapped.bam", package = "icetea")
 splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
 }
 

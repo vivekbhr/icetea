@@ -49,7 +49,7 @@ transcripts <- transcripts(dm6GTF)
 
 Plotting the precision using a pre computed set of TSS (.bed files) :
 
-files <- system.file("extdata", "testTSS.bed", package = "mapcapR")
+files <- system.file("extdata", "testTSS.bed", package = "icetea")
 plot_TSSprecision(reference = transcripts, detectedTSS = files,
 		sampleNames = "testTSS", distanceCutoff = 500,
 		outFile = "TSS_detection_precision.png")

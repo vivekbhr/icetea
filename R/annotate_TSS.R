@@ -15,7 +15,7 @@
 #'  # load a txdb object
 #'  dm6gtf <- loadDB("dm6gtf.DB")
 #'  # annotate a given TSS bed file
-#'  library(mapcapR)
+#'  library(icetea)
 #'  annotate_TSS(tssFile, dm6gtf, plot = NA)
 #' }
 

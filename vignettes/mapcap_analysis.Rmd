@@ -50,7 +50,7 @@ dir.create("04_removedup")
 dir.create("05_tssCalling")
 
 # load the package 
-library(mapcapR)
+library(icetea)
 
 # provide demultiplexing barcodes and sample names
 idxlist <- c("TGGAAC", "GGTTAC")

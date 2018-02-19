@@ -1,8 +1,8 @@
-Package: mapcapR
+Package: icetea
 Title: R package for processing and analysis of CAGE data
 Version: 0.98.0
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
-Description: mapcapR is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection.
+Description: icetea is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection.
 Depends:
     R (>= 3.3)
 Imports:
