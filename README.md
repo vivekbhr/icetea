@@ -1,2 +1,2 @@
 # ICETEA
-An R package for analysis of CAGE (Cap Analysis of Gene Expression) data, focused on new, paired-end CAGE protocols (RAMPAGE and MAPCap).
+An R package for analysis of data produced by transcript 5' profiling methods like RAMPAGE and MAPCap.
