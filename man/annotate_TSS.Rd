@@ -11,7 +11,7 @@ annotate_TSS(tssFile, txdb, plot = NA)
 
 \item{txdb}{A txdb object.}
 
-\item{plot}{Type of plot to make (choose from "numbers", "proportions" or NA for no plot)}
+\item{plot}{Type of plot to make (choose from "number", "percent" or NA for no plot)}
 }
 \value{
 Annotation of detected TSS
@@ -20,7 +20,12 @@ Annotation of detected TSS
 Annotate detected Transcription Start Sites
 }
 \examples{
-
-
+\dontrun{
+ # load a txdb object
+ dm6gtf <- loadDB("dm6gtf.DB")
+ # annotate a given TSS bed file
+ library(mapcapR)
+ annotate_TSS(tssFile, dm6gtf, plot = NA)
+}
 }
 

@@ -1,12 +1,27 @@
+#' Count the number of reads in a given GRanges
+#'
+#' @param regions The GRanges object
+#' @param bams path to bam files from where the reads have to be counted
+#'
+#' @return Total counts within given ranges per BAM file.
+#'
+numReadsInBed <- function(regions, bams = NA) {
+	counts <- GenomicAlignments::summarizeOverlaps(GenomicRanges::GRangesList(regions),
+						       reads = Rsamtools::BamFileList(as.character(bams)),
+						       mode = "Union",
+						       inter.feature = FALSE)
+	numreads <- SummarizedExperiment::assay(counts)
+	return(t(numreads))
+}
 
 
 #' Detection of Trancription start sites based on local enrichment
 #'
-#' @param bam.files List of bam files to use
-#' @param design A data frame with rownames = sample names and a column called 'group'
-#' 		that contains information about the sample group (see example)
-#' @param outfile_prefix Output name prefix for the .bed files
-#'
+#' @param CapSet CapSet object created using \code{\link{newCapSet}} function
+#' @param groups a character vector that contains group name of the sample, for replicate-based TSS
+#'               calling (see example)
+#' @param outfile_prefix Output name prefix for the .Rdata file containing window counts, background counts
+#'                       and filtering statistics calculated during TSS detection.
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #' 		'usual' amount of starting material and squencing depth (>=5ug starting material,
 #' 		>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
@@ -21,27 +36,53 @@
 #' @importFrom utils write.table
 #'
 #' @examples
+#'
+#' # before running this
+#' # 1. Create a CapSet object
+#' # 2. de-multiplex the fastqs
+#' # 3. map them
+#' # 4. filter duplicate reads from mapped BAM
 #' \dontrun{
-#' bams <- system.file("extdata", c("test_filt1.bam", "test_filt2.bam"), package = "mapcapR")
-#' detect_TSS(bam.files = bams, design = design, outfile_prefix = "testTSS",
-#'            foldChange = 6, restrictChr = c("2L","2R","X"))
-#'}
+#' # load a previously saved CapSet object
+#' dir <- system.file("extdata", package="icetea")
+#' cs <- load(file.path(dir, "CSobject.Rdata"))
+#'
+#' # detect TSS (samples in same group are treated as replicates)
+#'
+#' cs <- detect_TSS(cs, group = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
+#'            foldChange = 6, restrictChr = "X")
+#' }
 #'
 
-
-detect_TSS <- function(bam.files, design,  outfile_prefix,
+detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 		       foldChange = 2, restrictChr = NULL) {
 
+	# check whether group and outfile_prefix is provided
+	if (missing(outfile_prefix)) stop("Please provide outfile_prefix!")
+	if (missing(groups)) stop("Please provide groups!")
+
 	# convert group to char
-	design$group <- as.character(design$group)
+	si <- sampleInfo(CapSet)
+	design <- data.frame(row.names = si$samples, group = as.character(groups) )
+
+	if (is.null(si$filtered_file) ) {
+		message("Filtered files not found under sampleInfo(CapSet). Using mapped files")
+		bam.files <- si$mapped_file
+	} else {
+		bam.files <- si$filtered_file
+	}
+	if (sum(file.exists(bam.files)) != length(bam.files)) {
+		stop("One or more bam files don't exist! Check sampleInfo(CapSet) ")
+	}
+
 	# Define read params
 	frag.len <- NA
 	win.width <- 10
-	param <- csaw::readParam(minq=30, forward = NULL, restrict = restrictChr)
-	regionparam <- csaw::readParam(minq=30, restrict = restrictChr)
+	param <- csaw::readParam(minq = 2, forward = NULL, restrict = restrictChr)
+	regionparam <- csaw::readParam(minq = 2, restrict = restrictChr)
 
 	# Count reads into sliding windows
-	data <- csaw::strandedCounts(bam.files, param=param, ext=frag.len, width=win.width, bin = TRUE)
+	data <- csaw::strandedCounts(bam.files, param = param, ext = frag.len, width = win.width, bin = TRUE)
 	colnames(data) <- rownames(design)
 	SummarizedExperiment::colData(data) <- c(SummarizedExperiment::colData(data), design)
 
@@ -78,24 +119,64 @@ detect_TSS <- function(bam.files, design,  outfile_prefix,
 		return(data[keep,])
 	})
 
-	## merge nearby windows (within 50bp) to get broader TSS
+	## merge nearby windows (within 10bp) to get broader TSS
 	merged <- lapply(filtered.data, function(d) {
 		return(csaw::mergeWindows(d, tol = 10L, ignore.strand = FALSE))
 	})
-
-	## write merged output for each group
-	message("Writing output .bed files per group")
-	mapply(function(bedfile, group) {
-		rtracklayer::export.bed(object = bedfile$region, con = group)
-	}, bedfile = merged, group = paste0(outfile_prefix, "_" , unique(design$group), ".bed") )
-
-	## write out the union of merges
-	message("Writing merged .bed files")
+	# update the Capset object
 	merged <- lapply(merged, function(x) return(x$region))
-	mergedall <- base::Reduce(S4Vectors::union, merged)
-	rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
+	names(merged) <- unique(as.character(groups))
+	CapSet@tss_detected <- GenomicRanges::GRangesList(merged)
 
-	# return data
-	output <- list(counts.windows = data, counts.background = wider, filter.stats = filterstat)
-	return(output)
+	## Calculate prop reads in TSS per group
+	message("Counting reads within detected TSS")
+	mergedall <- base::Reduce(S4Vectors::union, merged)
+	si$num_intss <- as.numeric(numReadsInBed(mergedall, bam.files))
+	sampleInfo(CapSet) <- si
+
+	# Add the results as a list and save as .Rdata
+	output <- list(counts.windows = data,
+		       counts.background = wider,
+		       filter.stats = S4Vectors::DataFrame(filterstat[[1]]) )
+	if(!(is.null(outfile_prefix))) {
+		message("Writing filtering information as .Rdata")
+		save(output, file = paste0(outfile_prefix, ".Rdata"))
+	}
+
+	return(CapSet)
+}
+
+#' Export the detected TSS from CapSet object as .bed files
+#'
+#' @param CapSet The modified CapSet object after running \code{\link{detect_TSS}} function
+#' @param outfile_prefix Prefix (with path) for output .bed files
+#' @param pergroup If TRUE, write output per group of samples
+#' @param merged If TRUE, write merged bed file (union of all groups)
+#'
+#' @return .bed file(s) containing detected TSS.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' export_tss(cs, merged = TRUE, outfile_prefix = "testdata")
+#' }
+#'
+export_tss <- function(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE) {
+
+	mergedBED <- CapSet@tss_detected
+	if(isTRUE(pergroup)) {
+		## write merged output for each group
+		message("Writing output .bed files per group")
+		mapply(function(bedfile, group) {
+			rtracklayer::export.bed(object = bedfile, con = group)
+		}, bedfile = mergedBED, group = paste0(outfile_prefix, "_" , names(mergedBED), ".bed") )
+
+	}
+	if (isTRUE(merged)) {
+		## write out the union of GRanges
+		message("Writing merged .bed files")
+		mergedall <- base::Reduce(S4Vectors::union, mergedBED)
+		rtracklayer::export.bed(mergedall,  con = paste(outfile_prefix, "merged.bed", sep = "_"))
+	}
+
 }

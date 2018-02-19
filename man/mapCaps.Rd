@@ -2,18 +2,16 @@
 % Please edit documentation in R/mapCaps.R
 \name{mapCaps}
 \alias{mapCaps}
-\title{Map the paired-end MAPCap data.}
+\title{Map the data from 5' profiling techniques}
 \usage{
-mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
+mapCaps(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...)
 }
 \arguments{
-\item{index}{character string giving the basename of the Subread index file.}
+\item{CapSet}{An object of class \code{\link{CapSet}}}
 
-\item{R1}{forward read (R1) fastq file, output of \code{\link{trimFastqIndex}} command.}
+\item{genomeIndex}{path to the Subread index file. Should end with the basename of the index.}
 
-\item{R2}{reverse read (R2) fastq file, output of \code{\link{trimFastqIndex}} command.}
-
-\item{outprefix}{output file prefix (without ".bam" extention)}
+\item{outdir}{output directory path}
 
 \item{nthreads}{number of threads to use for mapping.}
 
@@ -22,16 +20,26 @@ mapCaps(index, R1, R2, outprefix, nthreads, logfile = NULL, ...)
 \item{...}{additional arguments passed to the \code{\link{subjunc}} function.}
 }
 \value{
-bamfile A mapped BAM file for the sample.
+modified CapSet object with mapping information. Mapped and sorted BAM files are saved in `outdir`.
 }
 \description{
-Map the paired-end MAPCap data.
+Map the data from 5' profiling techniques
 }
 \examples{
-r1 <- system.file("extdata", "testout_R1.fastq.gz", package = "mapcapR")
-r2 <- system.file("extdata", "testout_R2.fastq.gz", package = "mapcapR")
 \dontrun{
-mapCaps(index,R1 = r1, R2 = r2, outprefix = "test_mapped", nthreads = 10, logfile=NULL)
+# before mapping :
+# 1. Create a CapSet object
+# 2. de-multiplex the fastqs
+
+# load a previously saved CapSet object
+dir <- system.file("extdata", package="icetea")
+cs <- load(file.path(dir, "CSobject.Rdata"))
+
+# map the data (not available on windows)
+library(Rsubread)
+buildindex(basename = "dm6", reference = "/path/to/dm6genome.fa")
+cs <- mapCaps(cs, genomeIndex = "dm6", outdir = dir, nthreads = 10)
+
 }
 
 }

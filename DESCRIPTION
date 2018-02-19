@@ -1,17 +1,22 @@
 Package: mapcapR
 Title: R package for processing and analysis of CAGE data
-Version: 0.1
+Version: 0.98.0
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
-Description: mapcapR is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection
+Description: mapcapR is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection.
 Depends:
-    R (>= 3.2.2)
+    R (>= 3.3)
 Imports:
-    stats, utils, methods, grDevices,
-    plyr, ggplot2,
-    BiocParallel, Biostrings, S4Vectors, Rsamtools,
+    stats, utils, methods, graphics, grDevices,
+    plyr, reshape2, ggplot2, GenomicFeatures, ShortRead,
+    BiocParallel, Biostrings, S4Vectors, Rsamtools, BiocGenerics, IRanges,
     GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
-    VariantAnnotation,  Rsubread, limma, edgeR, csaw, CAGEr
-biocViews: CAGE, MAPCap
+    VariantAnnotation, limma, edgeR, csaw, Rsubread
+biocViews: Transcription, GeneExpression, Sequencing, RNASeq, Transcriptomics,
+            DifferentialExpression, Annotation, SequencingData, ExpressionData
+URL: https://github.com/vivekbhr/icetea
 License: GPL-3
 LazyData: true
 RoxygenNote: 5.0.1
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr

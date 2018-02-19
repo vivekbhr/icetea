@@ -14,10 +14,12 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
 #' splitBAM_byIndex(bamFile = bam,
 #'  	   index_list = c("TTAGCC" ,"CAAGTG"),
 #'  	    	   outfile_list = c("test_filt1.bam","test_filt2.bam"), nthreads = 10)
+#' }
 
 
 splitBAM_byIndex <- function(bamFile, index_list, outfile_list, max_mismatch = 0, nthreads = 1) {
