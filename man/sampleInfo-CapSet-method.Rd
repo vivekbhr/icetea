@@ -10,7 +10,16 @@
 \arguments{
 \item{object}{the \code{\link{CapSet}} object}
 }
+\value{
+sample information data.frame
+}
 \description{
 get sample information data frame
+}
+\examples{
+\dontrun{
+si <- sampleInfo(cs)
+}
+
 }
 

@@ -12,7 +12,18 @@
 
 \item{value}{The replacement sampleInfo data frame}
 }
+\value{
+None
+}
 \description{
 reset sample information data frame
+}
+\examples{
+\dontrun{
+si <- sampleInfo(cs)
+si$mapped_file <- c("new", "files")
+sampleInfo(cs) <- si
+}
+
 }
 

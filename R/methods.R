@@ -28,7 +28,12 @@ setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 #' @param object the \code{\link{CapSet}} object
 #'
 #' @docType methods
+#' @return sample information data.frame
 #' @export
+#' @examples
+#' \dontrun{
+#' si <- sampleInfo(cs)
+#' }
 #'
 
 setMethod("sampleInfo",
@@ -48,7 +53,15 @@ setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInf
 #' reset sample information data frame
 #' @param object The \code{\link{CapSet}} object
 #' @param value The replacement sampleInfo data frame
+#' @return None
 #' @exportMethod "sampleInfo<-"
+#'
+#' @examples
+#' \dontrun{
+#' si <- sampleInfo(cs)
+#' si$mapped_file <- c("new", "files")
+#' sampleInfo(cs) <- si
+#' }
 #'
 setReplaceMethod("sampleInfo",
 		 signature = "CapSet", #value = c("data.frame", "DataFrame") ),
