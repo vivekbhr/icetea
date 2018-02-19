@@ -4,16 +4,17 @@
 \alias{detect_TSS}
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
-detect_TSS(bam.files, design, outfile_prefix, foldChange = 2,
+detect_TSS(CapSet, groups, outfile_prefix = NULL, foldChange = 2,
   restrictChr = NULL)
 }
 \arguments{
-\item{bam.files}{List of bam files to use}
+\item{CapSet}{CapSet object created using \code{\link{newCapSet}} function}
 
-\item{design}{A data frame with rownames = sample names and a column called 'group'
-that contains information about the sample group (see example)}
+\item{groups}{a character vector that contains group name of the sample, for replicate-based TSS
+calling (see example)}
 
-\item{outfile_prefix}{Output name prefix for the .bed files}
+\item{outfile_prefix}{Output name prefix for the .Rdata file containing window counts, background counts
+and filtering statistics calculated during TSS detection.}
 
 \item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
 'usual' amount of starting material and squencing depth (>=5ug starting material,
@@ -31,10 +32,21 @@ samples with 500ng starting material).}
 Detection of Trancription start sites based on local enrichment
 }
 \examples{
+
+# before running this
+# 1. Create a CapSet object
+# 2. de-multiplex the fastqs
+# 3. map them
+# 4. filter duplicate reads from mapped BAM
 \dontrun{
-bams <- system.file("extdata", c("test_filt1.bam", "test_filt2.bam"), package = "mapcapR")
-detect_TSS(bam.files = bams, design = design, outfile_prefix = "testTSS",
-           foldChange = 6, restrictChr = c("2L","2R","X"))
+# load a previously saved CapSet object
+dir <- system.file("extdata", package="icetea")
+cs <- load(file.path(dir, "CSobject.Rdata"))
+
+# detect TSS (samples in same group are treated as replicates)
+
+cs <- detect_TSS(cs, group = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
+           foldChange = 6, restrictChr = "X")
 }
 
 }

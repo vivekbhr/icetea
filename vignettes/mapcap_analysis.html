@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+<meta name="date" content="2018-02-14" />
+
+<title>Analysing CAGE data using ICETEA</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Analysing CAGE data using ICETEA</h1>
+<h4 class="author"><em>Vivek Bhardwaj</em></h4>
+<address class="author_afil">
+Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="author"><em>Thomas Manke</em></h4>
+<address class="author_afil">
+Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><a class="author_email" href="mailto:#"><a href="mailto:manke@ie-freiburg.mpg.de">manke@ie-freiburg.mpg.de</a></a>
+</address>
+<h4 class="date"><em>2018-02-14</em></h4>
+
+
+
+<div id="abstract" class="section level2">
+<h2>Abstract</h2>
+<p><strong>ICETEA</strong> can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols. Here we show the usability of ICETEA in analysis of MAPCap data.</p>
+<p><strong>MAPCap</strong> (Multiplexed Affinity Purification of Capped RNA) is a newly developed CAGE protocol that allows fast and accutate detection of transcription start sites and gene expression analysis of a set of multiplexed samples.</p>
+</div>
+<div id="quick-start" class="section level2">
+<h2>Quick Start</h2>
+<p>Here we show a set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the raw fastq files, we can either perform quality trimming using a standard program (eg. cutadapt/trimgalore) or simply begin the analysis by creating a <code>CapSet</code> object. The <code>CapSet</code> object takes raw/quality trimmed fastq file paths as input, along with a simple dataframe (called <code>sampleInfo</code>) which contains demultiplexing barcodes as rownames and another column called <code>samples</code> which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the TSS.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create directories</span>
+<span class="kw">dir.create</span>(<span class="st">&quot;01_fastq&quot;</span>)
+<span class="kw">dir.create</span>(<span class="st">&quot;01_fastq/raw&quot;</span>)
+<span class="kw">dir.create</span>(<span class="st">&quot;01_fastq/trimmed&quot;</span>)
+<span class="kw">dir.create</span>(<span class="st">&quot;02_splitting&quot;</span>)
+<span class="kw">dir.create</span>(<span class="st">&quot;03_mapping&quot;</span>)
+<span class="kw">dir.create</span>(<span class="st">&quot;04_removedup&quot;</span>)
+<span class="kw">dir.create</span>(<span class="st">&quot;05_tssCalling&quot;</span>)
+
+<span class="co"># load the package </span>
+<span class="kw">library</span>(mapcapR)
+
+<span class="co"># provide demultiplexing barcodes and sample names</span>
+idxlist &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;TGGAAC&quot;</span>, <span class="st">&quot;GGTTAC&quot;</span>)
+fnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;wt_rep1&quot;</span>, <span class="st">&quot;wt_rep2&quot;</span>) 
+
+<span class="co"># make the CapSet object</span>
+
+
+cs &lt;-<span class="st"> </span><span class="kw">newCapSet</span>(<span class="st">&quot;MAPCap&quot;</span>, <span class="st">&quot;paired&quot;</span>, 
+        <span class="st">&quot;01_fastq/raw/MAPCapH_R1.fastq.gz&quot;</span>, 
+        <span class="st">&quot;01_fastq/raw/MAPCapH_R2.fastq.gz&quot;</span>,
+        <span class="dt">sampleInfo =</span> <span class="kw">data.frame</span>(<span class="dt">row.names =</span> idxlist, <span class="dt">samples =</span> fnames))
+
+<span class="co"># trim sample barcodes from sequence</span>
+cs &lt;-<span class="st"> </span><span class="kw">trimFastqIndex</span>(cs, <span class="dt">outdir =</span> <span class="st">&quot;01_fastq/trimmed&quot;</span>)
+
+<span class="co"># demultiplex fastq</span>
+cs &lt;-<span class="st"> </span><span class="kw">demultiplex_fastq</span>(cs, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">outdir =</span> <span class="st">&quot;02_splitting&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)
+
+<span class="co"># map fastq</span>
+cs &lt;-<span class="st"> </span><span class="kw">mapCaps</span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">&quot;03_mapping&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">&quot;03_mapping/subread_mapping.log&quot;</span>)
+
+<span class="co"># filter PCR duplicates</span>
+cs &lt;-<span class="st"> </span><span class="kw">filterDuplicates</span>(cs, <span class="dt">outdir =</span> <span class="st">&quot;04_removedup&quot;</span>)
+
+<span class="co"># detect TSS</span>
+cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;wt&quot;</span>, <span class="st">&quot;wt&quot;</span>), <span class="dt">outfile_prefix =</span> <span class="st">&quot;05_tssCalling&quot;</span>)</code></pre></div>
+</div>
+<div id="help-and-citations" class="section level2">
+<h2>Help and citations</h2>
+<div id="how-to-get-help" class="section level3">
+<h3>How to get help</h3>
+<p>ICETEA questions could be posted to the <a href="https://support.bioconductor.org">Bioconductor support site</a>, which serves as a searchable knowledge base of questions and answers.</p>
+<p>Posting a question and tagging with “ICETEA” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.</p>
+</div>
+<div id="how-to-cite-icetea" class="section level3">
+<h3>How to cite ICETEA</h3>
+<p>Please cite ICETEA as follows:</p>
+</div>
+</div>
+<div id="detailed-description-of-the-above-workflow" class="section level2">
+<h2>Detailed description of the above workflow</h2>
+<div id="creating-a-capset-object" class="section level3">
+<h3>Creating a CapSet object</h3>
+<p>The workflow begins by creating an object of class <code>CapSet</code> using the function <code>newCapSet</code>. This contains information about the experiment method (CAGE, RAMPAGE or MAPCap), along with fastq type (<code>single</code> or <code>paired</code> end) and the path of the fastq files. It also contains a sampleInfo dataframe.</p>
+<p>The sampleInfo is a dataframe containing the demultiplexing barcodes as rownames and the corresponding samplenames within a column called <code>samples</code>.</p>
+<p>With this information, create the CapSet object as follows.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># provide demultiplexing barcodes and sample names</span>
+idxlist &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;TGGAAC&quot;</span>, <span class="st">&quot;GGTTAC&quot;</span>)
+fnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;wt_rep1&quot;</span>, <span class="st">&quot;wt_rep2&quot;</span>) 
+
+<span class="co"># make the CapSet object</span>
+cs &lt;-<span class="st"> </span><span class="kw">newCapSet</span>(<span class="st">&quot;MAPCap&quot;</span>, <span class="st">&quot;paired&quot;</span>, 
+        <span class="st">&quot;01_fastq/raw/MAPCapH_R1.fastq.gz&quot;</span>, 
+        <span class="st">&quot;01_fastq/raw/MAPCapH_R2.fastq.gz&quot;</span>,
+        <span class="dt">sampleInfo =</span> <span class="kw">data.frame</span>(<span class="dt">row.names =</span> idxlist, <span class="dt">samples =</span> fnames))</code></pre></div>
+</div>
+<div id="trimming-the-barcodes" class="section level3">
+<h3>Trimming the barcodes</h3>
+<p>Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to the fastq sequence. The tool <code>trimFastqIndex</code> trims off these barcodes and attaches them in the header of the fastq files for further processing (i.e. sample de-multiplexing and PCR duplicate removal). The output is a modified CapSet object that stors informatin about the fastq file location.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cs &lt;-<span class="st"> </span><span class="kw">trimFastqIndex</span>(cs, <span class="dt">outdir =</span> <span class="st">&quot;01_fastq/trimmed&quot;</span>)</code></pre></div>
+</div>
+<div id="demultiplexing-the-fastq" class="section level3">
+<h3>demultiplexing the fastq</h3>
+<p>Trimmed fastq files from previous steps can now be demultiplxed to produce fastq files corresponding to each sample, using the tool <code>demultiplex_fastq</code>. The result is a modified CapSet object that contains location of demultiplexed files along with processing statistics.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># demultiplex fastq</span>
+cs &lt;-<span class="st"> </span><span class="kw">demultiplex_fastq</span>(cs, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">outdir =</span> <span class="st">&quot;02_splitting&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
+<p>It takes about 6 min (340 sec) to trim and de-multiplex 1M PE reads into 12 sampels (12 pair of fastqs), using 1 thread. This can be done under 45 seconds if 10 threads are used.</p>
+<p>Optionally, we can skip the above process and perform post-mapping de-multiplexing on the BAM files (see below).</p>
+</div>
+<div id="mapping-the-fastqs" class="section level3">
+<h3>Mapping the fastqs</h3>
+<p>The demultiplexed fastqs can now be mapped using the <code>mapCaps</code> function. This function is a wrapper over the <code>subjunc</code> function from <code>Rsubread</code> package. It additionally performes sorting and collects mapping statistics of the mapped files, stored in the modified <code>CapSet</code> object.</p>
+<p>In order to run the function we first create a subread index of our genome.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dir.create</span>(<span class="st">&quot;genome_index&quot;</span>)
+Rsubread<span class="op">::</span><span class="kw">buildindex</span>(<span class="dt">basename =</span> <span class="st">&quot;genome_index/dm6&quot;</span>, <span class="dt">reference =</span> <span class="st">&quot;/path/to/dm6/genome.fa&quot;</span>)</code></pre></div>
+<p>We can now perform the mapping.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># provide location of a subread index file</span>
+subread_idx &lt;-<span class="st"> &quot;/data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_index/dm6&quot;</span>
+<span class="co"># map fastq</span>
+cs &lt;-<span class="st"> </span><span class="kw">mapCaps</span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">&quot;03_mapping&quot;</span>, <span class="dt">nthreads =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">&quot;03_mapping/subread_mapping.log&quot;</span>)</code></pre></div>
+<p><strong>Note:</strong> The package Rsubread is not available for windows. Windows users would need to map their demultiplexed files on their own.</p>
+<p><strong>Note:</strong> Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files and perform the de-multiplexing afterwards (see below).</p>
+</div>
+<div id="optional-post-mapping-de-multiplexing" class="section level3">
+<h3>(optional) Post mapping de-multiplexing</h3>
+<p>Demultiplxeing can also be performed on the BAM files after mapping, using the <code>splitBAM_byIndex</code> and <code>splitBAM_byRepindex</code> functions.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">splitBAM_byIndex</span>(bamFile, index_list, outfile_list, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
+</div>
+<div id="filtering-pcr-duplicates" class="section level3">
+<h3>Filtering PCR duplicates</h3>
+<p>Experiments like MAPCap and RAMPAGE provide us a way to remove sequencing reads which are PCR duplicates from the mapped data. random UMIs are added to the read sequence for this purpose. In MAPCap, pre-designed random barcodes present in the oligos serve as the UMIs, while in RAMPAGE, the sequences used as RT-PCR primers are treated as pseudo-random barcodes. PCR duplicates are recognized by identifying reads that map to the same start and end site, and contain the same random UMI.</p>
+<p>The function <code>filterDuplicates</code> removes these PCR duplicate sequences (keeping only one copy in these cases), and creates de-duplicated BAM files. It returns the modified <code>CapSet</code> object with de-duplication statistics.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># filter PCR duplicates</span>
+cs &lt;-<span class="st"> </span><span class="kw">filterDuplicates</span>(cs, <span class="dt">outdir =</span> <span class="st">&quot;04_removedup&quot;</span>)</code></pre></div>
+</div>
+<div id="detection-of-tss" class="section level3">
+<h3>Detection of TSS</h3>
+<p>ICETEA implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.</p>
+<p>This method is implemented in the function <code>detect_TSS</code>, which returns a modified <code>CapSet</code> object with TSS detection statistics.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># detect TSS</span>
+cs &lt;-<span class="st"> </span><span class="kw">detect_TSS</span>(cs, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">&quot;wt&quot;</span>, <span class="st">&quot;wt&quot;</span>), <span class="dt">outfile_prefix =</span> <span class="st">&quot;05_tssCalling&quot;</span>)</code></pre></div>
+</div>
+</div>
+<div id="plotting-and-qc" class="section level2">
+<h2>Plotting and QC</h2>
+<p>The <code>sampleInfo</code> field of the CapSet object stores information about the read numbers kept at each step of processing, this information can be easily plotted using the function <code>plot_readStats</code></p>
+<p>We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># separate barchart for numbers</span>
+<span class="kw">plot_readStats</span>(<span class="dt">CapSet =</span> cs, <span class="dt">plotValue =</span> <span class="st">&quot;numbers&quot;</span>, <span class="dt">plotType =</span> <span class="st">&quot;dodge&quot;</span> )
+<span class="co"># stacked barchart for proportions</span>
+<span class="kw">plot_readStats</span>(<span class="dt">CapSet =</span> cs, <span class="dt">plotValue =</span> <span class="st">&quot;proportions&quot;</span>, <span class="dt">plotType =</span> <span class="st">&quot;stack&quot;</span> )</code></pre></div>
+<p>In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can be used to compare samples. This can be done using the function <code>plotPrecision</code>, which takes the <em>known</em> TSS annotations as a TxDB object.</p>
+</div>
+<div id="differential-tss-expression-analysis" class="section level2">
+<h2>Differential TSS expression analysis</h2>
+<p>For the experiments with two or more groups, ICETEA can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.</p>
+<p>The functions <code>fit_diffTSS</code> and <code>detect_diffTSS</code> utilize edgeR to perform differential expression analysis.</p>
+<div id="using-spike-in-controls" class="section level3">
+<h3>Using spike-In controls</h3>
+<p>For the differential TSS expression analysis, the function <code>fit_diffTSS</code> shown above utilize the <a href>TMM method</a> for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides a way to perform spike-in normalization during differential expression analysis, through the functions ``.</p>
+</div>
+</div>
+<div id="additional-useful-functions" class="section level2">
+<h2>Additional useful functions</h2>
+<div id="sample-information" class="section level3">
+<h3>sample information</h3>
+<p>Sample Information correspondng to the CapSet object can be obtained as a data.frame using the <code>sampleInfo</code> function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">si &lt;-<span class="st"> </span><span class="kw">sampleInfo</span>(cs)</code></pre></div>
+<p>In case of underlying files being deleted or moved to another folder, we can reset the sample information.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sampleInfo</span>(cs) &lt;-<span class="st"> </span>newsi</code></pre></div>
+</div>
+<div id="getting-the-gene-counts" class="section level3">
+<h3>getting the gene counts</h3>
+<p>Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load a txdb object</span>
+dm6gtf &lt;-<span class="st"> </span><span class="kw">loadDB</span>(<span class="st">&quot;dm6gtf.DB&quot;</span>)
+<span class="co"># get transcripts by gene</span>
+dm6trans &lt;-<span class="st"> </span><span class="kw">transcriptsBy</span>(dm6gtf, <span class="st">&quot;gene&quot;</span>)
+
+<span class="co"># get gene counts, counting reads around 500 bp of the TSS</span>
+bamfiles &lt;-<span class="st"> </span><span class="kw">sampleInfo</span>(cs)<span class="op">$</span>mapped_file
+gcounts &lt;-<span class="st"> </span><span class="kw">get_geneCounts</span>(dm6trans, bamfiles, <span class="dt">regionAroundTSS =</span> <span class="dv">500</span>)</code></pre></div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -4,18 +4,29 @@
 \alias{fit_diffTSS}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
-fit_diffTSS(bam.files, TSSfile, design, outplots, plotref)
+fit_diffTSS(CSobject, TSSfile = NULL, groups, normalization = "internal",
+  CSobjectSpikeIn, outplots = NULL, plotref)
 }
 \arguments{
-\item{bam.files}{List of bam files to use}
+\item{CSobject}{An object of class \code{\link{CapSet}}}
 
-\item{TSSfile}{A .bed file with TS sites to test. Normally it would be the *merged.bed file
-(output of \code{\link{detect_TSS}} command)}
+\item{TSSfile}{A .bed file with TSS positions to test for differential TSS analysis. If left empty,
+the union of detected TSS present within the provided CSobject would be plotted.}
 
-\item{design}{A data frame with rownames = sample names and a column called 'group'
-that contains information about the sample group (see example)}
+\item{groups}{Character vector indicating the group into which each sample within the CSobject falls.
+the groups would be use to create a design matrix. As an example, replicates for one
+condition could be in the same group.}
 
-\item{outplots}{Output pdf filename for plots}
+\item{normalization}{Either a character indicating the type of normalization to perform ("internal",
+"external" or "none"), or a numeric vector vector with pre-computed normalization factors.
+If internal normalization is chosen, the normalization factors are calculated using the TMM
+method on large windows of the genome. For "external" normalization, the normalization factors
+from the provided spike-in samples are used. "none" performs no normalization.}
+
+\item{CSobjectSpikeIn}{Another CapSet object produced using the spike-in mapping.}
+
+\item{outplots}{Output pdf filename for plots. If provided, the plots for BCV, dispersion and
+MDS plot is created and saved in this file.}
 
 \item{plotref}{Name of reference sample to plot for detection of composition bias in the
 data. Data is normalized using the TMM method to avoid composition bias.}
@@ -27,7 +38,23 @@ Returns an object of class DGEGLM.
 Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 }
 \examples{
+# before running this
+# 1. Create a CapSet object
+# 2. de-multiplex the fastqs
+# 3. map them
+# 4. filter duplicate reads from mapped BAM
+# 5. detect TSS
+# 6. fit the diffTSS model
+\dontrun{
+# load a previously saved CapSet object
+dir <- system.file("extdata", package="icetea")
+cs <- load(file.path(dir, "CSobject.Rdata"))
 
+# count reads on all TSS (union) and fit a model using replicates within groups
+csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 3), normalization = "internal",
+                     outplots = NULL, plotref = "WTa")
+save(csfit, file = "diffTSS_fit.Rdata")
+}
 
 }
 

@@ -1,35 +1,42 @@
-
-
 #' Get gene-level counts from TSS data
 #'
-#' @param txdb A txdb object
+#' @param transcriptGRL A GRangesList object containing transcripts, created using transcriptsBy(txdb)
 #' @param bamfiles Bam files to count the reads from
-#' @param single_end whether reads are single end
+#' @param regionAroundTSS How many bases downstream of TSS to count
+#' @param single_end Logical, indicating whether reads are single end
 #' @param outfile Tab-separated output file name (if required)
 #'
 #' @return data.frame with gene-level counts for all genes in the txdb object
+#'
+#' @importFrom GenomicFeatures transcriptsBy
 #' @export
 #'
 #' @examples
+#' \dontrun{
+#'
+#'  # load a txdb object
+#'  dm6gtf <- loadDB("dm6gtf.DB")
+#'  # get transcripts by gene
+#' 	dm6trans <- transcriptsBy(dm6gtf, "gene")
+#'  # get gene counts, counting reads around 500 bp of the TSS
+#'  gcounts <- get_geneCounts(dm6trans, bamfiles)
+#' }
 #'
 
-get_geneCounts <- function(txdb, bamfiles, single_end = TRUE,outfile = NA) {
+get_geneCounts <- function(transcriptGRL, bamfiles, regionAroundTSS = 500, single_end = TRUE, outfile = NA) {
 
-
-	# get 500bp region around transcripts to count the reads
-	dm6trans <- GenomicFeatures::transcriptsBy(txdb, "gene")
-
-	#add gene names and unlist
-	dm6trans <- mapply(function(x, name) {
+	# add gene names and unlist
+	transcriptGRL <- mapply(function(x, name) {
 		x$geneID <- name
 		return(x)
-		}, dm6trans, names(dm6trans))
+		}, transcriptGRL, names(transcriptGRL))
 
-	dm6trans <- unlist(GenomicRanges::GRangesList(dm6trans))
-	dm6trans_resized <- GenomicRanges::resize(dm6trans, 500, fix = "start")
+	# get XX bp region around transcripts to count the reads
+	transcriptGR <- unlist(GenomicRanges::GRangesList(transcriptGRL))
+	transcriptGR <- GenomicRanges::resize(transcriptGR, regionAroundTSS, fix = "start")
 
 	# count reads
-	tsscounts <- GenomicAlignments::summarizeOverlaps(dm6trans_resized,
+	tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
 							  reads = Rsamtools::BamFileList(bamfiles),
 							  singleEnd = single_end)
 	tsscounts.df <- SummarizedExperiment::assay(tsscounts)

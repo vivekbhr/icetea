@@ -12,11 +12,11 @@
 #' @export
 #'
 #' @examples
-#'
+#' \dontrun{
 #' bam <- system.file("extdata", "test_mapped.bam", package = "mapcapR")
 #' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
+#' }
 #'
-
 
 
 splitBAM_byRepindex <- function(bamFile, outfile_prefix, nthreads = 1) {
