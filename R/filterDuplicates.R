@@ -1,37 +1,37 @@
 
 ## Filter duplicates from a data.frame, using position and UMI seq
 filterdups_func <- function(bamdf) {
-	bamdf$qname <- as.character(bamdf$qname)
-	bamdf$pos <- as.numeric(bamdf$pos)
-	## split the df by chromosome into multiple df
-	chroms <- factor(bamdf$rname, levels = unique(as.character(bamdf$rname)))
-	bam2 <- S4Vectors::split(bamdf, chroms)
+    bamdf$qname <- as.character(bamdf$qname)
+    bamdf$pos <- as.numeric(bamdf$pos)
+    ## split the df by chromosome into multiple df
+    chroms <- factor(bamdf$rname, levels = unique(as.character(bamdf$rname)))
+    bam2 <- S4Vectors::split(bamdf, chroms)
 
-	## get duplicate stats for a given df
-	getdupstats <- function(bamdf) {
-		## split the df by pos (get one list per pos)
-		pos <- factor(bamdf$pos, levels = unique(as.numeric(bamdf$pos)))
-		bamdf.bypos <- S4Vectors::split(bamdf, pos)
-		## extract umis from each df
-		getumi <- function(x) {
-			hdr <- vapply(strsplit(x$qname, "#"), "[[", character(1), 2)
-			umi <- vapply(strsplit(hdr, ":"), "[[", character(1), 2)
-			return(!(duplicated(umi)))
-		}
-		dupStats_umi <- lapply(bamdf.bypos, getumi)
-		return(dupStats_umi)
-	}
-	#getfraglength <- function(x) {
-	#	fraglen <- (2*x$qwidth)  x$isize
-	#	return(fraglen)
-	#}
-	#dupStats_fraglen <- unlist(lapply(fraglengths, function(x) !(duplicated(x)) ))
-	# final dupstats (both UMI and fragment length are same --> remove reads, else keep)
-	#dupStats <- dupStats_umi | dupStats_fraglen
+    ## get duplicate stats for a given df
+    getdupstats <- function(bamdf) {
+    ## split the df by pos (get one list per pos)
+    pos <- factor(bamdf$pos, levels = unique(as.numeric(bamdf$pos)))
+    bamdf.bypos <- S4Vectors::split(bamdf, pos)
+    ## extract umis from each df
+    getumi <- function(x) {
+    hdr <- vapply(strsplit(x$qname, "#"), "[[", character(1), 2)
+    umi <- vapply(strsplit(hdr, ":"), "[[", character(1), 2)
+    return(!(duplicated(umi)))
+    }
+    dupStats_umi <- lapply(bamdf.bypos, getumi)
+    return(dupStats_umi)
+    }
+    #getfraglength <- function(x) {
+    #	fraglen <- (2*x$qwidth)  x$isize
+    #	return(fraglen)
+    #}
+    #dupStats_fraglen <- unlist(lapply(fraglengths, function(x) !(duplicated(x)) ))
+    # final dupstats (both UMI and fragment length are same --> remove reads, else keep)
+    #dupStats <- dupStats_umi | dupStats_fraglen
 
-	## run for all
-	dupstats_perchr <- lapply(bam2, getdupstats)
-	return(unlist(dupstats_perchr))
+    ## run for all
+    dupstats_perchr <- lapply(bam2, getdupstats)
+    return(unlist(dupstats_perchr))
 
 }
 
@@ -46,19 +46,19 @@ filterdups_func <- function(bamdf) {
 #'
 
 filterDups <- function(bamFile, outFile) {
-	message(paste0("Removing PCR duplicates : ", bamFile))
-	# get baminfo
-	sparam <- Rsamtools::ScanBamParam(what = c("qname", "rname", "pos"), #, "isize", "qwidth", "mapq"
-					  flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
-					  			      isFirstMateRead = TRUE) )
+    message(paste0("Removing PCR duplicates : ", bamFile))
+    # get baminfo
+    sparam <- Rsamtools::ScanBamParam(what = c("qname", "rname", "pos"), #, "isize", "qwidth", "mapq"
+      flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
+      			      isFirstMateRead = TRUE) )
 
-	## create rule
-	rule <- S4Vectors::FilterRules(list(filterdups_func))
+    ## create rule
+    rule <- S4Vectors::FilterRules(list(filterdups_func))
 
-	## filter command
-	Rsamtools::filterBam(file = bamFile,
-			     destination = outFile,
-			     filter = rule, param = sparam )
+    ## filter command
+    Rsamtools::filterBam(file = bamFile,
+         destination = outFile,
+         filter = rule, param = sparam )
 
 }
 
@@ -89,29 +89,29 @@ filterDups <- function(bamFile, outFile) {
 #'
 
 filterDuplicates <- function(CapSet, outdir) {
-	si <- sampleInfo(CapSet)
-	bamfiles <- si$mapped_file
+    si <- sampleInfo(CapSet)
+    bamfiles <- si$mapped_file
 
-	# first check if the bam files exist
-	lapply(bamfiles, function(f) {
-		if (!(file.exists(f) )) stop(paste0("mapped file ", f, " doesn't exist!",
-						  "Please update your Capset object with valid file paths ",
-						  "using sampleInfo(CapSet). "))
-	})
-	# then prepare outfile list
-	outfiles <- file.path(outdir, paste0(si$samples, ".filtered.bam") )
-	# run the filter duplicates function on all files
-	mapply(filterDups, bamfiles, outfiles)
+    # first check if the bam files exist
+    lapply(bamfiles, function(f) {
+    if (!(file.exists(f) )) stop(paste0("mapped file ", f, " doesn't exist!",
+      "Please update your Capset object with valid file paths ",
+      "using sampleInfo(CapSet). "))
+    })
+    # then prepare outfile list
+    outfiles <- file.path(outdir, paste0(si$samples, ".filtered.bam") )
+    # run the filter duplicates function on all files
+    mapply(filterDups, bamfiles, outfiles)
 
-	# collect post-filtering stats
-	mapstat <- sapply(outfiles, Rsubread::propmapped, simplify = TRUE)
-	# update CapSet
-	maptable <- as.data.frame(t(mapstat[c(1,3),]))
-	si$filtered_file <- as.character(maptable$Samples)
-	si$num_filtered <- as.numeric(maptable$NumMapped)
-	sampleInfo(CapSet) <- si
+    # collect post-filtering stats
+    mapstat <- sapply(outfiles, Rsubread::propmapped, simplify = TRUE)
+    # update CapSet
+    maptable <- as.data.frame(t(mapstat[c(1,3),]))
+    si$filtered_file <- as.character(maptable$Samples)
+    si$num_filtered <- as.numeric(maptable$NumMapped)
+    sampleInfo(CapSet) <- si
 
-	validObject(CapSet)
-	return(CapSet)
+    validObject(CapSet)
+    return(CapSet)
 
 }

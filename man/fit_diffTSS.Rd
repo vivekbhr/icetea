@@ -47,8 +47,7 @@ Detect differentially expressed Transcription Start Sites between two conditions
 # 6. fit the diffTSS model
 \dontrun{
 # load a previously saved CapSet object
-dir <- system.file("extdata", package="icetea")
-cs <- load(file.path(dir, "CSobject.Rdata"))
+cs <- exampleCSobject()
 
 # count reads on all TSS (union) and fit a model using replicates within groups
 csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 3), normalization = "internal",

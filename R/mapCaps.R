@@ -31,65 +31,65 @@
 
 mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
 
-	## extract info
-	sampleInfo <- sampleInfo(CapSet)
-	expMethod <- CapSet@expMethod
+    ## extract info
+    sampleInfo <- sampleInfo(CapSet)
+    expMethod <- CapSet@expMethod
 
-	# test whether the CapSet object has demultiplexed fastqs
-	demult <- !(is.null(sampleInfo$demult_R1)) # TRUE/FALSE
+    # test whether the CapSet object has demultiplexed fastqs
+    demult <- !(is.null(sampleInfo$demult_R1)) # TRUE/FALSE
 
-	if (demult) {
-		if (sum(sapply(sampleInfo$demult_R1, file.exists, simplify = TRUE)) != nrow(sampleInfo) ) {
-			stop("One or more demultiplxed fastq files don't exist.
-			     Please check file paths under sampleInfo(CapSet)")
-		}
-	}
+    if (demult) {
+    if (sum(sapply(sampleInfo$demult_R1, file.exists, simplify = TRUE)) != nrow(sampleInfo) ) {
+    stop("One or more demultiplxed fastq files don't exist.
+         Please check file paths under sampleInfo(CapSet)")
+    }
+    }
 
-	if (demult) {
-		samplelist <- sampleInfo$samples
-		R1_list <- as.character(sampleInfo$demult_R1)
-		R2_list <- as.character(sampleInfo$demult_R2)
-	} else {
-		samplelist <- list("raw")
-		R1_list <- CapSet@fastq_R1
-		R2_list <- CapSet@fastq_R2
-	}
+    if (demult) {
+    samplelist <- sampleInfo$samples
+    R1_list <- as.character(sampleInfo$demult_R1)
+    R2_list <- as.character(sampleInfo$demult_R2)
+    } else {
+    samplelist <- list("raw")
+    R1_list <- CapSet@fastq_R1
+    R2_list <- CapSet@fastq_R2
+    }
 
-	mapstat <- mapply(function(sample, R1, R2) {
+    mapstat <- mapply(function(sample, R1, R2) {
 
-		message(paste0("Mapping sample : ", sample))
-		# Align using RSubread
-		tmpout <- file.path(outdir, paste0(sample, ".tmp.bam") )
+    message(paste0("Mapping sample : ", sample))
+    # Align using RSubread
+    tmpout <- file.path(outdir, paste0(sample, ".tmp.bam") )
 
-		capture.output(Rsubread::subjunc(index = genomeIndex,
-				  readfile1 = R1,
-				  readfile2 = R2,
-				  output_file = tmpout,
-				  nthreads = nthreads,
-				  minFragLength = 10,
-				  reportAllJunctions = TRUE,
-				  ...),
-		    file = logfile, append = TRUE)
+    capture.output(Rsubread::subjunc(index = genomeIndex,
+      readfile1 = R1,
+      readfile2 = R2,
+      output_file = tmpout,
+      nthreads = nthreads,
+      minFragLength = 10,
+      reportAllJunctions = TRUE,
+      ...),
+        file = logfile, append = TRUE)
 
-		# Sort and Index
-		message("Sorting and Indexing")
-		dest <- file.path(outdir, sample)
-		Rsamtools::sortBam(file = tmpout, destination = dest) # adds .bam suffix
-		Rsamtools::indexBam(paste0(dest, ".bam"))
-		file.remove(tmpout)
+    # Sort and Index
+    message("Sorting and Indexing")
+    dest <- file.path(outdir, sample)
+    Rsamtools::sortBam(file = tmpout, destination = dest) # adds .bam suffix
+    Rsamtools::indexBam(paste0(dest, ".bam"))
+    file.remove(tmpout)
 
-		# Get mapping stats
-		stat <- Rsubread::propmapped(paste0(dest, ".bam"))
-		return(stat)
+    # Get mapping stats
+    stat <- Rsubread::propmapped(paste0(dest, ".bam"))
+    return(stat)
 
-	}, samplelist, R1_list, R2_list)
+    }, samplelist, R1_list, R2_list)
 
-	# edit sampleinfo of CapSet
-	si <- sampleInfo(CapSet)
-	maptable <- as.data.frame(t(mapstat[c(1,3),]))
-	si$mapped_file <- as.character(maptable$Samples)
-	si$num_mapped <- as.numeric(maptable$NumMapped)
-	sampleInfo(CapSet) <- si
+    # edit sampleinfo of CapSet
+    si <- sampleInfo(CapSet)
+    maptable <- as.data.frame(t(mapstat[c(1,3),]))
+    si$mapped_file <- as.character(maptable$Samples)
+    si$num_mapped <- as.numeric(maptable$NumMapped)
+    sampleInfo(CapSet) <- si
 
-	return(CapSet)
+    return(CapSet)
 }
