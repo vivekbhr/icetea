@@ -1,0 +1,15 @@
+ICETEA : Integrating Cap Enrichment with Transcript Expression Analysis
+
+The ICETEA R package is built to work with the newly developed transcript 5' profiling techniques, such as RAMPAGE and MAPCap.
+
+The package can be used for data processing, detection of TSS enrichments, as well as differential TSS detection between two group of samples.
+Functions for :
+
+1. Read demultiplexing.
+2. Mapping
+3. Removal of PCR duplicates using UMIs and mapping position of reads in genomic bins.
+4. New TSS detection method that considers biological replicates.
+5. Differential TSS detection using an RNAseq-like approach.
+6. Annotation of detected TSS.
+7. QC plots
+8. Other helper functions.
