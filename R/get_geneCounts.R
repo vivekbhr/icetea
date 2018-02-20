@@ -14,12 +14,14 @@
 #' @examples
 #'
 #'  # load a txdb object
-#'  library(GenomicFeatures)
-#'  dm6gtf <- loadDb(system.file("extdata/dm6_GTF.DB", package = "icetea"))
+#'  library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+#'  seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 #'  # get transcripts by gene
-#'  dm6trans <- transcriptsBy(dm6gtf, "gene")
+#'  dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
+#'  # load a CapSet object
+#'  cs <- exampleCSobject()
 #'  # get gene counts, counting reads around 500 bp of the TSS
-#'  gcounts <- get_geneCounts(dm6trans, bamfiles)
+#'  gcounts <- get_geneCounts(cs, dm6trans)
 #'
 
 get_geneCounts <- function(CSobject, transcriptGRL, regionAroundTSS = 500, single_end = TRUE, outfile = NA) {
@@ -35,7 +37,7 @@ get_geneCounts <- function(CSobject, transcriptGRL, regionAroundTSS = 500, singl
     transcriptGR <- GenomicRanges::resize(transcriptGR, regionAroundTSS, fix = "start")
     # get bamfiles
     si <- sampleInfo(CSobject)
-    bamfiles <- si$filtered_bam
+    bamfiles <- si$filtered_file
 
     # count reads
     tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,

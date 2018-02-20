@@ -98,7 +98,7 @@ get_stackedNum <- function(df) {
 #'                    or a character vector with paths to the BED files containing detcted TSSs
 #' @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
 #' @param outFile Output file name (filename extention would be used to determine type)
-#'                If outfile not specified, the plot would be retured on the screen
+#'                If outfile not specified, the plot would be returned on the screen
 #' @param sampleNames Labels for input samples (in the same order as the input bed files)
 #' @rdname plot_TSSprecision
 #' @return A ggplot object, or a file. Plot showing perent of TSS detected per sample with respect to
@@ -109,8 +109,9 @@ get_stackedNum <- function(df) {
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # load a txdb object
-#' dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
-#' transcripts <- transcripts(dm6GTF)
+#' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+#' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+#' transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 #'
 #' # Plotting the precision using a pre computed set of TSS (.bed files) :
 #'
@@ -153,8 +154,9 @@ setMethod(plot_TSSprecision,
 #' @examples
 #' # Plotting the precision using a CapSet object :
 #'
-#' dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
-#' transcripts <- transcripts(dm6gtf)
+#' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+#' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+#' transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 #'
 #' plot_TSSprecision(reference = transcripts, detectedTSS = cs,
 #'                   outFile = "TSS_detection_precision.png")
@@ -221,10 +223,3 @@ plotPrecision <- function(ref, tssData, distCut) {
     return(p)
 
 }
-
-# @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
-# @param detectedTSS either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
-#                    or a character vector with paths to the BED files containing detcted TSSs
-# @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
-# @param outFile Output file name (filename extention would be used to determine type).
-#                If outfile not specified, the plot would be retured on the screen

@@ -46,8 +46,8 @@ Plot precision of TSS detection from multiple samples present within a
 # load a previously saved CapSet object
 cs <- exampleCSobject()
 # load a txdb object
-dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
-transcripts <- transcripts(dm6GTF)
+library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
 
@@ -58,8 +58,8 @@ plot_TSSprecision(reference = transcripts, detectedTSS = tssfile,
 
 # Plotting the precision using a CapSet object :
 
-dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
-transcripts <- transcripts(dm6gtf)
+library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 plot_TSSprecision(reference = transcripts, detectedTSS = cs,
                   outFile = "TSS_detection_precision.png")
