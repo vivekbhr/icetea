@@ -4,13 +4,13 @@
 \alias{get_geneCounts}
 \title{Get gene-level counts from TSS data}
 \usage{
-get_geneCounts(transcriptGRL, bamfiles, regionAroundTSS = 500,
+get_geneCounts(CSobject, transcriptGRL, regionAroundTSS = 500,
   single_end = TRUE, outfile = NA)
 }
 \arguments{
-\item{transcriptGRL}{A GRangesList object containing transcripts, created using transcriptsBy(txdb)}
+\item{CSobject}{The \code{\link{CapSet}} object to use.}
 
-\item{bamfiles}{Bam files to count the reads from}
+\item{transcriptGRL}{A GRangesList object containing transcripts, created using transcriptsBy(txdb)}
 
 \item{regionAroundTSS}{How many bases downstream of TSS to count}
 
@@ -27,7 +27,8 @@ Get gene-level counts from TSS data
 \examples{
 
  # load a txdb object
- dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
+ library(GenomicFeatures)
+ dm6gtf <- loadDb(system.file("extdata/dm6_GTF.DB", package = "icetea"))
  # get transcripts by gene
  dm6trans <- transcriptsBy(dm6gtf, "gene")
  # get gene counts, counting reads around 500 bp of the TSS

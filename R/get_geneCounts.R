@@ -1,7 +1,7 @@
 #' Get gene-level counts from TSS data
 #'
+#' @param CSobject The \code{\link{CapSet}} object to use.
 #' @param transcriptGRL A GRangesList object containing transcripts, created using transcriptsBy(txdb)
-#' @param bamfiles Bam files to count the reads from
 #' @param regionAroundTSS How many bases downstream of TSS to count
 #' @param single_end Logical, indicating whether reads are single end
 #' @param outfile Tab-separated output file name (if required)
@@ -14,29 +14,33 @@
 #' @examples
 #'
 #'  # load a txdb object
-#'  dm6gtf <- loadDB(system.file("extdata/dm6_GTF.DB", package = "icetea"))
+#'  library(GenomicFeatures)
+#'  dm6gtf <- loadDb(system.file("extdata/dm6_GTF.DB", package = "icetea"))
 #'  # get transcripts by gene
 #'  dm6trans <- transcriptsBy(dm6gtf, "gene")
 #'  # get gene counts, counting reads around 500 bp of the TSS
 #'  gcounts <- get_geneCounts(dm6trans, bamfiles)
 #'
 
-get_geneCounts <- function(transcriptGRL, bamfiles, regionAroundTSS = 500, single_end = TRUE, outfile = NA) {
+get_geneCounts <- function(CSobject, transcriptGRL, regionAroundTSS = 500, single_end = TRUE, outfile = NA) {
 
     # add gene names and unlist
     transcriptGRL <- mapply(function(x, name) {
-    x$geneID <- name
-    return(x)
-    }, transcriptGRL, names(transcriptGRL))
+                                    x$geneID <- name
+                                    return(x)
+                                    }, transcriptGRL, names(transcriptGRL))
 
     # get XX bp region around transcripts to count the reads
     transcriptGR <- unlist(GenomicRanges::GRangesList(transcriptGRL))
     transcriptGR <- GenomicRanges::resize(transcriptGR, regionAroundTSS, fix = "start")
+    # get bamfiles
+    si <- sampleInfo(CSobject)
+    bamfiles <- si$filtered_bam
 
     # count reads
     tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
-      reads = Rsamtools::BamFileList(bamfiles),
-      singleEnd = single_end)
+                                                reads = Rsamtools::BamFileList(bamfiles),
+                                                singleEnd = single_end)
     tsscounts.df <- SummarizedExperiment::assay(tsscounts)
 
     # sum all the TSS counts to gene counts
