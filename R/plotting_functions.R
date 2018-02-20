@@ -25,12 +25,12 @@ plot_readStats <- function(CSobject,
        outFile = NULL) {
 
     ## evaluate expressions
-    stopifnot(is(CapSet, "CapSet"))
+    stopifnot(is(CSobject, "CapSet"))
     stopifnot(plotType %in% c("stack", "dodge"))
     stopifnot(plotValue %in% c("numbers", "proportions"))
 
     ## get info on how many columns present
-    si <- sampleInfo(CapSet)
+    si <- sampleInfo(CSobject)
 
     sicols <- colnames(si)
     fields_toplot <- c("demult_reads", "num_mapped", "num_filtered", "num_intss")
