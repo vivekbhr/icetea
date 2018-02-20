@@ -48,7 +48,7 @@ setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 setMethod("sampleInfo",
       signature = "CapSet",
       function(object) {
-      	return(object@sampleInfo)
+        return(object@sampleInfo)
       })
 
 #' reset sample information data frame
@@ -90,8 +90,8 @@ setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInf
 setReplaceMethod("sampleInfo",
      signature = "CapSet", #value = c("data.frame", "DataFrame") ),
      function(object, value) {
-     	df <- S4Vectors::DataFrame(value)
-     	object@sampleInfo <- df
-     	validObject(object)
-     	return(object)
+        df <- S4Vectors::DataFrame(value)
+        object@sampleInfo <- df
+        validObject(object)
+        return(object)
      })

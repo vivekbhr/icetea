@@ -84,8 +84,8 @@ fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "inter
     par(cex.lab=1.5, mfrow=c(n,3))
     lapply(cols_toplot, function(x) {
     smoothScatter(bin.ab, adjc[,plotref] - adjc[,x], ylim = c(-6, 6),
-          xlab = "Average abundance",
-          ylab = paste0("Log-ratio (", plotref," vs ", x,")") )
+            xlab = "Average abundance",
+            ylab = paste0("Log-ratio (", plotref," vs ", x,")") )
 
     abline(h = log2(normfacs[plotref]/normfacs[x]), col = "red")
 
@@ -141,7 +141,7 @@ fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "inter
     par(mfrow = c(2,2), mar = c(5,4,2,2))
     for (top in c(100, 500, 1000, 5000)) {
     out <- limma::plotMDS(edgeR::cpm(y, log = TRUE), main = top,
-          labels = design$group, top = top)
+            labels = design$group, top = top)
     }
 
     dev.off()

@@ -122,12 +122,11 @@ get_stackedNum <- function(df) {
 
 setMethod(plot_TSSprecision,
       signature = signature("GRanges","character"),
-      definition =
-      	function(reference,
-      		 detectedTSS,
-      		 distanceCutoff = 500,
-      		 outFile = NULL,
-      		 sampleNames) {
+      definition = function(reference,
+                            detectedTSS,
+                            distanceCutoff = 500,
+                            outFile = NULL,
+                            sampleNames) {
     # read bed files
     tssData <- lapply(detectedTSS, rtracklayer::import.bed)
     names(tssData) <- sampleNames
@@ -163,11 +162,10 @@ setMethod(plot_TSSprecision,
 
 setMethod(plot_TSSprecision,
       signature = signature("GRanges", "CapSet"),
-      definition =
-      	function(reference,
-      		 detectedTSS,
-      		 distanceCutoff = 500,
-      		 outFile = NULL, ...) {
+      definition = function(reference,
+                            detectedTSS,
+                            distanceCutoff = 500,
+                            outFile = NULL, ...) {
 
     # get the data out
        tssData <- detectedTSS@tss_detected

@@ -28,10 +28,9 @@ annotate_TSS <- function(tssFile, txdb, plot = NA) {
     tssbed <- rtracklayer::import.bed(tssFile)
     # Annotate
     db <- VariantAnnotation::locateVariants(query = tssbed,
-    subject = txdb,
+                                            subject = txdb,
     VariantAnnotation::AllVariants(
-    promoter = VariantAnnotation::PromoterVariants(upstream = 500,
-          downstream = 0)))
+    promoter = VariantAnnotation::PromoterVariants(upstream = 500, downstream = 0)))
     ## resolve 1:many mapping isues using ranks from rankdf
     t <- data.frame(QUERYID = db$QUERYID, LOCATION = db$LOCATION)
     tt <- getranks(t, rankdf = rank_df)

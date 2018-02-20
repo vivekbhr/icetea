@@ -29,8 +29,7 @@ splitBAM_byRepindex <- function(bamFile, outfile_prefix, nthreads = 1) {
       character(1), 2),
        stringsAsFactors = FALSE)
     df_sep3 <- data.frame(idx = vapply(strsplit(df_sep$idx, ":"), "[[",
-       character(1), 3),
-    stringsAsFactors = FALSE)
+            character(1), 3), stringsAsFactors = FALSE)
 
     return(grepl(rep_name,df_sep3$idx))
     }
