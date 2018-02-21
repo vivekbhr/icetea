@@ -4,7 +4,7 @@
 \alias{mapCaps}
 \title{Map the data from 5' profiling techniques}
 \usage{
-mapCaps(CSobject, genomeIndex, outdir, nthreads, logfile = NULL, ...)
+mapCaps(CSobject, genomeIndex, outdir, nthreads = 1, logfile = NULL, ...)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}

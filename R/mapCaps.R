@@ -10,6 +10,8 @@
 #' @return modified CapSet object with mapping information. Mapped and sorted BAM files are saved in `outdir`.
 #'
 #' @importFrom utils capture.output
+#' @importFrom methods validObject
+#' @importFrom Rsamtools sortBam indexBam countBam ScanBamParam scanBamFlag
 #' @export
 #'
 #' @examples
@@ -29,7 +31,7 @@
 #' }
 #'
 
-mapCaps <- function(CSobject, genomeIndex, outdir, nthreads, logfile = NULL, ...){
+mapCaps <- function(CSobject, genomeIndex, outdir, nthreads = 1, logfile = NULL, ...){
 
     ## extract info
     sampleInfo <- sampleInfo(CSobject)
@@ -41,7 +43,7 @@ mapCaps <- function(CSobject, genomeIndex, outdir, nthreads, logfile = NULL, ...
     if (demult) {
     if (sum(sapply(sampleInfo$demult_R1, file.exists, simplify = TRUE)) != nrow(sampleInfo) ) {
     stop("One or more demultiplxed fastq files don't exist.
-         Please check file paths under sampleInfo(CSobject)")
+        Please check file paths under sampleInfo(CSobject)")
     }
     }
 
@@ -62,34 +64,41 @@ mapCaps <- function(CSobject, genomeIndex, outdir, nthreads, logfile = NULL, ...
     tmpout <- file.path(outdir, paste0(sample, ".tmp.bam") )
 
     capture.output(Rsubread::subjunc(index = genomeIndex,
-      readfile1 = R1,
-      readfile2 = R2,
-      output_file = tmpout,
-      nthreads = nthreads,
-      minFragLength = 10,
-      reportAllJunctions = TRUE,
-      ...),
+        readfile1 = R1,
+        readfile2 = R2,
+        output_file = tmpout,
+        nthreads = nthreads,
+        minFragLength = 10,
+        reportAllJunctions = TRUE,
+        ...),
         file = logfile, append = TRUE)
 
     # Sort and Index
     message("Sorting and Indexing")
     dest <- file.path(outdir, sample)
-    Rsamtools::sortBam(file = tmpout, destination = dest) # adds .bam suffix
-    Rsamtools::indexBam(paste0(dest, ".bam"))
+    sortBam(file = tmpout, destination = dest) # adds .bam suffix
+    indexBam(paste0(dest, ".bam"))
     file.remove(tmpout)
 
     # Get mapping stats
-    stat <- Rsubread::propmapped(paste0(dest, ".bam"))
+    stat <- countBam(paste0(dest, ".bam"),
+                param = ScanBamParam(
+                    flag = scanBamFlag(
+                        isUnmappedQuery = FALSE,
+                        isFirstMateRead = TRUE,
+                        isSecondaryAlignment = FALSE)))[,5:6] # "file" and "records"
+    stat$file <- as.character(stat$file)
+    stat$records <- as.integer(stat$records)
     return(stat)
-
     }, samplelist, R1_list, R2_list)
 
     # edit sampleinfo of CapSet
     si <- sampleInfo(CSobject)
-    maptable <- as.data.frame(t(mapstat[c(1,3),]))
-    si$mapped_file <- as.character(maptable$Samples)
-    si$num_mapped <- as.numeric(maptable$NumMapped)
+    maptable <- as.data.frame(t(mapstat))
+    si$mapped_file <- file.path(outdir, as.character(maptable$file))
+    si$num_mapped <- as.integer(maptable$records)
     sampleInfo(CSobject) <- si
 
+    validObject(CSobject)
     return(CSobject)
 }

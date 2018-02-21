@@ -1,4 +1,3 @@
-
 ## Filter duplicates from a data.frame, using position and UMI seq
 filterdups_func <- function(bamdf) {
     bamdf$qname <- as.character(bamdf$qname)
@@ -73,6 +72,7 @@ filterDups <- function(bamFile, outFile) {
 #'
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
 #' @importFrom methods validObject
+#' @importFrom Rsamtools countBam ScanBamParam scanBamFlag BamFileList
 #' @export
 #'
 #' @examples
@@ -104,11 +104,18 @@ filterDuplicates <- function(CSobject, outdir) {
     mapply(filterDups, bamfiles, outfiles)
 
     # collect post-filtering stats
-    mapstat <- sapply(outfiles, Rsubread::propmapped, simplify = TRUE)
+    maptable <- countBam(BamFileList(outfiles),
+                param = ScanBamParam(
+                    flag = scanBamFlag(
+                        isUnmappedQuery = FALSE,
+                        isFirstMateRead = TRUE,
+                        isSecondaryAlignment = FALSE)))[,5:6] # "file" and "records"
+    maptable$file <- as.character(maptable$file)
+    maptable$records <- as.integer(maptable$records)
+
     # update CapSet
-    maptable <- as.data.frame(t(mapstat[c(1,3),]))
-    si$filtered_file <- as.character(maptable$Samples)
-    si$num_filtered <- as.numeric(maptable$NumMapped)
+    si$filtered_file <- file.path(outdir, as.character(maptable$file))
+    si$num_filtered <- as.numeric(maptable$records)
     sampleInfo(CSobject) <- si
 
     validObject(CSobject)
