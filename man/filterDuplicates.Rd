@@ -4,10 +4,10 @@
 \alias{filterDuplicates}
 \title{Filter PCR-duplicates from mapped files using internal UMIs}
 \usage{
-filterDuplicates(CapSet, outdir)
+filterDuplicates(CSobject, outdir)
 }
 \arguments{
-\item{CapSet}{an object of class \code{\link{CapSet}}}
+\item{CSobject}{an object of class \code{\link{CapSet}}}
 
 \item{outdir}{output directory for filtered BAM files}
 }

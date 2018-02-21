@@ -4,10 +4,10 @@
 \alias{demultiplex_fastq}
 \title{Demultiplex (tagged) fastq files using sample barcodes}
 \usage{
-demultiplex_fastq(CapSet, max_mismatch, outdir, ncores = 1)
+demultiplex_fastq(CSobject, max_mismatch, outdir, ncores = 1)
 }
 \arguments{
-\item{CapSet}{CapSet object created using \code{\link{newCapSet}} function}
+\item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
 
 \item{max_mismatch}{maximum allowd mismatches}
 

@@ -132,7 +132,7 @@ split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2,
 
 #' Demultiplex (tagged) fastq files using sample barcodes
 #'
-#' @param CapSet CapSet object created using \code{\link{newCapSet}} function
+#' @param CSobject CapSet object created using \code{\link{newCapSet}} function
 #' @param max_mismatch maximum allowd mismatches
 #' @param outdir path to output directory
 #' @param ncores No. of cores to use
@@ -148,16 +148,16 @@ split_fastq <- function(expType, idx_name, outfile_R1, outfile_R2,
 #' cs <- demultiplex_fastq(cs, outdir = dir, max_mismatch = 1)
 #'
 
-demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
+demultiplex_fastq <- function(CSobject, max_mismatch, outdir, ncores = 1) {
 
-    protocol <- CapSet@expMethod
-    sampleinfo <- sampleInfo(CapSet)
+    protocol <- CSobject@expMethod
+    sampleinfo <- sampleInfo(CSobject)
     destinations <- as.character(sampleinfo[,1])
     idx_list <- as.character(rownames(sampleinfo))
 
     ## get the fastq to split (raise error if fastq untrimmed/not existing)
-    fastq_R1 <- CapSet@fastq_R1
-    fastq_R2 <- CapSet@fastq_R2
+    fastq_R1 <- CSobject@fastq_R1
+    fastq_R2 <- CSobject@fastq_R2
     param = BiocParallel::MulticoreParam(workers = ncores)
     message("de-multiplexing the FASTQ file")
 
@@ -188,7 +188,7 @@ demultiplex_fastq <- function(CapSet, max_mismatch, outdir, ncores = 1) {
     sampleinfo$demult_R2 <- as.character(keptinfo$R2)
 
     ## return object
-    sampleInfo(CapSet) <- sampleinfo
-    return(CapSet)
+    sampleInfo(CSobject) <- sampleinfo
+    return(CSobject)
 
 }

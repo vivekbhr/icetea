@@ -1,6 +1,6 @@
 #' Map the data from 5' profiling techniques
 #'
-#' @param CapSet An object of class \code{\link{CapSet}}
+#' @param CSobject An object of class \code{\link{CapSet}}
 #' @param genomeIndex path to the Subread index file. Should end with the basename of the index.
 #' @param outdir output directory path
 #' @param nthreads number of threads to use for mapping.
@@ -29,11 +29,11 @@
 #' }
 #'
 
-mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
+mapCaps <- function(CSobject, genomeIndex, outdir, nthreads, logfile = NULL, ...){
 
     ## extract info
-    sampleInfo <- sampleInfo(CapSet)
-    expMethod <- CapSet@expMethod
+    sampleInfo <- sampleInfo(CSobject)
+    expMethod <- CSobject@expMethod
 
     # test whether the CapSet object has demultiplexed fastqs
     demult <- !(is.null(sampleInfo$demult_R1)) # TRUE/FALSE
@@ -41,7 +41,7 @@ mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
     if (demult) {
     if (sum(sapply(sampleInfo$demult_R1, file.exists, simplify = TRUE)) != nrow(sampleInfo) ) {
     stop("One or more demultiplxed fastq files don't exist.
-         Please check file paths under sampleInfo(CapSet)")
+         Please check file paths under sampleInfo(CSobject)")
     }
     }
 
@@ -51,8 +51,8 @@ mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
     R2_list <- as.character(sampleInfo$demult_R2)
     } else {
     samplelist <- list("raw")
-    R1_list <- CapSet@fastq_R1
-    R2_list <- CapSet@fastq_R2
+    R1_list <- CSobject@fastq_R1
+    R2_list <- CSobject@fastq_R2
     }
 
     mapstat <- mapply(function(sample, R1, R2) {
@@ -85,11 +85,11 @@ mapCaps <- function(CapSet, genomeIndex, outdir, nthreads, logfile = NULL, ...){
     }, samplelist, R1_list, R2_list)
 
     # edit sampleinfo of CapSet
-    si <- sampleInfo(CapSet)
+    si <- sampleInfo(CSobject)
     maptable <- as.data.frame(t(mapstat[c(1,3),]))
     si$mapped_file <- as.character(maptable$Samples)
     si$num_mapped <- as.numeric(maptable$NumMapped)
-    sampleInfo(CapSet) <- si
+    sampleInfo(CSobject) <- si
 
-    return(CapSet)
+    return(CSobject)
 }

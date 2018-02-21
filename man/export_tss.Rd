@@ -4,10 +4,10 @@
 \alias{export_tss}
 \title{Export the detected TSS from CapSet object as .bed files}
 \usage{
-export_tss(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE)
+export_tss(CSobject, outfile_prefix, pergroup = FALSE, merged = TRUE)
 }
 \arguments{
-\item{CapSet}{The modified CapSet object after running \code{\link{detect_TSS}} function}
+\item{CSobject}{The modified CapSet object after running \code{\link{detect_TSS}} function}
 
 \item{outfile_prefix}{Prefix (with path) for output .bed files}
 

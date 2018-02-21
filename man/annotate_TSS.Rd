@@ -22,6 +22,7 @@ Annotate detected Transcription Start Sites
 \examples{
 # load a txdb object
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 # annotate a given TSS bed file
 tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
 annotate_TSS(tssFile = tssfile, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")

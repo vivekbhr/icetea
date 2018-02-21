@@ -25,7 +25,7 @@ or a character vector with paths to the BED files containing detcted TSSs}
 \item{distanceCutoff}{Maximum distance (in base pairs) from reference TSS to plot}
 
 \item{outFile}{Output file name (filename extention would be used to determine type)
-If outfile not specified, the plot would be retured on the screen}
+If outfile not specified, the plot would be returned on the screen}
 
 \item{...}{Additional arguments}
 
@@ -47,6 +47,7 @@ Plot precision of TSS detection from multiple samples present within a
 cs <- exampleCSobject()
 # load a txdb object
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
@@ -59,6 +60,7 @@ plot_TSSprecision(reference = transcripts, detectedTSS = tssfile,
 # Plotting the precision using a CapSet object :
 
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 plot_TSSprecision(reference = transcripts, detectedTSS = cs,
