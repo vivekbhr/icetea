@@ -1,5 +1,6 @@
 Package: icetea
-Title: R package for Integrating mRNA Cap Enrichment with Transcript Expression Analysis
+Type: Package
+Title: Integrating mRNA Cap Enrichment with Transcript Expression Analysis
 Version: 0.98.0
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
 Description: icetea is a tool that integrates the cap enrichment information
@@ -11,17 +12,40 @@ Description: icetea is a tool that integrates the cap enrichment information
 Depends:
     R (>= 3.3)
 Imports:
-    stats, utils, methods, graphics, grDevices,
-    plyr, reshape2, ggplot2, GenomicFeatures, ShortRead,
-    BiocParallel, Biostrings, S4Vectors, Rsamtools, BiocGenerics, IRanges,
-    GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
-    VariantAnnotation, limma, edgeR, csaw, Rsubread
-biocViews:  Transcription, GeneExpression, Sequencing,
-            RNASeq, Transcriptomics, DifferentialExpression
+    stats,
+    utils,
+    methods,
+    graphics,
+    grDevices,
+    plyr,
+    reshape2,
+    ggplot2,
+    GenomicFeatures,
+    ShortRead,
+    BiocParallel,
+    Biostrings,
+    S4Vectors,
+    Rsamtools,
+    BiocGenerics,
+    IRanges,
+    GenomicAlignments,
+    GenomicRanges,
+    rtracklayer,
+    SummarizedExperiment,
+    VariantAnnotation,
+    limma,
+    edgeR,
+    csaw
+
+Suggests:
+    knitr,
+    rmarkdown,
+    Rsubread
+VignetteBuilder: knitr
+biocViews:
+    Transcription, GeneExpression, Sequencing,
+    RNASeq, Transcriptomics, DifferentialExpression
 URL: https://github.com/vivekbhr/icetea
 License: GPL-3
 LazyData: true
 RoxygenNote: 5.0.1
-Suggests: knitr,
-    rmarkdown
-VignetteBuilder: knitr
