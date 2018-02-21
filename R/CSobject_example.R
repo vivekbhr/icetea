@@ -12,7 +12,7 @@ exampleCSobject <- function(protocol = "MAPCap") {
     fnames <- c("embryo1", "embryo2", "embryo3", "embryo4")
     # numbers
     demult_reads <- c(60, 80, 180, 140)
-    num_mapped <- c(120, 180, 360, 280)
+    num_mapped <- c(56, 79, 178, 138)
     num_filtered <- c(47, 56, 145, 91)
     num_intss <- c(46, 53, 138, 88)
 
