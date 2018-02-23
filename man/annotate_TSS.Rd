@@ -2,30 +2,45 @@
 % Please edit documentation in R/annotate_TSS.R
 \name{annotate_TSS}
 \alias{annotate_TSS}
-\title{Annotate detected Transcription Start Sites}
+\title{Annotate the provided Transcription Start Sites}
 \usage{
-annotate_TSS(tssGR, txdb, plot = NA)
+annotate_TSS(tssBED, txdb, featureRank = c("fiveUTR", "promoter", "intron",
+  "coding", "spliceSite", "threeUTR", "intergenic"), plotValue = "number",
+  outFile = NA)
 }
 \arguments{
-\item{tssGR}{GRanges object with detected TSS/differential TSS results.}
-
 \item{txdb}{A txdb object.}
 
-\item{plot}{Type of plot to make (choose from "number", "percent" or NA for no plot)}
+\item{featureRank}{A vector with features to use for breaking ties, in decending order of
+preference (highest to lowest),}
+
+\item{plotValue}{what values to plot (choose from "number", "percent" or NULL for no plot)}
+
+\item{outFile}{Output file name. (filename extention would be used to determine type).
+If outfile not specified, the plot would be retured on the screen}
+
+\item{tssBed}{A bed file with detected TSS/differential TSS coordinates}
 }
 \value{
-Annotation of detected TSS
+A data.frame with number of TSS falling into each feature
 }
 \description{
-Annotate detected Transcription Start Sites
+This function annotates the provided TSS bed file to provide the number of TSS
+falling within the genomic features from a given TxDB object. In order to break
+ties between overlapping features, the function ranks the features by preference.
+By default, the following order is used: fiveUTR > promoter > intron > coding >
+spliceSite > threeUTR > intergenic. A custom order of feature ranks can also be
+provided.
 }
 \examples{
 # load a txdb object
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
-# annotate a given TSS bed file
-tss <- load(file.path(dir, "testTSS_grl.Rdata"))
 
-annotations <- annotate_TSS(tssGR = tss$wt, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")
+# annotate a given TSS bed file
+dir <- system.file("extdata", package = "icetea")
+tss <- file.path(dir, "testTSS_merged.bed")
+annotations <- annotate_TSS(tssBED = tss, TxDb.Dmelanogaster.UCSC.dm6.ensGene,
+               plotValue = "number", outFile = "TSS_annot.pdf")
 
 }
