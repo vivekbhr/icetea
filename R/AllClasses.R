@@ -8,6 +8,7 @@
 #'                   and first column containing corresponding sample names.
 #'
 #' @return An object of class CapSet
+#' @importFrom methods new
 #' @export
 #'
 #' @examples

@@ -39,7 +39,8 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    Rsubread (>= 1.29.0)
+    Rsubread (>= 1.29.0),
+    TxDb.Dmelanogaster.UCSC.dm6.ensGene
 VignetteBuilder: knitr
 biocViews:
     Transcription, GeneExpression, Sequencing,

@@ -12,7 +12,7 @@
 #'         files are saved in `outdir`.
 #'
 #' @importFrom utils capture.output
-#' @importFrom methods validObject
+#' @importFrom methods validObject is
 #' @importFrom Rsamtools sortBam indexBam countBam ScanBamParam scanBamFlag
 #' @export
 #'
