@@ -131,7 +131,7 @@ newCapSet <- function(expMethod,
     # create an instance of CapSet
     new("CapSet",
         sampleInfo = info,  # sample Information
-        fastqType = fastqType,
+        #fastqType = fastqType,
         fastq_R1 = fastq_R1,
         fastq_R2 = fastq_R2,
         expMethod = expMethod,
@@ -163,14 +163,14 @@ check_capSet <- function(object) {
     errors <- c(errors, msg)
     }
     # fastq check
-    if(!file.exists(R1) ) {
-    msg <- paste0("Please specify correct fastq file path for fastq_R1 ")
-    errors <- c(errors, msg)
-    }
-    if(fqtype == "paired" & !(file.exists(R2) ) ) {
-    msg <- paste0("Please specify correct fastq file path for fastq_R2 ")
-    errors <- c(errors, msg)
-    }
+#    if(!is.null(R1) & !file.exists(R1) ) {
+#    msg <- paste0("Please specify correct fastq file path for fastq_R1 ")
+#    errors <- c(errors, msg)
+#    }
+#    if(!is.null(R2) & !(file.exists(R2) ) ) {
+#    msg <- paste0("Please specify correct fastq file path for fastq_R2 ")
+#    errors <- c(errors, msg)
+#    }
     # sampleInfo
     if(!is(info, "DataFrame")) {
     msg <- paste0("sampleInfo should be a DataFrame object ")
@@ -195,11 +195,12 @@ setClassUnion("charOrNULL", c("character", "NULL"))
 #' @importClassesFrom S4Vectors DataFrame
 #'
 CapSet <- setClass("CapSet",
-       slots = c(fastqType = "character",
-        fastq_R1 = "charOrNULL",
-        fastq_R2 = "charOrNULL",
-        expMethod = "character",
-        sampleInfo = "DataFrame",
-        tss_detected = "ANY"
+       slots = c(
+            fastqType = "character",
+            fastq_R1 = "charOrNULL",
+            fastq_R2 = "charOrNULL",
+            expMethod = "character",
+            sampleInfo = "DataFrame",
+            tss_detected = "ANY"
         ),
        validity = check_capSet)
