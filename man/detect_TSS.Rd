@@ -46,4 +46,3 @@ cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 3), outfile_prefix = "te
            foldChange = 6, restrictChr = "X")
 
 }
-

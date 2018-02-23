@@ -25,4 +25,3 @@ bam <- system.file("extdata", "bam/WTa.bam", package = "icetea")
 splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
 
 }
-

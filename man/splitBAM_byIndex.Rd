@@ -33,4 +33,3 @@ splitBAM_byIndex(bamFile = bam,
  	    	   nthreads = 10)
 
 }
-

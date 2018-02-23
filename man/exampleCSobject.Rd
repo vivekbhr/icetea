@@ -16,4 +16,3 @@ Create example CapSet object
 cs <- exampleCSobject(protocol = "MAPCap")
 
 }
-

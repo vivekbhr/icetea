@@ -29,4 +29,3 @@ cs <- exampleCSobject()
 cs <- demultiplex_fastq(cs, outdir = dir, max_mismatch = 1)
 
 }
-

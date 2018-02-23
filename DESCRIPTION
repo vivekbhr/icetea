@@ -36,11 +36,10 @@ Imports:
     limma,
     edgeR,
     csaw
-
 Suggests:
     knitr,
     rmarkdown,
-    Rsubread
+    Rsubread (>= 1.29.0)
 VignetteBuilder: knitr
 biocViews:
     Transcription, GeneExpression, Sequencing,
@@ -48,4 +47,4 @@ biocViews:
 URL: https://github.com/vivekbhr/icetea
 License: GPL-3
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

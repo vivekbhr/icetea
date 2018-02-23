@@ -30,4 +30,3 @@ si$samples <- paste0("sample_", 1:6)
 sampleInfo(cs) <- si
 
 }
-

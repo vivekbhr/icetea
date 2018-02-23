@@ -2,9 +2,9 @@
 % Please edit documentation in R/AllClasses.R
 \docType{class}
 \name{newCapSet}
-\alias{CapSet}
-\alias{CapSet-class}
 \alias{newCapSet}
+\alias{CapSet-class}
+\alias{CapSet}
 \title{Create a new CapSet object}
 \usage{
 newCapSet(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL)
@@ -49,4 +49,3 @@ cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
 save(cs, file = file.path(dir, "CSobject.Rdata") )
 
 }
-

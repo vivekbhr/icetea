@@ -28,4 +28,3 @@ tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
 annotate_TSS(tssFile = tssfile, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")
 
 }
-

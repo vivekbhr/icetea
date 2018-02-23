@@ -15,4 +15,3 @@ boolean
 \description{
 Check capset validity
 }
-

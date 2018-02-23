@@ -33,4 +33,3 @@ cs <- exampleCSobject()
 plot_readStats(cs, plotType = "numbers", outFile = "test_numbers.pdf")
 
 }
-

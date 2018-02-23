@@ -17,4 +17,3 @@ Filtered BAM file (with only R1), after PCR duplicate removal
 \description{
 Filter PCR-duplicates from BAM file using internal UMIs
 }
-

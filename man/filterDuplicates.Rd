@@ -32,4 +32,3 @@ cs <- exampleCSobject()
 cs <- filterDuplicates(cs, outdir = dir)
 
 }
-

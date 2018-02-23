@@ -19,4 +19,3 @@ ggplot object
 \description{
 Plotprecision background script
 }
-

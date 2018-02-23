@@ -17,4 +17,3 @@ Total counts within given ranges per BAM file.
 \description{
 Count the number of reads in a given GRanges
 }
-

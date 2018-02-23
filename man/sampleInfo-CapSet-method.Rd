@@ -24,4 +24,3 @@ cs <- exampleCSobject()
 si <- sampleInfo(cs)
 
 }
-

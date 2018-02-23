@@ -28,4 +28,3 @@ split fastq files
 \description{
 Split paired-end fastq by barcodes
 }
-

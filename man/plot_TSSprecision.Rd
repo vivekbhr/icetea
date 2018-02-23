@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plot_TSSprecision}
 \alias{plot_TSSprecision}
-\alias{plot_TSSprecision,GRanges,CapSet-method}
 \alias{plot_TSSprecision,GRanges,character-method}
+\alias{plot_TSSprecision,GRanges,CapSet-method}
 \title{Compare the precision of TSS detection between multiple samples}
 \usage{
 plot_TSSprecision(reference, detectedTSS, distanceCutoff = 500,
@@ -67,4 +67,3 @@ plot_TSSprecision(reference = transcripts, detectedTSS = cs,
                   outFile = "TSS_detection_precision.png")
 
 }
-
