@@ -8,9 +8,9 @@
 #' spliceSite > threeUTR > intergenic. A custom order of feature ranks can also be
 #' provided.
 #'
-#' @param tssBed A bed file with detected TSS/differential TSS coordinates
+#' @param tssBED A bed file with detected TSS/differential TSS coordinates
 #' @param txdb A txdb object.
-#' @param plotValue what values to plot (choose from "number", "percent" or NULL for no plot)
+#' @param plotValue What values to plot (choose from "number", "percent" or NULL for no plot)
 #' @param featureRank A vector with features to use for breaking ties, in decending order of
 #'                    preference (highest to lowest),
 #' @param outFile Output file name. (filename extention would be used to determine type).

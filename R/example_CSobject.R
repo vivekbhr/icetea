@@ -1,12 +1,13 @@
 #' Create example CapSet object
 #'
+#' @param expMethod Which experiment method to use (options : "RAMPAGE", "MAPCap")
 #' @return An object of class CapSet
 #' @export
 #'
 #' @examples
-#' cs <- exampleCSobject(protocol = "MAPCap")
+#' cs <- exampleCSobject(expMethod = "MAPCap")
 #'
-exampleCSobject <- function(protocol = "MAPCap") {
+exampleCSobject <- function(expMethod = "MAPCap") {
     # list of barcode IDs
     idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
     fnames <- c("embryo1", "embryo2", "embryo3", "embryo4")
@@ -17,7 +18,7 @@ exampleCSobject <- function(protocol = "MAPCap") {
     num_intss <- c(46, 53, 138, 88)
 
     dir <- system.file("extdata", package = "icetea")
-     cs <- newCapSet(expMethod = 'MAPCap',
+    cs <- newCapSet(expMethod = 'MAPCap',
                     fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
                     fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
                     idxList = idxlist,
@@ -31,7 +32,7 @@ exampleCSobject <- function(protocol = "MAPCap") {
      si$num_intss <- num_intss
      sampleInfo(cs) <- si
      # tss detected
-     tss <- load(file.path(dir, "testTSS_grl.Rdata"))
-     cs@tss_detected <- tss
+     grl <- readRDS(file.path(dir, "testTSS_grl.rds"))
+     cs@tss_detected <- grl
      return(cs)
      }

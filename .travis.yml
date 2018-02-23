@@ -4,7 +4,14 @@ language: R
 sudo: false
 cache: packages
 r: bioc-devel
+# in order to sync with devtools::check()
+#r_check_args: --as-cran --timings --no-manual
 warnings_are_errors: true
+# customize build to add biocCheck? (not tested)
+script:
+    - R CMD build . --no-resave-data --no-manual
+    - R CMD check *tar.gz --as-cran --timings --no-manual
+    - R CMD BiocCheck
 os:
     - linux
     - osx

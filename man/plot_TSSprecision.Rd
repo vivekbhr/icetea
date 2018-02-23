@@ -52,17 +52,20 @@ transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
 
-tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
+tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
 plot_TSSprecision(reference = transcripts, detectedTSS = tssfile,
 		sampleNames = "testTSS", distanceCutoff = 500,
 		outFile = "TSS_detection_precision.png")
 
-# Plotting the precision using a CapSet object :
+## Plotting the precision using a CapSet object :
 
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# plot
 plot_TSSprecision(reference = transcripts, detectedTSS = cs,
                   outFile = "TSS_detection_precision.png")
 

@@ -85,7 +85,8 @@ filterDups <- function(bamFile, outFile) {
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # filter duplicate reads from mapped BAM files
-#' cs <- filterDuplicates(cs, outdir = dir)
+#' dir.create("filtered_bam")
+#' cs <- filterDuplicates(cs, outdir = "filtered_bam")
 #'
 
 filterDuplicates <- function(CSobject, outdir) {

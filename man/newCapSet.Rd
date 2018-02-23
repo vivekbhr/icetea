@@ -61,7 +61,7 @@ cs <- newCapSet(expMethod = 'MAPCap',
        sampleNames = fnames)
 
 ## CapSet object from mapped BAM files
-bams <- list.files(file.path(dir, 'bam'), prefix = '.bam$', full.names = TRUE)
+bams <- list.files(file.path(dir, 'bam'), pattern = '.bam$', full.names = TRUE)
 cs <- newCapSet(expMethod = 'MAPCap',
        mapped_file = bams,
        sampleNames = fnames)

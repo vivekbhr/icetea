@@ -4,7 +4,10 @@
 \alias{exampleCSobject}
 \title{Create example CapSet object}
 \usage{
-exampleCSobject(protocol = "MAPCap")
+exampleCSobject(expMethod = "MAPCap")
+}
+\arguments{
+\item{expMethod}{Which experiment method to use (options : "RAMPAGE", "MAPCap")}
 }
 \value{
 An object of class CapSet
@@ -13,6 +16,6 @@ An object of class CapSet
 Create example CapSet object
 }
 \examples{
-cs <- exampleCSobject(protocol = "MAPCap")
+cs <- exampleCSobject(expMethod = "MAPCap")
 
 }

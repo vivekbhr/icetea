@@ -4,14 +4,14 @@
 \alias{demultiplex_fastq}
 \title{Demultiplex (tagged) fastq files using sample barcodes}
 \usage{
-demultiplex_fastq(CSobject, max_mismatch, outdir, ncores = 1)
+demultiplex_fastq(CSobject, outdir, max_mismatch = 0, ncores = 1)
 }
 \arguments{
 \item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
 
-\item{max_mismatch}{maximum allowd mismatches}
-
 \item{outdir}{path to output directory}
+
+\item{max_mismatch}{maximum allowd mismatches}
 
 \item{ncores}{No. of cores to use}
 }
@@ -25,7 +25,9 @@ Demultiplex (tagged) fastq files using sample barcodes
 \examples{
 # load a previously saved CapSet object
 cs <- exampleCSobject()
+
 # demultiplex allowing one mismatch in sample indexes
-cs <- demultiplex_fastq(cs, outdir = dir, max_mismatch = 1)
+dir.create("demult_fastq")
+cs <- demultiplex_fastq(cs, outdir =  "demult_fastq", max_mismatch = 1)
 
 }

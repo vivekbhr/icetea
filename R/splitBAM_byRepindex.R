@@ -1,10 +1,7 @@
-#### ~~~~ Part of the icetea package for analysis of MAPCap data ~~~~ ####
-### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
 
-
-#' Split the composite BAM file using replicate indexes
+#' Split the composite BAM file using replicate indexes (MAPCap data)
 #'
-#' @param bamFile Input BAM file
+#' @param bamFile Path to a mapped BAM file
 #' @param outfile_prefix A prefix for output file (replicates IDs will be added as RR/YY)
 #' @param nthreads Number of threads
 #'
@@ -13,13 +10,13 @@
 #'
 #' @examples
 #'
-#' bam <- system.file("extdata", "bam/WTa.bam", package = "icetea")
-#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
+#' bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
+#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", nthreads = 10)
 #'
 
 splitBAM_byRepindex <- function(bamFile, outfile_prefix, nthreads = 1) {
 
-    ## Write a CLOSURE that return the function to search idx in readname
+    ## Write a closure that return the function to search idx in readname
     message("Creating Filtering Rules")
     make_FilterFunc <- function(rep_name){
 

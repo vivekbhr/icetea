@@ -46,7 +46,7 @@ numReadsInBed <- function(regions, bams = NA) {
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # detect TSS (samples in same group are treated as replicates)
-#' cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
+#' cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 2), outfile_prefix = "testTSS",
 #'            foldChange = 6, restrictChr = "X")
 #'
 

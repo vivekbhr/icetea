@@ -9,17 +9,17 @@ annotate_TSS(tssBED, txdb, featureRank = c("fiveUTR", "promoter", "intron",
   outFile = NA)
 }
 \arguments{
+\item{tssBED}{A bed file with detected TSS/differential TSS coordinates}
+
 \item{txdb}{A txdb object.}
 
 \item{featureRank}{A vector with features to use for breaking ties, in decending order of
 preference (highest to lowest),}
 
-\item{plotValue}{what values to plot (choose from "number", "percent" or NULL for no plot)}
+\item{plotValue}{What values to plot (choose from "number", "percent" or NULL for no plot)}
 
 \item{outFile}{Output file name. (filename extention would be used to determine type).
 If outfile not specified, the plot would be retured on the screen}
-
-\item{tssBed}{A bed file with detected TSS/differential TSS coordinates}
 }
 \value{
 A data.frame with number of TSS falling into each feature

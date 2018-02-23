@@ -41,7 +41,7 @@
 #'        sampleNames = fnames)
 #'
 #' ## CapSet object from mapped BAM files
-#' bams <- list.files(file.path(dir, 'bam'), prefix = '.bam$', full.names = TRUE)
+#' bams <- list.files(file.path(dir, 'bam'), pattern = '.bam$', full.names = TRUE)
 #' cs <- newCapSet(expMethod = 'MAPCap',
 #'        mapped_file = bams,
 #'        sampleNames = fnames)
@@ -58,7 +58,8 @@ newCapSet <- function(expMethod,
                     filtered_file = NA
                     ) {
     ## Get numbers from already provided files
-    # R1
+    suppressWarnings({
+        # R1
     if(!is.na(demult_R1)) {
         message("Checking de-multiplexed R1 reads")
         if(sum(sapply(demult_R1, file.exists, simplify = TRUE)) != length(demult_R1)) {
@@ -97,9 +98,9 @@ newCapSet <- function(expMethod,
     }
     # Filtered BAM
     if(!is.na(filtered_file)) {
-        message("Checking mapped file")
+        message("Checking de-duplicated file")
         if(sum(sapply(filtered_file, file.exists, simplify = TRUE)) != length(filtered_file)) {
-            stop("One or more mapped files don't exist!")
+            stop("One or more de-duplicated files don't exist!")
         }
         filt_readcounts <- countBam(BamFileList(filtered_file),
                 param = ScanBamParam(
@@ -110,6 +111,8 @@ newCapSet <- function(expMethod,
     } else {
         filt_readcounts <- NA
     }
+
+    })
 
     # make sampleinfo DataFrame
     info <- S4Vectors::DataFrame(row.names = idxList,
@@ -169,12 +172,12 @@ check_capSet <- function(object) {
     errors <- c(errors, msg)
     }
     # sampleInfo
-    if(is(info, "DataFrame")) {
+    if(!is(info, "DataFrame")) {
     msg <- paste0("sampleInfo should be a DataFrame object ")
     errors <- c(errors, msg)
     }
     # TSS info
-    if(!(class(tss) %in% c("NULL", "GRangesList")) ) {
+    if(!(class(tss) %in% c("NULL", "CompressedGRangesList", "GRangesList")) ) {
         msg <- paste0("tss_detected should be a GRangesList object ")
         errors <- c(errors, msg)
     }

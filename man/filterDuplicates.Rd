@@ -29,6 +29,7 @@ This script considers the read mapping start position and the UMI to determine w
 # load a previously saved CapSet object
 cs <- exampleCSobject()
 # filter duplicate reads from mapped BAM files
-cs <- filterDuplicates(cs, outdir = dir)
+dir.create("filtered_bam")
+cs <- filterDuplicates(cs, outdir = "filtered_bam")
 
 }

@@ -1,10 +1,6 @@
-#### ~~~~ Part of the icetea package for analysis of MAPCap data ~~~~ ####
-### (c) Vivek Bhardwaj (bhardwaj@ie-freiburg.mpg.de)
-
-
-#' Split the composite BAM file using internal indexes
+#' Split the composite BAM file using internal indexes (MAPCap)
 #'
-#' @param bamFile Input BAM file
+#' @param bamFile Path to a mapped BAM file
 #' @param index_list A list of indexes for splitting (character vector)
 #' @param outfile_list A list of output file names (with order corresponding to that of index_list)
 #' @param max_mismatch No. of mismatches allowed in index (maxium 1 recommended)
@@ -15,11 +11,11 @@
 #'
 #' @examples
 #'
-#' bam <- system.file("extdata", "bam/WTa.bam", package = "icetea")
+#' bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
 #' splitBAM_byIndex(bamFile = bam,
-#'  	   index_list = c("CAAGTG", "CAAGTT"),
-#'  	    	   outfile_list = c("test_filt1.bam","test_filt2.bam"),
-#'  	    	   nthreads = 10)
+#'                  index_list = c("CAAGTG", "CAAGTT"),
+#'                  outfile_list = c("test_filt1.bam","test_filt2.bam"),
+#'                  nthreads = 10)
 #'
 
 

@@ -50,8 +50,8 @@ Detect differentially expressed Transcription Start Sites between two conditions
 cs <- exampleCSobject()
 
 # count reads on all TSS (union) and fit a model using replicates within groups
-csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 3), normalization = "internal",
-                     outplots = NULL, plotref = "WTa")
+csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
+                     outplots = NULL, plotref = "embryo1")
 save(csfit, file = "diffTSS_fit.Rdata")
 }
 

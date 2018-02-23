@@ -39,8 +39,9 @@ cs <- exampleCSobject()
 
 # map the data (not available on windows)
 library(Rsubread)
+dir.create("bam")
 buildindex(basename = "dm6", reference = "/path/to/dm6_genome.fa")
-cs <- mapCaps(cs, genomeIndex = "dm6", outdir = dir, nthreads = 10)
+cs <- mapCaps(cs, genomeIndex = "dm6", outdir = "bam", nthreads = 10)
 
 }
 
