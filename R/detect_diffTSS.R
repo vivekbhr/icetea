@@ -56,8 +56,16 @@ fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "inter
     si <- sampleInfo(CSobject)
     bam.files <- si$filtered_file
     samples <- as.character(si$samples)
-    merged <- CSobject@tss_detected
     design <- data.frame(row.names = samples, group = groups)
+
+    # Import tss locations to test
+    if(is.null(TSSfile)) {
+    merged <- CSobject@tss_detected
+    stopifnot(!(is.null(merged)))
+    mergedall <- base::Reduce(S4Vectors::union, merged)
+    } else {
+    mergedall <- rtracklayer::import.bed(TSSfile)
+    }
 
     if(normalization == "internal") {
     # fail early if plotref is not given
@@ -93,13 +101,6 @@ fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "inter
 
     } else {
     normfacs <- NULL
-    }
-
-    # Import tss locations to test
-    if(is.null(TSSfile)) {
-    mergedall <- base::Reduce(S4Vectors::union, merged)
-    } else {
-    mergedall <- rtracklayer::import.bed(TSSfile)
     }
 
     ## get 5' read counts on the locations from the bam.files
