@@ -7,45 +7,63 @@
 \alias{CapSet}
 \title{Create a new CapSet object}
 \usage{
-newCapSet(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL)
+newCapSet(expMethod, fastq_R1 = NULL, fastq_R2 = NULL, idxList = NULL,
+  sampleNames, demult_R1 = NA, demult_R2 = NA, mapped_file = NA,
+  filtered_file = NA)
 }
 \arguments{
-\item{sampleInfo}{data.frame with sample information, with row.names = barcode sequences,
-and first column containing corresponding sample names.}
-
 \item{expMethod}{experiment method ('CAGE', 'RAMPAGE' or 'MAPCap')}
-
-\item{fastqType}{fastq file type. Should be either 'single' or 'paired'}
 
 \item{fastq_R1}{path for Read R1 (or file path for single end reads)}
 
 \item{fastq_R2}{path for Read R2 (for paired end reads)}
+
+\item{idxList}{a vector of index sequences (for demultiplexing)}
+
+\item{sampleNames}{(required) a vector of sample names corresponding to the provided files}
+
+\item{demult_R1}{a vector of file paths for demultiplexed R1 reads}
+
+\item{demult_R2}{a vector of file paths for demultiplexed R2 reads}
+
+\item{mapped_file}{a vector of file paths for mapped BAM files.}
+
+\item{filtered_file}{a vector of file paths for de-duplicated BAM files.}
 }
 \value{
 An object of class CapSet
 }
 \description{
-Create a new CapSet object
+The function creates an object of class `CapSet`, used for the TSS analysis.
+A CapSet object can be created using the the raw, multiplxed fastq files along
+with the list of sample indexes and corresponding sample names. In case the
+files are already de-multiplexed or mapped, the CapSet object can also be created
+using the path to demultiplexed fastq/mapped or filtered BAM files, along with
+corresponding sample names. In these cases statistics and operations for the
+missing files would not be possible.
 
 CapSet object
 }
 \examples{
 
 # list of barcode IDs
-idxlist <- c("CAAGTG", "AGATGC", "TGTGAG",
-		 "GGTTAC", "TTAGCC", "AGTCGA")
-# corresponding sample names
-fnames <-  c("WTa", "WTb", "WTc",
-		 "MLEa", "MLEb", "MLEc")
+idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
 
-# create a new capset object and save
 dir <- system.file("extdata", package="icetea")
+# corresponding sample names
+fnames <- c("embryo1", "embryo2", "embryo3", "embryo4")
 
-cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
-	fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
-	fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
-	sampleInfo = data.frame(row.names = idxlist, samples = fnames))
+## CapSet object from raw (multiplexed) fastq files
+cs <- newCapSet(expMethod = 'MAPCap',
+       fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
+       fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
+       idxList = idxlist,
+       sampleNames = fnames)
 
-save(cs, file = file.path(dir, "CSobject.Rdata") )
+## CapSet object from mapped BAM files
+bams <- list.files(file.path(dir, 'bam'), prefix = '.bam$', full.names = TRUE)
+cs <- newCapSet(expMethod = 'MAPCap',
+       mapped_file = bams,
+       sampleNames = fnames)
 
 }
