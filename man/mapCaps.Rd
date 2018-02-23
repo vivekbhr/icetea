@@ -4,7 +4,8 @@
 \alias{mapCaps}
 \title{Map the data from 5' profiling techniques}
 \usage{
-mapCaps(CSobject, genomeIndex, outdir, nthreads = 1, logfile = NULL, ...)
+mapCaps(CSobject, genomeIndex, outdir, externalGTF = NULL, nthreads = 1,
+  logfile = NULL)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
@@ -13,14 +14,16 @@ mapCaps(CSobject, genomeIndex, outdir, nthreads = 1, logfile = NULL, ...)
 
 \item{outdir}{output directory path}
 
+\item{externalGTF}{(optional) provide external annotation file in `GTF`` format to
+increase alignment accuracy}
+
 \item{nthreads}{number of threads to use for mapping.}
 
 \item{logfile}{a log file to write the processing message.}
-
-\item{...}{additional arguments passed to the \code{\link{subjunc}} function.}
 }
 \value{
-modified CapSet object with mapping information. Mapped and sorted BAM files are saved in `outdir`.
+modified CapSet object with mapping information. Mapped and sorted BAM
+        files are saved in `outdir`.
 }
 \description{
 Map the data from 5' profiling techniques
@@ -36,10 +39,9 @@ cs <- exampleCSobject()
 
 # map the data (not available on windows)
 library(Rsubread)
-buildindex(basename = "dm6", reference = "/path/to/dm6genome.fa")
+buildindex(basename = "dm6", reference = "/path/to/dm6_genome.fa")
 cs <- mapCaps(cs, genomeIndex = "dm6", outdir = dir, nthreads = 10)
 
 }
 
 }
-

@@ -5,9 +5,11 @@
 #' @param outdir output directory path
 #' @param nthreads number of threads to use for mapping.
 #' @param logfile a log file to write the processing message.
-#' @param ... additional arguments passed to the \code{\link{subjunc}} function.
+#' @param externalGTF (optional) provide external annotation file in `GTF`` format to
+#'                    increase alignment accuracy
 #'
-#' @return modified CapSet object with mapping information. Mapped and sorted BAM files are saved in `outdir`.
+#' @return modified CapSet object with mapping information. Mapped and sorted BAM
+#'         files are saved in `outdir`.
 #'
 #' @importFrom utils capture.output
 #' @importFrom methods validObject
@@ -25,13 +27,13 @@
 #'
 #' # map the data (not available on windows)
 #' library(Rsubread)
-#' buildindex(basename = "dm6", reference = "/path/to/dm6genome.fa")
+#' buildindex(basename = "dm6", reference = "/path/to/dm6_genome.fa")
 #' cs <- mapCaps(cs, genomeIndex = "dm6", outdir = dir, nthreads = 10)
 #'
 #' }
 #'
 
-mapCaps <- function(CSobject, genomeIndex, outdir, nthreads = 1, logfile = NULL, ...){
+mapCaps <- function(CSobject, genomeIndex, outdir, externalGTF = NULL, nthreads = 1, logfile = NULL){
 
     ## extract info
     sampleInfo <- sampleInfo(CSobject)
@@ -56,22 +58,52 @@ mapCaps <- function(CSobject, genomeIndex, outdir, nthreads = 1, logfile = NULL,
     R1_list <- CSobject@fastq_R1
     R2_list <- CSobject@fastq_R2
     }
-
+    # get annotation if provided
+    if(!is.null(externalGTF)) {
+        useAnnot <- TRUE
+    } else {
+        useaAnnot <- FALSE
+    }
     mapstat <- mapply(function(sample, R1, R2) {
-
     message(paste0("Mapping sample : ", sample))
     # Align using RSubread
     tmpout <- file.path(outdir, paste0(sample, ".tmp.bam") )
-
-    capture.output(Rsubread::subjunc(index = genomeIndex,
-        readfile1 = R1,
-        readfile2 = R2,
-        output_file = tmpout,
-        nthreads = nthreads,
-        minFragLength = 10,
-        reportAllJunctions = TRUE,
-        ...),
-        file = logfile, append = TRUE)
+    capture.output(
+        Rsubread::subjunc(index = genomeIndex,# change here
+                        readfile1 = R1,
+                        readfile2 = R2,
+                        output_file = tmpout,
+                        annot.ext = externalGTF,
+                        isGTF = TRUE,
+                        # annotation (v1.28 onwards)
+                        useAnnotation = useAnnot,
+                        annot.inbuilt=NULL,# neglected
+                        GTF.featureType="exon",
+                        GTF.attrType="gene_id",
+                        chrAliases=NULL,
+                        input_format="gzFASTQ",
+                        output_format="BAM",
+                        nsubreads=20,
+                        TH1=1,
+                        TH2=1,
+                        maxMismatches=3,
+                        nthreads=10,
+                        indels=5,
+                        complexIndels=FALSE,
+                        phredOffset=33,
+                        unique=TRUE,
+                        nBestLocations=1,
+                        minFragLength=10,
+                        maxFragLength=600,
+                        PE_orientation="fr",
+                        nTrim5=0,
+                        nTrim3=0,
+                        readGroupID=NULL,
+                        readGroup=NULL,
+                        color2base=FALSE,
+                        # subjunc-specific
+                        reportAllJunctions=FALSE,
+                        ),file = logfile, append = TRUE)
 
     # Sort and Index
     message("Sorting and Indexing")
