@@ -1,7 +1,7 @@
 
 #' Annotate detected Transcription Start Sites
 #'
-#' @param tssFile BED file with detected TSS/differential TSS results.
+#' @param tssGR GRanges object with detected TSS/differential TSS results.
 #' @param txdb A txdb object.
 #' @param plot Type of plot to make (choose from "number", "percent" or NA for no plot)
 #'
@@ -15,18 +15,17 @@
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 #' # annotate a given TSS bed file
-#' tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
-#' annotate_TSS(tssFile = tssfile, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")
+#' tss <- load(file.path(dir, "testTSS_grl.Rdata"))
+#'
+#' annotations <- annotate_TSS(tssGR = tss$wt, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")
 #'
 
-annotate_TSS <- function(tssFile, txdb, plot = NA) {
+annotate_TSS <- function(tssGR, txdb, plot = NA) {
 
     ## resolve 1:many mapping issue by prioritising some features over others
     rank_df <- data.frame(feature = c("fiveUTR", "promoter", "intron", "coding",
       "spliceSite", "threeUTR", "intergenic"),
           rank = c(1,2,3,4,5,6,7))
-    # import TSS file
-    tssbed <- rtracklayer::import.bed(tssFile)
     # Annotate
     db <- VariantAnnotation::locateVariants(query = tssbed,
                                             subject = txdb,

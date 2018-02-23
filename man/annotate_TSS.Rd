@@ -4,10 +4,10 @@
 \alias{annotate_TSS}
 \title{Annotate detected Transcription Start Sites}
 \usage{
-annotate_TSS(tssFile, txdb, plot = NA)
+annotate_TSS(tssGR, txdb, plot = NA)
 }
 \arguments{
-\item{tssFile}{BED file with detected TSS/differential TSS results.}
+\item{tssGR}{GRanges object with detected TSS/differential TSS results.}
 
 \item{txdb}{A txdb object.}
 
@@ -24,7 +24,8 @@ Annotate detected Transcription Start Sites
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 # annotate a given TSS bed file
-tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
-annotate_TSS(tssFile = tssfile, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")
+tss <- load(file.path(dir, "testTSS_grl.Rdata"))
+
+annotations <- annotate_TSS(tssGR = tss$wt, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")
 
 }
