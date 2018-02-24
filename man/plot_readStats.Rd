@@ -30,6 +30,6 @@ Plot read statistics from the CapSet object
 
 # load a previously saved CapSet object
 cs <- exampleCSobject()
-plot_readStats(cs, plotType = "numbers", outFile = "test_numbers.pdf")
+plot_readStats(cs, plotType = "dodge", plotValue = "numbers", outFile = "test_numbers.pdf")
 
 }
