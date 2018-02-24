@@ -4,6 +4,7 @@ language: R
 sudo: false
 cache: packages
 r: bioc-devel
+bioc_packages: BiocCheck
 # in order to sync with devtools::check()
 #r_check_args: --as-cran --timings --no-manual
 warnings_are_errors: true
