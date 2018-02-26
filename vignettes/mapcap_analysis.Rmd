@@ -279,7 +279,7 @@ Sample Information correspondng to the CapSet object can be obtained as a data.f
 si <- sampleInfo(cs)
 dir <- system.file("extdata/bam", package = "icetea")
 si$mapped_file <- list.files(dir, pattern = ".bam$", full.names = TRUE)
-sampleInfo(cs) <- newsi
+sampleInfo(cs) <- si
 ```
 
 ### getting the gene counts
