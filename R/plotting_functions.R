@@ -156,6 +156,8 @@ setMethod(plot_TSSprecision,
 #'
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+#' # only use chrX to make the analysis faster
+#' seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
 #' transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 #'
 #' # load a previously saved CapSet object

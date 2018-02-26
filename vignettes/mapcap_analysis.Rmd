@@ -231,6 +231,8 @@ a TxDB object.
 ```{r eval=TRUE}
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+# only analyse genes on chrX to make the analysis faster
+seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
 transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
@@ -285,8 +287,6 @@ sampleInfo(cs) <- newsi
 Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.
 
 ```{r eval=TRUE}
-# Use only X chromosome genes for simplicity
-seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
 dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
 # get gene counts, counting reads around 500 bp of the TSS
 gcounts <- get_geneCounts(cs, dm6trans)
