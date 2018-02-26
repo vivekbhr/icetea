@@ -3,6 +3,7 @@
 \docType{methods}
 \name{sampleInfo}
 \alias{sampleInfo}
+\alias{sampleInfo<-}
 \alias{sampleInfo}
 \alias{sampleInfo,CapSet-method}
 \alias{sampleInfo<-,CapSet-method}
@@ -39,5 +40,4 @@ si <- sampleInfo(cs)
 si$samples <- paste0("sample_", seq_along(1:nrow(si)) )
 # replace
 sampleInfo(cs) <- si
-
 }

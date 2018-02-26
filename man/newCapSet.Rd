@@ -44,6 +44,23 @@ missing files would not be possible.
 
 CapSet object
 }
+\section{Slots}{
+
+\describe{
+\item{\code{fastqType}}{Type of fastq ('single' or 'paired')}
+
+\item{\code{fastq_R1}}{Path to R1 fastq}
+
+\item{\code{fastq_R2}}{Path to R1 fastq (for paired-end data)}
+
+\item{\code{expMethod}}{Name of protocol (RAMPGE or MAPCap)}
+
+\item{\code{sampleInfo}}{A DataFrame object created using information from
+\code{\link{newCapSet}} function}
+
+\item{\code{tss_detected}}{A GRangesList object of detected TSS}
+}}
+
 \examples{
 
 # list of barcode IDs

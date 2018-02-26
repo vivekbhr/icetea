@@ -192,6 +192,13 @@ setClassUnion("charOrNULL", c("character", "NULL"))
 #' CapSet object
 #'
 #' @rdname newCapSet
+#' @slot fastqType Type of fastq ('single' or 'paired')
+#' @slot fastq_R1 Path to R1 fastq
+#' @slot fastq_R2 Path to R1 fastq (for paired-end data)
+#' @slot expMethod Name of protocol (RAMPGE or MAPCap)
+#' @slot sampleInfo A DataFrame object created using information from
+#'                  \code{\link{newCapSet}} function
+#' @slot tss_detected A GRangesList object of detected TSS
 #' @importClassesFrom S4Vectors DataFrame
 #'
 CapSet <- setClass("CapSet",
