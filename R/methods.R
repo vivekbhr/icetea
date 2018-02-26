@@ -16,26 +16,11 @@ setMethod("show", "CapSet", function(object) {
     print(object@tss_detected)
 } )
 
-#' Retrieve and replace sample information of a CapSet object
-#'
-#' @name sampleInfo
-#' @param object the \code{\link{CapSet}} object
-#'
-#' @docType methods
-#' @return sample information data.frame
-#' @export
-#' @examples
-#'
-#' # load a previously saved CapSet object
-#' cs <- exampleCSobject()
-#' # get sampleinfo
-#' si <- sampleInfo(cs)
-#' # modify
-#' si$samples <- paste0("sample_", seq_along(1:nrow(si)) )
-#' # replace
-#' sampleInfo(cs) <- si
-#'
 
+
+#' @rdname sampleInfo
+#' @export
+#'
 setMethod("sampleInfo",
       signature = "CapSet",
       function(object) {

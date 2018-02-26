@@ -10,7 +10,25 @@ setGeneric("plot_TSSprecision",
 #' @export
 setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 
-
-#' @rdname sampleInfo
+#' Retrieve and replace sample information of a CapSet object
+#'
+#' @name sampleInfo
+#' @param object The \code{\link{CapSet}} object
+#' @param value Replacement DataFrame object
+#' @param ... Additional options
+#'
+#' @docType methods
+#' @return sample information data.frame
 #' @export
+#' @examples
+#'
+#' # load a previously saved CapSet object
+#' cs <- exampleCSobject()
+#' # get sampleinfo
+#' si <- sampleInfo(cs)
+#' # modify
+#' si$samples <- paste0("sample_", seq_along(1:nrow(si)) )
+#' # replace
+#' sampleInfo(cs) <- si
+#'
 setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))

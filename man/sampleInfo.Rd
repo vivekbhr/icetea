@@ -3,8 +3,8 @@
 \docType{methods}
 \name{sampleInfo}
 \alias{sampleInfo}
-\alias{sampleInfo<-}
 \alias{sampleInfo}
+\alias{sampleInfo,CapSet-method}
 \alias{sampleInfo<-,CapSet-method}
 \title{Retrieve and replace sample information of a CapSet object}
 \usage{
@@ -17,7 +17,11 @@ sampleInfo(object, ...) <- value
 \S4method{sampleInfo}{CapSet}(object) <- value
 }
 \arguments{
-\item{object}{the \code{\link{CapSet}} object}
+\item{object}{The \code{\link{CapSet}} object}
+
+\item{...}{Additional options}
+
+\item{value}{Replacement DataFrame object}
 }
 \value{
 sample information data.frame
