@@ -40,44 +40,36 @@ along with a simple dataframe (called `sampleInfo`) which contains demultiplexin
 called `samples` which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the TSS.
 
 ```{r eval=FALSE}
-# create directories
-dir.create("01_fastq")
-dir.create("01_fastq/raw")
-dir.create("01_fastq/trimmed")
-dir.create("02_splitting")
-dir.create("03_mapping")
-dir.create("04_removedup")
-dir.create("05_tssCalling")
-
 # load the package 
 library(icetea)
 
 # provide demultiplexing barcodes and sample names
-idxlist <- c("TGGAAC", "GGTTAC")
-fnames <- c("wt_rep1", "wt_rep2") 
+idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
+dir <- system.file("extdata", package="icetea")
+# corresponding sample names
+fnames <- c("embryo1", "embryo2", "embryo3", "embryo4")
+## create CapSet object
+cs <- newCapSet(expMethod = 'MAPCap',
+                fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
+                fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
+                idxList = idxlist,
+                sampleNames = fnames)
 
-# make the CapSet object
-
-
-cs <- newCapSet("MAPCap", "paired", 
-	    "01_fastq/raw/MAPCapH_R1.fastq.gz", 
-	    "01_fastq/raw/MAPCapH_R2.fastq.gz",
-	    sampleInfo = data.frame(row.names = idxlist, samples = fnames))
-
-# trim sample barcodes from sequence
-cs <- trimFastqIndex(cs, outdir = "01_fastq/trimmed")
-
-# demultiplex fastq
-cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "02_splitting", nthreads = 10)
+# demultiplex fastq and trim the barcodes
+dir.create("splitting")
+cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "splitting", nthreads = 10)
 
 # map fastq
-cs <- mapCaps(cs, subread_idx, outdir = "03_mapping", nthreads = 20, logfile = "03_mapping/subread_mapping.log")
+dir.create("mapping")
+cs <- mapCaps(cs, subread_idx, outdir = "03_mapping", nthreads = 20, logfile = "mapping/subread_mapping.log")
 
 # filter PCR duplicates
-cs <- filterDuplicates(cs, outdir = "04_removedup")
+dir.create("removedup")
+cs <- filterDuplicates(cs, outdir = "removedup")
 
 # detect TSS
-cs <- detect_TSS(cs, groups = c("wt", "wt"), outfile_prefix = "05_tssCalling")
+dir.create("tssCalling")
+cs <- detect_TSS(cs, groups = c("wt", "wt", "mut", "mut"), outfile_prefix = "tssCalling")
 ```
 
 
@@ -108,44 +100,39 @@ called `samples`.
 
 With this information, create the CapSet object as follows.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # provide demultiplexing barcodes and sample names
-idxlist <- c("TGGAAC", "GGTTAC")
-fnames <- c("wt_rep1", "wt_rep2") 
+idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
+dir <- system.file("extdata", package="icetea")
+# corresponding sample names
+fnames <- c("embryo1", "embryo2", "embryo3", "embryo4")
 
-# make the CapSet object
-cs <- newCapSet("MAPCap", "paired", 
-	    "01_fastq/raw/MAPCapH_R1.fastq.gz", 
-	    "01_fastq/raw/MAPCapH_R2.fastq.gz",
-	    sampleInfo = data.frame(row.names = idxlist, samples = fnames))
+## CapSet object from raw (multiplexed) fastq files
+library(icetea)
+cs <- newCapSet(expMethod = 'MAPCap',
+                fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
+                fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
+                idxList = idxlist,
+                sampleNames = fnames)
 
 ```
 
-
-### Trimming the barcodes
-
-Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to
-the fastq sequence. The tool `trimFastqIndex` trims off these barcodes and attaches them in the header of the fastq files 
-for further processing (i.e. sample de-multiplexing and PCR duplicate removal). The output is a modified CapSet object 
-that stors informatin about the fastq file location.
-
-```{r eval=FALSE}
-cs <- trimFastqIndex(cs, outdir = "01_fastq/trimmed")
-```
 
 ### De-multiplexing the fastq
 
-Trimmed fastq files from previous steps can now be demultiplxed to produce fastq files corresponding to each sample,
-using the tool `demultiplex_fastq`. The result is a modified CapSet object that contains location of demultiplexed files
+Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to
+the fastq sequence. The tool `demultiplex_fastq` de-multiplexes the samples using the sample barcode, producing fastq files
+corresponding to each sample. It also trims off these barcodes and attaches them in the header of the fastq files 
+for further processing. Function returns a modified CapSet object that contains location of demultiplexed files
 along with processing statistics.
 
-```{r eval=FALSE}
-# demultiplex fastq
-cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "02_splitting", nthreads = 10)
+```{r eval=TRUE}
+# demultiplex fastq and trim the barcodes
+dir.create("splitting")
+cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "splitting", ncores = 10)
 ```
 
 It takes about 6 min (340 sec) to trim and de-multiplex 1M PE reads into 12 sampels (12 pair of fastqs), using 1 thread. This can be done under 45 seconds if 10 threads are used.
-
 
 Optionally, we can skip the above process and perform post-mapping de-multiplexing on the BAM files (see below).
 
@@ -159,19 +146,22 @@ In order to run the function we first create a subread index of our genome.
 
 ```{r eval=FALSE}
 dir.create("genome_index")
-Rsubread::buildindex(basename = "genome_index/dm6", reference = "/path/to/dm6/genome.fa")
+library(Rsubread)
+buildindex(basename = "genome_index/dm6", reference = "/path/to/dm6/genome.fa")
 ```
 
 We can now perform the mapping.
 
 ```{r eval=FALSE}
 # provide location of a subread index file
-subread_idx <- "/data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_index/dm6"
+subread_idx <- "genome_index/dm6"
 # map fastq
-cs <- mapCaps(cs, subread_idx, outdir = "03_mapping", nthreads = 20, logfile = "03_mapping/subread_mapping.log")
+cs <- mapCaps(cs, subread_idx, outdir = "mapping", nthreads = 20, logfile = "mapping/subread_mapping.log")
+# you can save the CapSet object for later use
+save(cs, file = "myCapSet.Rdata")
 ```
 
-**Note:** The package Rsubread is not available for windows. Windows users would need to map their demultiplexed files on their own.
+**Note:** The package Rsubread is not available for windows. Windows users would need to map their demultiplexed files using another tool.
 
 **Note:** Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files
 and perform the de-multiplexing afterwards (see below).
@@ -195,9 +185,12 @@ and contain the same random UMI.
 The function `filterDuplicates` removes these PCR duplicate sequences (keeping only one copy in these cases), and 
 creates de-duplicated BAM files. It returns the modified `CapSet` object with de-duplication statistics.
 
-```{r eval=FALSE}
-# filter PCR duplicates
-cs <- filterDuplicates(cs, outdir = "04_removedup")
+```{r eval=TRUE}
+# load a previously saved CapSet object (or create new one)
+cs <- exampleCSobject()
+# filter PCR duplicates and save output in a new directory
+dir.create("removedup")
+cs <- filterDuplicates(cs, outdir = "removedup")
 ```
 
 ### Detection of TSS
@@ -207,9 +200,12 @@ windows that show an X-fold enrichment over a local background of 2 kb. Multiple
 
 This method is implemented in the function `detect_TSS`, which returns a modified `CapSet` object with TSS detection statistics.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # detect TSS
-cs <- detect_TSS(cs, groups = c("wt", "wt"), outfile_prefix = "05_tssCalling")
+dir.create("tssCalling")
+cs <- detect_TSS(cs, groups = c("wt", "wt", "mut", "mut"), outfile_prefix = "tssCalling")
+# export the detected TSS bed files
+export_tss(cs, merged = TRUE, outfile_prefix = "testTSS")
 ```
 
 
@@ -220,20 +216,26 @@ information can be easily plotted using the function `plot_readStats`
 
 We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 # separate barchart for numbers
-plot_readStats(CapSet = cs, plotValue = "numbers", plotType = "dodge" )
+plot_readStats(cs, plotValue = "numbers", plotType = "dodge")
 # stacked barchart for proportions
-plot_readStats(CapSet = cs, plotValue = "proportions", plotType = "stack" )
+plot_readStats(cs, plotValue = "proportions", plotType = "stack" )
 ```
 
 In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected
 TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can 
-be used to compare samples. This can be done using the function `plotPrecision`, which takes the *known* TSS annotations as 
+be used to compare samples. This can be done using the function `plot_TSSprecision`, which takes the *known* TSS annotations as 
 a TxDB object.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
+library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
+# Plotting the precision using a pre computed set of TSS (.bed files) :
+tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
+plot_TSSprecision(reference = transcripts, detectedTSS = cs)
 ```
 
 
@@ -245,7 +247,12 @@ For the experiments with two or more groups, ICETEA can also be used to perform 
 The functions `fit_diffTSS` and `detect_diffTSS` utilize edgeR to perform differential expression analysis.
 
 ```{r eval=FALSE}
+csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
+                     outplots = NULL, plotref = "embryo1")
+save(csfit, file = "diffTSS_fit.Rdata")
 
+detect_diffTSS(csfit, testGroup = "mut", controlGroup = "wt",
+               tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
 ```
 
 
@@ -264,15 +271,12 @@ a way to perform spike-in normalization during differential expression analysis,
 
 ### sample information
 
-Sample Information correspondng to the CapSet object can be obtained as a data.frame using the `sampleInfo` function.
+Sample Information correspondng to the CapSet object can be obtained as a data.frame using the `sampleInfo` function. In case of underlying files being deleted or moved to another folder, we can reset the sample information.
 
-```{r eval=FALSE}
+```{r eval=TRUE}
 si <- sampleInfo(cs)
-```
-
-In case of underlying files being deleted or moved to another folder, we can reset the sample information.
-
-```{r eval=FALSE}
+dir <- system.file("extdata/bam", package = "icetea")
+si$mapped_file <- list.files(dir, pattern = ".bam$", full.names = TRUE)
 sampleInfo(cs) <- newsi
 ```
 
@@ -280,14 +284,11 @@ sampleInfo(cs) <- newsi
 
 Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.
 
-```{r eval=FALSE}
-# load a txdb object
-dm6gtf <- loadDB("dm6gtf.DB")
-# get transcripts by gene
-dm6trans <- transcriptsBy(dm6gtf, "gene")
-
+```{r eval=TRUE}
+# Use only X chromosome genes for simplicity
+seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
+dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
 # get gene counts, counting reads around 500 bp of the TSS
-bamfiles <- sampleInfo(cs)$mapped_file
-gcounts <- get_geneCounts(dm6trans, bamfiles, regionAroundTSS = 500)
+gcounts <- get_geneCounts(cs, dm6trans)
 ```
 

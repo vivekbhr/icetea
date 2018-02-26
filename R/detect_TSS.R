@@ -156,7 +156,7 @@ detect_TSS <- function(CSobject, groups,  outfile_prefix = NULL,
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # export tss
-#' export_tss(cs, merged = TRUE, outfile_prefix = "testdata")
+#' export_tss(cs, merged = TRUE, outfile_prefix = "testTSS")
 #'
 #'
 export_tss <- function(CSobject, outfile_prefix, pergroup = FALSE, merged = TRUE) {
