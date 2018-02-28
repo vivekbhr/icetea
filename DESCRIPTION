@@ -35,12 +35,12 @@ Imports:
     VariantAnnotation,
     limma,
     edgeR,
-    csaw
+    csaw,
+    TxDb.Dmelanogaster.UCSC.dm6.ensGene
 Suggests:
     knitr,
     rmarkdown,
-    Rsubread (>= 1.29.0),
-    TxDb.Dmelanogaster.UCSC.dm6.ensGene
+    Rsubread (>= 1.29.0)
 VignetteBuilder: knitr
 biocViews:
     Transcription, GeneExpression, Sequencing,
