@@ -39,7 +39,7 @@ begin the analysis by creating a `CapSet` object. The `CapSet` object takes raw/
 along with a simple dataframe (called `sampleInfo`) which contains demultiplexing barcodes as rownames and another column 
 called `samples` which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the TSS.
 
-```{r eval=FALSE}
+```{r quickIntro, eval=FALSE}
 # load the package 
 library(icetea)
 
@@ -100,7 +100,7 @@ called `samples`.
 
 With this information, create the CapSet object as follows.
 
-```{r eval=TRUE}
+```{r makeCS, eval=TRUE}
 # provide demultiplexing barcodes and sample names
 idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
 dir <- system.file("extdata", package="icetea")
@@ -126,7 +126,7 @@ corresponding to each sample. It also trims off these barcodes and attaches them
 for further processing. Function returns a modified CapSet object that contains location of demultiplexed files
 along with processing statistics.
 
-```{r eval=TRUE}
+```{r demultiplex, eval=TRUE}
 # demultiplex fastq and trim the barcodes
 dir.create("splitting")
 cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "splitting", ncores = 10)
@@ -144,7 +144,7 @@ stored in the modified `CapSet` object.
 
 In order to run the function we first create a subread index of our genome.
 
-```{r eval=FALSE}
+```{r indexgenome, eval=FALSE}
 dir.create("genome_index")
 library(Rsubread)
 buildindex(basename = "genome_index/dm6", reference = "/path/to/dm6/genome.fa")
@@ -152,7 +152,7 @@ buildindex(basename = "genome_index/dm6", reference = "/path/to/dm6/genome.fa")
 
 We can now perform the mapping.
 
-```{r eval=FALSE}
+```{r mapcaps, eval=FALSE}
 # provide location of a subread index file
 subread_idx <- "genome_index/dm6"
 # map fastq
@@ -170,7 +170,7 @@ and perform the de-multiplexing afterwards (see below).
 
 Demultiplxeing can also be performed on the BAM files after mapping, using the `splitBAM_byIndex` and `splitBAM_byRepindex` functions.
 
-```{r eval=FALSE}
+```{r splitbam, eval=FALSE}
 splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 1, nthreads = 10)
 ```
 
@@ -185,7 +185,7 @@ and contain the same random UMI.
 The function `filterDuplicates` removes these PCR duplicate sequences (keeping only one copy in these cases), and 
 creates de-duplicated BAM files. It returns the modified `CapSet` object with de-duplication statistics.
 
-```{r eval=TRUE}
+```{r filterdups, eval=TRUE}
 # load a previously saved CapSet object (or create new one)
 cs <- exampleCSobject()
 # filter PCR duplicates and save output in a new directory
@@ -200,10 +200,11 @@ windows that show an X-fold enrichment over a local background of 2 kb. Multiple
 
 This method is implemented in the function `detect_TSS`, which returns a modified `CapSet` object with TSS detection statistics.
 
-```{r eval=TRUE}
+```{r getTSS, eval=TRUE}
 # detect TSS
 dir.create("tssCalling")
-cs <- detect_TSS(cs, groups = c("wt", "wt", "mut", "mut"), outfile_prefix = "tssCalling")
+cs <- detect_TSS(cs, groups = c("wt", "wt", "mut", "mut"), 
+                 outfile_prefix = "tssCalling", restrictChr = "X")
 # export the detected TSS bed files
 export_tss(cs, merged = TRUE, outfile_prefix = "testTSS")
 ```
@@ -216,7 +217,7 @@ information can be easily plotted using the function `plot_readStats`
 
 We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.
 
-```{r eval=TRUE}
+```{r plotstats, eval=TRUE}
 # separate barchart for numbers
 plot_readStats(cs, plotValue = "numbers", plotType = "dodge")
 # stacked barchart for proportions
@@ -228,7 +229,7 @@ TSSs that fall close to an annotated TSS in the genome. The cumulative fraction 
 be used to compare samples. This can be done using the function `plot_TSSprecision`, which takes the *known* TSS annotations as 
 a TxDB object.
 
-```{r eval=TRUE}
+```{r plotPrecision, eval=TRUE}
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 # only analyse genes on chrX to make the analysis faster
@@ -248,7 +249,7 @@ For the experiments with two or more groups, ICETEA can also be used to perform 
 
 The functions `fit_diffTSS` and `detect_diffTSS` utilize edgeR to perform differential expression analysis.
 
-```{r eval=FALSE}
+```{r diffTSS, eval=FALSE}
 csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
                      outplots = NULL, plotref = "embryo1")
 save(csfit, file = "diffTSS_fit.Rdata")
@@ -264,7 +265,7 @@ For the differential TSS expression analysis, the function `fit_diffTSS` shown a
 for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides
 a way to perform spike-in normalization during differential expression analysis, through the functions ``.
 
-```{r eval=FALSE}
+```{r spikeIn, eval=FALSE}
 
 ```
 
@@ -275,7 +276,7 @@ a way to perform spike-in normalization during differential expression analysis,
 
 Sample Information correspondng to the CapSet object can be obtained as a data.frame using the `sampleInfo` function. In case of underlying files being deleted or moved to another folder, we can reset the sample information.
 
-```{r eval=TRUE}
+```{r sampleinfo, eval=TRUE}
 si <- sampleInfo(cs)
 dir <- system.file("extdata/bam", package = "icetea")
 si$mapped_file <- list.files(dir, pattern = ".bam$", full.names = TRUE)
@@ -286,7 +287,7 @@ sampleInfo(cs) <- si
 
 Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.
 
-```{r eval=TRUE}
+```{r genecounts, eval=FALSE}
 dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
 # get gene counts, counting reads around 500 bp of the TSS
 gcounts <- get_geneCounts(cs, dm6trans)
