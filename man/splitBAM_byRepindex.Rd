@@ -2,12 +2,12 @@
 % Please edit documentation in R/splitBAM_byRepindex.R
 \name{splitBAM_byRepindex}
 \alias{splitBAM_byRepindex}
-\title{Split the composite BAM file using replicate indexes}
+\title{Split the composite BAM file using replicate indexes (MAPCap data)}
 \usage{
 splitBAM_byRepindex(bamFile, outfile_prefix, nthreads = 1)
 }
 \arguments{
-\item{bamFile}{Input BAM file}
+\item{bamFile}{Path to a mapped BAM file}
 
 \item{outfile_prefix}{A prefix for output file (replicates IDs will be added as RR/YY)}
 
@@ -17,12 +17,11 @@ splitBAM_byRepindex(bamFile, outfile_prefix, nthreads = 1)
 Filtered files by replicate Index
 }
 \description{
-Split the composite BAM file using replicate indexes
+Split the composite BAM file using replicate indexes (MAPCap data)
 }
 \examples{
 
-bam <- system.file("extdata", "bam/WTa.bam", package = "icetea")
-splitBAM_byRepindex(bamFile = bam, outfile_prefix = "TEST", nthreads = 10)
+bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
+splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", nthreads = 10)
 
 }
-

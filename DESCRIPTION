@@ -1,22 +1,51 @@
 Package: icetea
-Title: R package for processing and analysis of CAGE data
+Type: Package
+Title: Integrating mRNA Cap Enrichment with Transcript Expression Analysis
 Version: 0.98.0
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
-Description: icetea is a tool for processing and analysis of CAGE data, from raw reads to TSS calling and differential TSS detection.
+Description: icetea is a tool that integrates the cap enrichment information
+            obtained from transcript 5' profiling methods like MAPCap and RAMPAGE,
+            with the analysis of transcript expression. It provides functions for
+            end-to-end analysis : from raw reads to detection of transcription
+            start sites and performing differential TSS detection between group
+            of samples.
 Depends:
     R (>= 3.3)
 Imports:
-    stats, utils, methods, graphics, grDevices,
-    plyr, reshape2, ggplot2, GenomicFeatures, ShortRead,
-    BiocParallel, Biostrings, S4Vectors, Rsamtools, BiocGenerics, IRanges,
-    GenomicAlignments, GenomicRanges, rtracklayer, SummarizedExperiment,
-    VariantAnnotation, limma, edgeR, csaw, Rsubread
-biocViews: Transcription, GeneExpression, Sequencing, RNASeq, Transcriptomics,
-            DifferentialExpression
+    stats,
+    utils,
+    methods,
+    graphics,
+    grDevices,
+    plyr,
+    reshape2,
+    ggplot2,
+    GenomicFeatures,
+    ShortRead,
+    BiocParallel,
+    Biostrings,
+    S4Vectors,
+    Rsamtools,
+    BiocGenerics,
+    IRanges,
+    GenomicAlignments,
+    GenomicRanges,
+    rtracklayer,
+    SummarizedExperiment,
+    VariantAnnotation,
+    limma,
+    edgeR,
+    csaw,
+    TxDb.Dmelanogaster.UCSC.dm6.ensGene
+Suggests:
+    knitr,
+    rmarkdown,
+    Rsubread (>= 1.29.0)
+VignetteBuilder: knitr
+biocViews:
+    Transcription, GeneExpression, Sequencing,
+    RNASeq, Transcriptomics, DifferentialExpression
 URL: https://github.com/vivekbhr/icetea
 License: GPL-3
 LazyData: true
-RoxygenNote: 5.0.1
-Suggests: knitr,
-    rmarkdown
-VignetteBuilder: knitr
+RoxygenNote: 6.0.1

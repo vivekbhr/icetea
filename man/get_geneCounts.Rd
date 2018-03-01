@@ -28,12 +28,15 @@ Get gene-level counts from TSS data
 
  # load a txdb object
  library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
- # get transcripts by gene
+ seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+
+ # get transcripts by gene (only X chromsome, for simplicity)
+ seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
  dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
+
  # load a CapSet object
  cs <- exampleCSobject()
  # get gene counts, counting reads around 500 bp of the TSS
  gcounts <- get_geneCounts(cs, dm6trans)
 
 }
-

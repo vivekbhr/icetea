@@ -17,4 +17,3 @@ A list of ranks
 \description{
 Assign feature ranks on a VariantAnnotation output
 }
-

@@ -19,4 +19,3 @@ A list with new R1 and R2 sequence, quality, barcode string and sample id
 \description{
 Get data to create new ShortReadQ object after barcode trimming
 }
-

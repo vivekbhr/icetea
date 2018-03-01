@@ -2,13 +2,13 @@
 % Please edit documentation in R/splitBAM_byIndex.R
 \name{splitBAM_byIndex}
 \alias{splitBAM_byIndex}
-\title{Split the composite BAM file using internal indexes}
+\title{Split the composite BAM file using internal indexes (MAPCap)}
 \usage{
 splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0,
   nthreads = 1)
 }
 \arguments{
-\item{bamFile}{Input BAM file}
+\item{bamFile}{Path to a mapped BAM file}
 
 \item{index_list}{A list of indexes for splitting (character vector)}
 
@@ -22,15 +22,14 @@ splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0,
 Filtered files
 }
 \description{
-Split the composite BAM file using internal indexes
+Split the composite BAM file using internal indexes (MAPCap)
 }
 \examples{
 
-bam <- system.file("extdata", "bam/WTa.bam", package = "icetea")
+bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
 splitBAM_byIndex(bamFile = bam,
- 	   index_list = c("CAAGTG", "CAAGTT"),
- 	    	   outfile_list = c("test_filt1.bam","test_filt2.bam"),
- 	    	   nthreads = 10)
+                 index_list = c("CAAGTG", "CAAGTT"),
+                 outfile_list = c("test_filt1.bam","test_filt2.bam"),
+                 nthreads = 10)
 
 }
-

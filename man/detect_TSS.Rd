@@ -4,11 +4,11 @@
 \alias{detect_TSS}
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
-detect_TSS(CapSet, groups, outfile_prefix = NULL, foldChange = 2,
+detect_TSS(CSobject, groups, outfile_prefix = NULL, foldChange = 2,
   restrictChr = NULL)
 }
 \arguments{
-\item{CapSet}{CapSet object created using \code{\link{newCapSet}} function}
+\item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
 
 \item{groups}{a character vector that contains group name of the sample, for replicate-based TSS
 calling (see example)}
@@ -42,8 +42,7 @@ Detection of Trancription start sites based on local enrichment
 # load a previously saved CapSet object
 cs <- exampleCSobject()
 # detect TSS (samples in same group are treated as replicates)
-cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
+cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 2), outfile_prefix = "testTSS",
            foldChange = 6, restrictChr = "X")
 
 }
-

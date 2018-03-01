@@ -17,7 +17,7 @@ numReadsInBed <- function(regions, bams = NA) {
 
 #' Detection of Trancription start sites based on local enrichment
 #'
-#' @param CapSet CapSet object created using \code{\link{newCapSet}} function
+#' @param CSobject CapSet object created using \code{\link{newCapSet}} function
 #' @param groups a character vector that contains group name of the sample, for replicate-based TSS
 #'               calling (see example)
 #' @param outfile_prefix Output name prefix for the .Rdata file containing window counts, background counts
@@ -46,11 +46,11 @@ numReadsInBed <- function(regions, bams = NA) {
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # detect TSS (samples in same group are treated as replicates)
-#' cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 3), outfile_prefix = "testTSS",
+#' cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 2), outfile_prefix = "testTSS",
 #'            foldChange = 6, restrictChr = "X")
 #'
 
-detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
+detect_TSS <- function(CSobject, groups,  outfile_prefix = NULL,
            foldChange = 2, restrictChr = NULL) {
 
     # check whether group and outfile_prefix is provided
@@ -58,17 +58,17 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
     if (missing(groups)) stop("Please provide groups!")
 
     # convert group to char
-    si <- sampleInfo(CapSet)
+    si <- sampleInfo(CSobject)
     design <- data.frame(row.names = si$samples, group = as.character(groups) )
 
     if (is.null(si$filtered_file) ) {
-    message("Filtered files not found under sampleInfo(CapSet). Using mapped files")
+    message("Filtered files not found under sampleInfo(CSobject). Using mapped files")
     bam.files <- si$mapped_file
     } else {
     bam.files <- si$filtered_file
     }
     if (sum(file.exists(bam.files)) != length(bam.files)) {
-    stop("One or more bam files don't exist! Check sampleInfo(CapSet) ")
+    stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
     }
 
     # Define read params
@@ -122,13 +122,13 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
     # update the Capset object
     merged <- lapply(merged, function(x) return(x$region))
     names(merged) <- unique(as.character(groups))
-    CapSet@tss_detected <- GenomicRanges::GRangesList(merged)
+    CSobject@tss_detected <- GenomicRanges::GRangesList(merged)
 
     ## Calculate prop reads in TSS per group
     message("Counting reads within detected TSS")
     mergedall <- base::Reduce(S4Vectors::union, merged)
     si$num_intss <- as.numeric(numReadsInBed(mergedall, bam.files))
-    sampleInfo(CapSet) <- si
+    sampleInfo(CSobject) <- si
 
     # Add the results as a list and save as .Rdata
     output <- list(counts.windows = data,
@@ -139,12 +139,12 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
     save(output, file = paste0(outfile_prefix, ".Rdata"))
     }
 
-    return(CapSet)
+    return(CSobject)
 }
 
 #' Export the detected TSS from CapSet object as .bed files
 #'
-#' @param CapSet The modified CapSet object after running \code{\link{detect_TSS}} function
+#' @param CSobject The modified CapSet object after running \code{\link{detect_TSS}} function
 #' @param outfile_prefix Prefix (with path) for output .bed files
 #' @param pergroup If TRUE, write output per group of samples
 #' @param merged If TRUE, write merged bed file (union of all groups)
@@ -156,12 +156,12 @@ detect_TSS <- function(CapSet, groups,  outfile_prefix = NULL,
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # export tss
-#' export_tss(cs, merged = TRUE, outfile_prefix = "testdata")
+#' export_tss(cs, merged = TRUE, outfile_prefix = "testTSS")
 #'
 #'
-export_tss <- function(CapSet, outfile_prefix, pergroup = FALSE, merged = TRUE) {
+export_tss <- function(CSobject, outfile_prefix, pergroup = FALSE, merged = TRUE) {
 
-    mergedBED <- CapSet@tss_detected
+    mergedBED <- CSobject@tss_detected
     if(isTRUE(pergroup)) {
     ## write merged output for each group
     message("Writing output .bed files per group")

@@ -1,34 +1,53 @@
 
-#' Annotate detected Transcription Start Sites
+#' Annotate the provided Transcription Start Sites
 #'
-#' @param tssFile BED file with detected TSS/differential TSS results.
+#' This function annotates the provided TSS bed file to provide the number of TSS
+#' falling within the genomic features from a given TxDB object. In order to break
+#' ties between overlapping features, the function ranks the features by preference.
+#' By default, the following order is used: fiveUTR > promoter > intron > coding >
+#' spliceSite > threeUTR > intergenic. A custom order of feature ranks can also be
+#' provided.
+#'
+#' @param tssBED A bed file with detected TSS/differential TSS coordinates
 #' @param txdb A txdb object.
-#' @param plot Type of plot to make (choose from "number", "percent" or NA for no plot)
+#' @param plotValue What values to plot (choose from "number", "percent" or NULL for no plot)
+#' @param featureRank A vector with features to use for breaking ties, in decending order of
+#'                    preference (highest to lowest),
+#' @param outFile Output file name. (filename extention would be used to determine type).
+#'                If outfile not specified, the plot would be retured on the screen
 #'
-#' @return Annotation of detected TSS
+#' @return A data.frame with number of TSS falling into each feature
 #' @export
-#' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_brewer labs theme theme_gray
+#' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_brewer labs theme
+#'                     theme_gray coord_flip ggsave
 #' @importFrom stats reshape
 #'
 #' @examples
 #' # load a txdb object
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+#'
 #' # annotate a given TSS bed file
-#' tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
-#' annotate_TSS(tssFile = tssfile, TxDb.Dmelanogaster.UCSC.dm6.ensGene, plot = "testplot.pdf")
+#' dir <- system.file("extdata", package = "icetea")
+#' tss <- file.path(dir, "testTSS_merged.bed")
+#' annotations <- annotate_TSS(tssBED = tss, TxDb.Dmelanogaster.UCSC.dm6.ensGene,
+#'                plotValue = "number", outFile = "TSS_annot.pdf")
 #'
 
-annotate_TSS <- function(tssFile, txdb, plot = NA) {
+annotate_TSS <- function(tssBED,
+                         txdb,
+                         featureRank = c("fiveUTR", "promoter", "intron", "coding",
+                                        "spliceSite", "threeUTR", "intergenic"),
+                         plotValue = "number",
+                         outFile = NA) {
 
     ## resolve 1:many mapping issue by prioritising some features over others
-    rank_df <- data.frame(feature = c("fiveUTR", "promoter", "intron", "coding",
-      "spliceSite", "threeUTR", "intergenic"),
-          rank = c(1,2,3,4,5,6,7))
-    # import TSS file
-    tssbed <- rtracklayer::import.bed(tssFile)
+    rank_df <- data.frame(feature = featureRank,
+                          rank = c(1,2,3,4,5,6,7))
+    # get data
+    tss <- rtracklayer::import.bed(tssBED)
     # Annotate
-    db <- VariantAnnotation::locateVariants(query = tssbed,
+    db <- VariantAnnotation::locateVariants(query = tss,
                                             subject = txdb,
     VariantAnnotation::AllVariants(
     promoter = VariantAnnotation::PromoterVariants(upstream = 500, downstream = 0)))
@@ -40,23 +59,25 @@ annotate_TSS <- function(tssFile, txdb, plot = NA) {
     final_table <- as.data.frame(table(ttt$LOCATION))
     colnames(final_table) <- c("feature", "value")
     ## plot if asked
-    if (!is.na(plot)) {
-    if (plot == "number") {
-    n <- "Number "
-    } else if(plot == "percent") {
-    final_table$value <- (final_table$value/sum(final_table$value))*100
-    n <- "% "
-    } else {
-    warning("Plot type neither 'number' nor 'percent'.")
-    }
+    if (!is.null(plotValue)) {
+        if (plotValue == "number") {
+            n <- "Number "
+        } else if(plotValue == "percent") {
+            final_table$value <- (final_table$value/sum(final_table$value))*100
+            n <- "% "
+        } else {
+            warning("Plot type neither 'number' nor 'percent'.")
+            }
 
-    print(ggplot(final_table, aes_string("feature", "value", fill = "feature")) +
+    ggplot(final_table, aes_string("feature", "value", fill = "feature")) +
     geom_bar(stat = "identity", position = "dodge") +
     scale_fill_brewer(palette = "Set1") +
     labs(x = "Feature", y = paste0(n, "of TSS")) +
     theme(legend.position = "none") +
-    theme_gray(base_size = 16)
-    )
+    theme_gray(base_size = 16) +
+    coord_flip()
+
+    ggsave(outFile)
     }
 
     return(final_table)

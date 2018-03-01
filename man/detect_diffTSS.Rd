@@ -36,12 +36,11 @@ Detect differentially expressed Transcription Start Sites between two conditions
 \dontrun{
 # load a previously saved DGEGLM object from step 5
 csfit <- load("diffTSS_fit.Rdata")
-
+dir <- system.file("extdata", package = "icetea")
 # detect differentially expressed TSS between groups (return MA plot)
 detect_diffTSS(csfit, testGroup = "mut", controlGroup = "wt",
-               tssFile = "testTSS_merged.bed", MAplot_fdr = 0.05)
+               tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
 
 }
 
 }
-

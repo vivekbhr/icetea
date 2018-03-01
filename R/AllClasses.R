@@ -1,45 +1,137 @@
 #' Create a new CapSet object
 #'
+#' The function creates an object of class `CapSet`, used for the TSS analysis.
+#' A CapSet object can be created using the the raw, multiplxed fastq files along
+#' with the list of sample indexes and corresponding sample names. In case the
+#' files are already de-multiplexed or mapped, the CapSet object can also be created
+#' using the path to demultiplexed fastq/mapped or filtered BAM files, along with
+#' corresponding sample names. In these cases statistics and operations for the
+#' missing files would not be possible.
+#'
+#'
 #' @param expMethod experiment method ('CAGE', 'RAMPAGE' or 'MAPCap')
-#' @param fastqType fastq file type. Should be either 'single' or 'paired'
 #' @param fastq_R1 path for Read R1 (or file path for single end reads)
 #' @param fastq_R2 path for Read R2 (for paired end reads)
-#' @param sampleInfo data.frame with sample information, with row.names = barcode sequences,
-#'                   and first column containing corresponding sample names.
+#' @param idxList a vector of index sequences (for demultiplexing)
+#' @param sampleNames (required) a vector of sample names corresponding to the provided files
+#' @param demult_R1 a vector of file paths for demultiplexed R1 reads
+#' @param demult_R2 a vector of file paths for demultiplexed R2 reads
+#' @param mapped_file a vector of file paths for mapped BAM files.
+#' @param filtered_file a vector of file paths for de-duplicated BAM files.
 #'
 #' @return An object of class CapSet
+#' @importFrom methods new is
+#' @importFrom Rsamtools countBam ScanBamParam scanBamFlag BamFileList
 #' @export
 #'
 #' @examples
 #'
 #' # list of barcode IDs
-#' idxlist <- c("CAAGTG", "AGATGC", "TGTGAG",
-#' 		 "GGTTAC", "TTAGCC", "AGTCGA")
-#' # corresponding sample names
-#' fnames <-  c("WTa", "WTb", "WTc",
-#' 		 "MLEa", "MLEb", "MLEc")
+#' idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
 #'
-#' # create a new capset object and save
 #' dir <- system.file("extdata", package="icetea")
+#' # corresponding sample names
+#' fnames <- c("embryo1", "embryo2", "embryo3", "embryo4")
 #'
-#' cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
-#'		fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
-#'		fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
-#'		sampleInfo = data.frame(row.names = idxlist, samples = fnames))
+#' ## CapSet object from raw (multiplexed) fastq files
+#' cs <- newCapSet(expMethod = 'MAPCap',
+#'        fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
+#'        fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
+#'        idxList = idxlist,
+#'        sampleNames = fnames)
 #'
-#' save(cs, file = file.path(dir, "CSobject.Rdata") )
+#' ## CapSet object from mapped BAM files
+#' bams <- list.files(file.path(dir, 'bam'), pattern = '.bam$', full.names = TRUE)
+#' cs <- newCapSet(expMethod = 'MAPCap',
+#'        mapped_file = bams,
+#'        sampleNames = fnames)
 #'
 
-newCapSet <- function(sampleInfo, expMethod, fastqType, fastq_R1, fastq_R2 = NULL) {
-    stopifnot(class(sampleInfo) %in% c("data.frame", "DataFrame"))
-    # rename columns
-    colnames(sampleInfo) <- "samples"
-    # convert sampleInfo to a DataFrame
-    info <- S4Vectors::DataFrame(sampleInfo)
+newCapSet <- function(expMethod,
+                    fastq_R1 = NULL,
+                    fastq_R2 = NULL,
+                    idxList = NULL,
+                    sampleNames,
+                    demult_R1 = NA,
+                    demult_R2 = NA,
+                    mapped_file = NA,
+                    filtered_file = NA
+                    ) {
+    ## Get numbers from already provided files
+    suppressWarnings({
+        # R1
+    if(!is.na(demult_R1)) {
+        message("Checking de-multiplexed R1 reads")
+        if(sum(sapply(demult_R1, file.exists, simplify = TRUE)) != length(demult_R1)) {
+            stop("One or more R1 read files don't exist!")
+        }
+        r1_counts <- ShortRead::countLines(demult_R1)
+    } else {
+        r1_counts <- NA
+    }
+    # R2
+    if(!is.na(demult_R2)) {
+        message("Checking de-multiplexed R2 reads")
+        if(sum(sapply(demult_R2, file.exists, simplify = TRUE)) != length(demult_R2)) {
+            stop("One or more R2 read files don't exist!")
+        }
+        r2_counts <- ShortRead::countLines(demult_R2)
+        # R1 and R2 have same no of reads?
+        sum(r1_counts == r1_counts) == length(r1_counts)
+    } else {
+        r2_counts <- NA
+    }
+    # BAM
+    if(!is.na(mapped_file)) {
+        message("Checking mapped file")
+        if(sum(sapply(mapped_file, file.exists, simplify = TRUE)) != length(mapped_file)) {
+            stop("One or more mapped files don't exist!")
+        }
+        mapped_readcounts <- countBam(BamFileList(mapped_file),
+                param = ScanBamParam(
+                    flag = scanBamFlag(
+                        isUnmappedQuery = FALSE,
+                        isFirstMateRead = TRUE,
+                        isSecondaryAlignment = FALSE)))[,6] # "file" and "records"
+    } else {
+        mapped_readcounts <- NA
+    }
+    # Filtered BAM
+    if(!is.na(filtered_file)) {
+        message("Checking de-duplicated file")
+        if(sum(sapply(filtered_file, file.exists, simplify = TRUE)) != length(filtered_file)) {
+            stop("One or more de-duplicated files don't exist!")
+        }
+        filt_readcounts <- countBam(BamFileList(filtered_file),
+                param = ScanBamParam(
+                    flag = scanBamFlag(
+                        isUnmappedQuery = FALSE,
+                        isFirstMateRead = TRUE,
+                        isSecondaryAlignment = FALSE)))[,6] # "records"
+    } else {
+        filt_readcounts <- NA
+    }
+
+    })
+
+    # make sampleinfo DataFrame
+    info <- S4Vectors::DataFrame(row.names = idxList,
+                                samples = sampleNames,
+                                demult_R1 = demult_R1,
+                                demult_R2 = demult_R2,
+                                mapped_file = mapped_file,
+                                filtered_file = filtered_file,
+                                demult_reads = r1_counts,
+                                num_mapped = mapped_readcounts,
+                                num_filtered = filt_readcounts,
+                                num_intss = NA)
+
+    # get fastq type (single or paired)
+    fastqType <- ifelse(is.null(fastq_R2), "single", "paired")
     # create an instance of CapSet
     new("CapSet",
         sampleInfo = info,  # sample Information
-        fastqType = fastqType,
+        #fastqType = fastqType,
         fastq_R1 = fastq_R1,
         fastq_R2 = fastq_R2,
         expMethod = expMethod,
@@ -65,35 +157,30 @@ check_capSet <- function(object) {
     tss <- object@tss_detected
 
     ## validate slots
-    # fastq
-    if(!(fqtype %in% c("single", "paired") )) {
-    msg <- paste0("Wrong fastq type : ", fqtype, ". Should be either 'single' or 'paired' ")
-    errors <- c(errors, msg)
-
-    } else if(fqtype == "single" & !file.exists(R1) ) {
-    msg <- paste0("Please specify correct fastq file path for fastq_R1 ")
-    errors <- c(errors, msg)
-
-    } else if(fqtype == "paired" & !(file.exists(R1) | file.exists(R2) ) ) {
-    msg <- paste0("Please specify correct fastq file path for both fastq_R1 and fastq_R2 ")
-    errors <- c(errors, msg)
-    }
     # experiment
     if(!(exp %in% c("CAGE", "RAMPAGE", "MAPCap") )) {
     msg <- paste0("Experiment type should be among : 'CAGE', 'RAMPAGE' or 'MAPCap' ")
     errors <- c(errors, msg)
-
     }
+    # fastq check
+#    if(!is.null(R1) & !file.exists(R1) ) {
+#    msg <- paste0("Please specify correct fastq file path for fastq_R1 ")
+#    errors <- c(errors, msg)
+#    }
+#    if(!is.null(R2) & !(file.exists(R2) ) ) {
+#    msg <- paste0("Please specify correct fastq file path for fastq_R2 ")
+#    errors <- c(errors, msg)
+#    }
     # sampleInfo
-    if(!(class(info) %in% c("data.frame", "DataFrame")) ) {
-    msg <- paste0("sampleInfo should be a data frame ")
+    if(!is(info, "DataFrame")) {
+    msg <- paste0("sampleInfo should be a DataFrame object ")
     errors <- c(errors, msg)
     }
-        # TSS info
-        if(!(class(tss) %in% c("NULL", "GRangesList")) ) {
-        	msg <- paste0("tss_detected should be a GRangesList object ")
-        	errors <- c(errors, msg)
-        }
+    # TSS info
+    if(!(class(tss) %in% c("NULL", "CompressedGRangesList", "GRangesList")) ) {
+        msg <- paste0("tss_detected should be a GRangesList object ")
+        errors <- c(errors, msg)
+    }
 
     ## return
     if (length(errors) == 0) TRUE else errors
@@ -105,14 +192,22 @@ setClassUnion("charOrNULL", c("character", "NULL"))
 #' CapSet object
 #'
 #' @rdname newCapSet
+#' @slot fastqType Type of fastq ('single' or 'paired')
+#' @slot fastq_R1 Path to R1 fastq
+#' @slot fastq_R2 Path to R1 fastq (for paired-end data)
+#' @slot expMethod Name of protocol (RAMPGE or MAPCap)
+#' @slot sampleInfo A DataFrame object created using information from
+#'                  \code{\link{newCapSet}} function
+#' @slot tss_detected A GRangesList object of detected TSS
 #' @importClassesFrom S4Vectors DataFrame
 #'
 CapSet <- setClass("CapSet",
-       slots = c(fastqType = "character",
-        fastq_R1 = "character",
-        fastq_R2 = "charOrNULL",
-        expMethod = "character",
-        sampleInfo = "DataFrame",
-        tss_detected = "ANY"
+       slots = c(
+            fastqType = "character",
+            fastq_R1 = "charOrNULL",
+            fastq_R2 = "charOrNULL",
+            expMethod = "character",
+            sampleInfo = "DataFrame",
+            tss_detected = "ANY"
         ),
        validity = check_capSet)

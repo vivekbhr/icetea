@@ -40,8 +40,8 @@
 #' cs <- exampleCSobject()
 #'
 #' # count reads on all TSS (union) and fit a model using replicates within groups
-#' csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 3), normalization = "internal",
-#'                      outplots = NULL, plotref = "WTa")
+#' csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
+#'                      outplots = NULL, plotref = "embryo1")
 #' save(csfit, file = "diffTSS_fit.Rdata")
 #' }
 #'
@@ -56,8 +56,16 @@ fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "inter
     si <- sampleInfo(CSobject)
     bam.files <- si$filtered_file
     samples <- as.character(si$samples)
-    merged <- CSobject@tss_detected
     design <- data.frame(row.names = samples, group = groups)
+
+    # Import tss locations to test
+    if(is.null(TSSfile)) {
+    merged <- CSobject@tss_detected
+    stopifnot(!(is.null(merged)))
+    mergedall <- base::Reduce(S4Vectors::union, merged)
+    } else {
+    mergedall <- rtracklayer::import.bed(TSSfile)
+    }
 
     if(normalization == "internal") {
     # fail early if plotref is not given
@@ -93,13 +101,6 @@ fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "inter
 
     } else {
     normfacs <- NULL
-    }
-
-    # Import tss locations to test
-    if(is.null(TSSfile)) {
-    mergedall <- base::Reduce(S4Vectors::union, merged)
-    } else {
-    mergedall <- rtracklayer::import.bed(TSSfile)
     }
 
     ## get 5' read counts on the locations from the bam.files
@@ -178,10 +179,10 @@ fit_diffTSS <- function(CSobject, TSSfile = NULL, groups, normalization = "inter
 #' \dontrun{
 #' # load a previously saved DGEGLM object from step 5
 #' csfit <- load("diffTSS_fit.Rdata")
-#'
+#' dir <- system.file("extdata", package = "icetea")
 #' # detect differentially expressed TSS between groups (return MA plot)
 #' detect_diffTSS(csfit, testGroup = "mut", controlGroup = "wt",
-#'                tssFile = "testTSS_merged.bed", MAplot_fdr = 0.05)
+#'                tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
 #'
 #' }
 #'

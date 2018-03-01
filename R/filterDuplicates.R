@@ -1,4 +1,3 @@
-
 ## Filter duplicates from a data.frame, using position and UMI seq
 filterdups_func <- function(bamdf) {
     bamdf$qname <- as.character(bamdf$qname)
@@ -68,11 +67,12 @@ filterDups <- function(bamFile, outFile) {
 #' @description This script considers the read mapping start position and the UMI to determine whether a
 #'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
 #'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
-#' @param CapSet an object of class \code{\link{CapSet}}
+#' @param CSobject an object of class \code{\link{CapSet}}
 #' @param outdir output directory for filtered BAM files
 #'
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
 #' @importFrom methods validObject
+#' @importFrom Rsamtools countBam ScanBamParam scanBamFlag BamFileList
 #' @export
 #'
 #' @examples
@@ -85,18 +85,19 @@ filterDups <- function(bamFile, outFile) {
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # filter duplicate reads from mapped BAM files
-#' cs <- filterDuplicates(cs, outdir = dir)
+#' dir.create("filtered_bam")
+#' cs <- filterDuplicates(cs, outdir = "filtered_bam")
 #'
 
-filterDuplicates <- function(CapSet, outdir) {
-    si <- sampleInfo(CapSet)
+filterDuplicates <- function(CSobject, outdir) {
+    si <- sampleInfo(CSobject)
     bamfiles <- si$mapped_file
 
     # first check if the bam files exist
     lapply(bamfiles, function(f) {
     if (!(file.exists(f) )) stop(paste0("mapped file ", f, " doesn't exist!",
       "Please update your Capset object with valid file paths ",
-      "using sampleInfo(CapSet). "))
+      "using sampleInfo(CSobject). "))
     })
     # then prepare outfile list
     outfiles <- file.path(outdir, paste0(si$samples, ".filtered.bam") )
@@ -104,14 +105,21 @@ filterDuplicates <- function(CapSet, outdir) {
     mapply(filterDups, bamfiles, outfiles)
 
     # collect post-filtering stats
-    mapstat <- sapply(outfiles, Rsubread::propmapped, simplify = TRUE)
-    # update CapSet
-    maptable <- as.data.frame(t(mapstat[c(1,3),]))
-    si$filtered_file <- as.character(maptable$Samples)
-    si$num_filtered <- as.numeric(maptable$NumMapped)
-    sampleInfo(CapSet) <- si
+    maptable <- countBam(BamFileList(outfiles),
+                param = ScanBamParam(
+                    flag = scanBamFlag(
+                        isUnmappedQuery = FALSE,
+                        isFirstMateRead = TRUE,
+                        isSecondaryAlignment = FALSE)))[,5:6] # "file" and "records"
+    maptable$file <- as.character(maptable$file)
+    maptable$records <- as.integer(maptable$records)
 
-    validObject(CapSet)
-    return(CapSet)
+    # update CapSet
+    si$filtered_file <- file.path(outdir, as.character(maptable$file))
+    si$num_filtered <- as.numeric(maptable$records)
+    sampleInfo(CSobject) <- si
+
+    validObject(CSobject)
+    return(CSobject)
 
 }

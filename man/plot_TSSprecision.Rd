@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plot_TSSprecision}
 \alias{plot_TSSprecision}
-\alias{plot_TSSprecision,GRanges,CapSet-method}
 \alias{plot_TSSprecision,GRanges,character-method}
+\alias{plot_TSSprecision,GRanges,CapSet-method}
 \title{Compare the precision of TSS detection between multiple samples}
 \usage{
 plot_TSSprecision(reference, detectedTSS, distanceCutoff = 500,
@@ -25,7 +25,7 @@ or a character vector with paths to the BED files containing detcted TSSs}
 \item{distanceCutoff}{Maximum distance (in base pairs) from reference TSS to plot}
 
 \item{outFile}{Output file name (filename extention would be used to determine type)
-If outfile not specified, the plot would be retured on the screen}
+If outfile not specified, the plot would be returned on the screen}
 
 \item{...}{Additional arguments}
 
@@ -47,22 +47,28 @@ Plot precision of TSS detection from multiple samples present within a
 cs <- exampleCSobject()
 # load a txdb object
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
 
-tssfile <- system.file("extdata", "testTSS.bed", package = "icetea")
+tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
 plot_TSSprecision(reference = transcripts, detectedTSS = tssfile,
 		sampleNames = "testTSS", distanceCutoff = 500,
 		outFile = "TSS_detection_precision.png")
 
-# Plotting the precision using a CapSet object :
+## Plotting the precision using a CapSet object :
 
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+# only use chrX to make the analysis faster
+seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
 transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
+# load a previously saved CapSet object
+cs <- exampleCSobject()
+# plot
 plot_TSSprecision(reference = transcripts, detectedTSS = cs,
                   outFile = "TSS_detection_precision.png")
 
 }
-

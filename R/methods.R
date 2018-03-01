@@ -16,76 +16,19 @@ setMethod("show", "CapSet", function(object) {
     print(object@tss_detected)
 } )
 
-#' get sample information data frame
-#' @param object the \code{\link{CapSet}} object
-#' @param ... ...
-#' @return sample information data.frame
-#' @export
-#' @examples
-#'
-#' # load a previously saved CapSet object
-#' cs <- exampleCSobject()
-#' # get sampleinfo
-#' si <- sampleInfo(cs)
-#'
-setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
 
-#' get sample information data frame
-#'
-#' @param object the \code{\link{CapSet}} object
-#'
-#' @docType methods
-#' @return sample information data.frame
-#' @export
-#' @examples
-#'
-#' # load a previously saved CapSet object
-#' cs <- exampleCSobject()
-#' # get sampleinfo
-#' si <- sampleInfo(cs)
-#'
 
+#' @rdname sampleInfo
+#' @export
+#'
 setMethod("sampleInfo",
       signature = "CapSet",
       function(object) {
         return(object@sampleInfo)
       })
 
-#' reset sample information data frame
-#' @param object The \code{\link{CapSet}} object
-#' @param ... ...
-#' @param value new value
-#' @export
-#'
-#' @return None
-#' @examples
-#' # load a previously saved CapSet object
-#' cs <- exampleCSobject()
-#' # get sampleinfo
-#' si <- sampleInfo(cs)
-#' # modify
-#' si$samples <- paste0("sample_", 1:6)
-#' # replace
-#' sampleInfo(cs) <- si
-#'
-setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))
-
-#' reset sample information data frame
-#' @param object The \code{\link{CapSet}} object
-#' @param value The replacement sampleInfo data frame
-#' @return None
+#' @rdname sampleInfo
 #' @exportMethod "sampleInfo<-"
-#'
-#' @examples
-#' # load a previously saved CapSet object
-#' cs <- exampleCSobject()
-#' # get sampleinfo
-#' si <- sampleInfo(cs)
-#' # modify
-#' si$samples <- paste0("sample_", 1:6)
-#' # replace
-#' sampleInfo(cs) <- si
-#'
 #'
 setReplaceMethod("sampleInfo",
      signature = "CapSet", #value = c("data.frame", "DataFrame") ),

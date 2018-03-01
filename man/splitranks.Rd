@@ -15,4 +15,3 @@ A data frame with counts
 \description{
 Get features with the best rank for each TSS
 }
-
