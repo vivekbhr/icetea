@@ -222,6 +222,7 @@ plotPrecision <- function(ref, tssData, distCut) {
     stat_ecdf(geom = "step", size = 1) +
     theme_light(base_size = 14)  +
     scale_x_continuous(limits = c(0,distCut)) +
+    scale_y_continuous(breaks = seq(0, 1, 0.2)) +
     scale_color_brewer(palette = "Set2") +
     labs(x = "Distances from nearby TSS (in bp)", y = "Cumulative Fraction",
          title = "TSS precisions", col = "Category")
