@@ -3,22 +3,23 @@ filterdups_func <- function(bamdf) {
     bamdf$qname <- as.character(bamdf$qname)
     bamdf$pos <- as.numeric(bamdf$pos)
     ## split the df by chromosome into multiple df
-    chroms <- factor(bamdf$rname, levels = unique(as.character(bamdf$rname)))
+    chroms <-
+        factor(bamdf$rname, levels = unique(as.character(bamdf$rname)))
     bam2 <- S4Vectors::split(bamdf, chroms)
 
     ## get duplicate stats for a given df
     getdupstats <- function(bamdf) {
-    ## split the df by pos (get one list per pos)
-    pos <- factor(bamdf$pos, levels = unique(as.numeric(bamdf$pos)))
-    bamdf.bypos <- S4Vectors::split(bamdf, pos)
-    ## extract umis from each df
-    getumi <- function(x) {
-    hdr <- vapply(strsplit(x$qname, "#"), "[[", character(1), 2)
-    umi <- vapply(strsplit(hdr, ":"), "[[", character(1), 2)
-    return(!(duplicated(umi)))
-    }
-    dupStats_umi <- lapply(bamdf.bypos, getumi)
-    return(dupStats_umi)
+        ## split the df by pos (get one list per pos)
+        pos <- factor(bamdf$pos, levels = unique(as.numeric(bamdf$pos)))
+        bamdf.bypos <- S4Vectors::split(bamdf, pos)
+        ## extract umis from each df
+        getumi <- function(x) {
+            hdr <- vapply(strsplit(x$qname, "#"), "[[", character(1), 2)
+            umi <- vapply(strsplit(hdr, ":"), "[[", character(1), 2)
+            return(!(duplicated(umi)))
+        }
+        dupStats_umi <- lapply(bamdf.bypos, getumi)
+        return(dupStats_umi)
     }
     #getfraglength <- function(x) {
     #	fraglen <- (2*x$qwidth)  x$isize
@@ -47,17 +48,24 @@ filterdups_func <- function(bamdf) {
 filterDups <- function(bamFile, outFile) {
     message(paste0("Removing PCR duplicates : ", bamFile))
     # get baminfo
-    sparam <- Rsamtools::ScanBamParam(what = c("qname", "rname", "pos"), #, "isize", "qwidth", "mapq"
-      flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
-      			      isFirstMateRead = TRUE) )
+    sparam <-
+        Rsamtools::ScanBamParam(
+            what = c("qname", "rname", "pos"),
+            #, "isize", "qwidth", "mapq"
+            flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
+                                          isFirstMateRead = TRUE)
+        )
 
     ## create rule
     rule <- S4Vectors::FilterRules(list(filterdups_func))
 
     ## filter command
-    Rsamtools::filterBam(file = bamFile,
-         destination = outFile,
-         filter = rule, param = sparam )
+    Rsamtools::filterBam(
+        file = bamFile,
+        destination = outFile,
+        filter = rule,
+        param = sparam
+    )
 
 }
 
@@ -95,27 +103,38 @@ filterDuplicates <- function(CSobject, outdir) {
 
     # first check if the bam files exist
     lapply(bamfiles, function(f) {
-    if (!(file.exists(f) )) stop(paste0("mapped file ", f, " doesn't exist!",
-      "Please update your Capset object with valid file paths ",
-      "using sampleInfo(CSobject). "))
+        if (!(file.exists(f)))
+            stop(
+                paste0(
+                    "mapped file ",
+                    f,
+                    " doesn't exist!",
+                    "Please update your Capset object with valid file paths ",
+                    "using sampleInfo(CSobject). "
+                )
+            )
     })
     # then prepare outfile list
-    outfiles <- file.path(outdir, paste0(si$samples, ".filtered.bam") )
+    outfiles <-
+        file.path(outdir, paste0(si$samples, ".filtered.bam"))
     # run the filter duplicates function on all files
     mapply(filterDups, bamfiles, outfiles)
 
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
-                param = ScanBamParam(
-                    flag = scanBamFlag(
-                        isUnmappedQuery = FALSE,
-                        isFirstMateRead = TRUE,
-                        isSecondaryAlignment = FALSE)))[,5:6] # "file" and "records"
+                         param = ScanBamParam(
+                             flag = scanBamFlag(
+                                 isUnmappedQuery = FALSE,
+                                 isFirstMateRead = TRUE,
+                                 isSecondaryAlignment = FALSE
+                             )
+                         ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)
 
     # update CapSet
-    si$filtered_file <- file.path(outdir, as.character(maptable$file))
+    si$filtered_file <-
+        file.path(outdir, as.character(maptable$file))
     si$num_filtered <- as.numeric(maptable$records)
     sampleInfo(CSobject) <- si
 

@@ -1,4 +1,5 @@
 
+
 #' Annotate the provided Transcription Start Sites
 #'
 #' This function annotates the provided TSS bed file to provide the number of TSS
@@ -36,23 +37,31 @@
 
 annotate_TSS <- function(tssBED,
                          txdb,
-                         featureRank = c("fiveUTR", "promoter", "intron", "coding",
-                                        "spliceSite", "threeUTR", "intergenic"),
+                         featureRank = c("fiveUTR",
+                                         "promoter",
+                                         "intron",
+                                         "coding",
+                                         "spliceSite",
+                                         "threeUTR",
+                                         "intergenic"),
                          plotValue = "number",
                          outFile = NA) {
-
     ## resolve 1:many mapping issue by prioritising some features over others
     rank_df <- data.frame(feature = featureRank,
-                          rank = c(1,2,3,4,5,6,7))
+                          rank = c(1, 2, 3, 4, 5, 6, 7))
     # get data
     tss <- rtracklayer::import.bed(tssBED)
     # Annotate
-    db <- VariantAnnotation::locateVariants(query = tss,
-                                            subject = txdb,
-    VariantAnnotation::AllVariants(
-    promoter = VariantAnnotation::PromoterVariants(upstream = 500, downstream = 0)))
+    db <- VariantAnnotation::locateVariants(
+        query = tss,
+        subject = txdb,
+        VariantAnnotation::AllVariants(promoter = VariantAnnotation::PromoterVariants(
+            upstream = 500, downstream = 0
+        ))
+    )
     ## resolve 1:many mapping isues using ranks from rankdf
-    t <- data.frame(QUERYID = db$QUERYID, LOCATION = db$LOCATION)
+    t <- data.frame(QUERYID = db$QUERYID,
+                    LOCATION = db$LOCATION)
     tt <- getranks(t, rankdf = rank_df)
     ttt <- splitranks(tt)
     ## Return a table of tss counts per feature
@@ -62,22 +71,23 @@ annotate_TSS <- function(tssBED,
     if (!is.null(plotValue)) {
         if (plotValue == "number") {
             n <- "Number "
-        } else if(plotValue == "percent") {
-            final_table$value <- (final_table$value/sum(final_table$value))*100
+        } else if (plotValue == "percent") {
+            final_table$value <- (final_table$value / sum(final_table$value)) * 100
             n <- "% "
         } else {
             warning("Plot type neither 'number' nor 'percent'.")
-            }
+        }
 
-    ggplot(final_table, aes_string("feature", "value", fill = "feature")) +
-    geom_bar(stat = "identity", position = "dodge") +
-    scale_fill_brewer(palette = "Set1") +
-    labs(x = "Feature", y = paste0(n, "of TSS")) +
-    theme(legend.position = "none") +
-    theme_gray(base_size = 16) +
-    coord_flip()
+        ggplot(final_table,
+               aes_string("feature", "value", fill = "feature")) +
+            geom_bar(stat = "identity", position = "dodge") +
+            scale_fill_brewer(palette = "Set1") +
+            labs(x = "Feature", y = paste0(n, "of TSS")) +
+            theme(legend.position = "none") +
+            theme_gray(base_size = 16) +
+            coord_flip()
 
-    ggsave(outFile)
+        ggsave(outFile)
     }
 
     return(final_table)
@@ -95,7 +105,7 @@ annotate_TSS <- function(tssBED,
 #'
 getranks <- function(x, rankdf) {
     x$rank <- sapply(x$LOCATION, function(y) {
-    return(rankdf[rankdf$feature == y, "rank"])
+        return(rankdf[rankdf$feature == y, "rank"])
     })
     return(x)
 }
@@ -110,7 +120,7 @@ getranks <- function(x, rankdf) {
 splitranks <- function(x) {
     l <- lapply(split(x, x$QUERYID), unique)
     l2 <- lapply(l, function(y) {
-    return(y[which(y$rank == min(y$rank)),])
+        return(y[which(y$rank == min(y$rank)), ])
     })
     l3 <- plyr::ldply(l2, data.frame)
     return(l3)
@@ -120,7 +130,13 @@ splitranks <- function(x) {
 # Melt the output df from splitranks
 melt <- function(x) {
     vars <- colnames(x[2:ncol(x)])
-    d <- plyr::unrowname(reshape(x, direction = "long", idvar = ".id", varying = vars) )
+    d <-
+        plyr::unrowname(reshape(
+            x,
+            direction = "long",
+            idvar = ".id",
+            varying = vars
+        ))
     d$time <- vars[d$time]
     colnames(d) <- c("variable", "Feature", "value")
 }

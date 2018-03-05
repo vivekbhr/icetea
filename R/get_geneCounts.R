@@ -27,39 +27,49 @@
 #'  gcounts <- get_geneCounts(cs, dm6trans)
 #'
 
-get_geneCounts <- function(CSobject, transcriptGRL, regionAroundTSS = 500, single_end = TRUE, outfile = NA) {
+get_geneCounts <-
+    function(CSobject,
+             transcriptGRL,
+             regionAroundTSS = 500,
+             single_end = TRUE,
+             outfile = NA) {
+        # add gene names and unlist
+        transcriptGRL <- mapply(function(x, name) {
+            x$geneID <- name
+            return(x)
+        }, transcriptGRL, names(transcriptGRL))
 
-    # add gene names and unlist
-    transcriptGRL <- mapply(function(x, name) {
-                                    x$geneID <- name
-                                    return(x)
-                                    }, transcriptGRL, names(transcriptGRL))
+        # get XX bp region around transcripts to count the reads
+        transcriptGR <-
+            unlist(GenomicRanges::GRangesList(transcriptGRL))
+        transcriptGR <-
+            GenomicRanges::resize(transcriptGR, regionAroundTSS, fix = "start")
+        # get bamfiles
+        si <- sampleInfo(CSobject)
+        bamfiles <- si$filtered_file
 
-    # get XX bp region around transcripts to count the reads
-    transcriptGR <- unlist(GenomicRanges::GRangesList(transcriptGRL))
-    transcriptGR <- GenomicRanges::resize(transcriptGR, regionAroundTSS, fix = "start")
-    # get bamfiles
-    si <- sampleInfo(CSobject)
-    bamfiles <- si$filtered_file
+        # count reads
+        tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
+                                                          reads = Rsamtools::BamFileList(bamfiles),
+                                                          singleEnd = single_end)
+        tsscounts.df <- SummarizedExperiment::assay(tsscounts)
 
-    # count reads
-    tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
-                                                reads = Rsamtools::BamFileList(bamfiles),
-                                                singleEnd = single_end)
-    tsscounts.df <- SummarizedExperiment::assay(tsscounts)
+        # sum all the TSS counts to gene counts
+        id <- rownames(tsscounts.df)
+        tsscounts.gene <-
+            lapply(split(as.data.frame(tsscounts.df), id), colSums)
+        tsscounts.gene <- do.call(rbind, tsscounts.gene)
+        rm(tsscounts.df)
 
-    # sum all the TSS counts to gene counts
-    id <- rownames(tsscounts.df)
-    tsscounts.gene <- lapply(split(as.data.frame(tsscounts.df), id), colSums)
-    tsscounts.gene <- do.call(rbind, tsscounts.gene)
-    rm(tsscounts.df)
+        # write back
+        if (!is.na(outfile)) {
+            write.table(
+                tsscounts.gene,
+                file = outfile,
+                sep = "\t",
+                quote = FALSE
+            )
+        }
+        return(tsscounts.gene)
 
-    # write back
-    if(!is.na(outfile)) {
-    write.table(tsscounts.gene,
-        file = outfile,
-        sep = "\t", quote = FALSE)
     }
-    return(tsscounts.gene)
-
-}
