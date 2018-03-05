@@ -51,7 +51,7 @@ fit_diffTSS <-
              TSSfile = NULL,
              groups,
              normalization = "internal",
-             CSobjectSpikeIn,
+             CSobjectSpikeIn = NULL,
              outplots = NULL,
              plotref) {
         ## assert the input

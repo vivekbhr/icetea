@@ -5,7 +5,7 @@
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
 fit_diffTSS(CSobject, TSSfile = NULL, groups, normalization = "internal",
-  CSobjectSpikeIn, outplots = NULL, plotref)
+  CSobjectSpikeIn = NULL, outplots = NULL, plotref)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
