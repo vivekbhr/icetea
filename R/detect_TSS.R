@@ -20,6 +20,7 @@ numReadsInBed <- function(regions, bams = NA) {
 
 #' Detection of Trancription start sites based on local enrichment
 #'
+#' @rdname detectTSS
 #' @param CSobject CapSet object created using \code{\link{newCapSet}} function
 #' @param groups a character vector that contains group name of the sample, for replicate-based TSS
 #'               calling (see example)
@@ -35,6 +36,7 @@ numReadsInBed <- function(regions, bams = NA) {
 #'
 #' @return .bed files containing TSS position for each group, along with a bed file for consensus
 #' 	   (union) TSS sites of all samples.
+#'
 #' @export
 #' @importFrom utils write.table
 #'
@@ -49,15 +51,17 @@ numReadsInBed <- function(regions, bams = NA) {
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # detect TSS (samples in same group are treated as replicates)
-#' cs <- detect_TSS(cs, groups = rep(c("wt","mut"), each = 2), outfile_prefix = "testTSS",
+#' cs <- detectTSS(cs, groups = rep(c("wt","mut"), each = 2), outfile_prefix = "testTSS",
 #'            foldChange = 6, restrictChr = "X")
 #'
 
-detect_TSS <- function(CSobject,
+setMethod("detectTSS",
+          signature = "CapSet",
+          function(CSobject,
                        groups,
-                       outfile_prefix = NULL,
-                       foldChange = 2,
-                       restrictChr = NULL) {
+                       outfile_prefix,
+                       foldChange,
+                       restrictChr) {
     # check whether group and outfile_prefix is provided
     if (missing(outfile_prefix))
         stop("Please provide outfile_prefix!")
@@ -167,30 +171,33 @@ detect_TSS <- function(CSobject,
     }
 
     return(CSobject)
-}
+          }
+)
 
 #' Export the detected TSS from CapSet object as .bed files
 #'
-#' @param CSobject The modified CapSet object after running \code{\link{detect_TSS}} function
+#' @rdname exportTSS
+#' @param CSobject The modified CapSet object after running \code{\link{detectTSS}} function
 #' @param outfile_prefix Prefix (with path) for output .bed files
 #' @param pergroup If TRUE, write output per group of samples
 #' @param merged If TRUE, write merged bed file (union of all groups)
 #'
 #' @return .bed file(s) containing detected TSS.
-#' @export
 #'
+#' @export
 #' @examples
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # export tss
-#' export_tss(cs, merged = TRUE, outfile_prefix = "testTSS")
+#' exportTSS(cs, merged = TRUE, outfile_prefix = "testTSS")
 #'
-#'
-export_tss <-
-    function(CSobject,
+
+setMethod("exportTSS",
+          signature = "CapSet",
+          function(CSobject,
              outfile_prefix,
-             pergroup = FALSE,
-             merged = TRUE) {
+             pergroup,
+             merged) {
         mergedBED <- CSobject@tss_detected
         if (isTRUE(pergroup)) {
             ## write merged output for each group
@@ -212,4 +219,5 @@ export_tss <-
                                     con = paste(outfile_prefix, "merged.bed", sep = "_"))
         }
 
-    }
+          }
+)

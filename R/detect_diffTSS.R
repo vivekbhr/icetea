@@ -1,5 +1,6 @@
 #' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 #'
+#' @rdname fitDiffTSS
 #' @param CSobject An object of class \code{\link{CapSet}}
 #' @param TSSfile A .bed file with TSS positions to test for differential TSS analysis. If left
 #'                empty, the union of detected TSS present within the provided CSobject would be plotted.
@@ -21,12 +22,12 @@
 #'
 #' @return Returns an object of class DGEGLM.
 #'
-#' @export
 #' @importFrom graphics abline par plot smoothScatter
 #' @importFrom grDevices dev.off pdf
 #' @importFrom stats model.matrix
 #' @importFrom methods as
 #'
+#' @export
 #' @examples
 #' # before running this
 #' # 1. Create a CapSet object
@@ -40,20 +41,21 @@
 #' cs <- exampleCSobject()
 #'
 #' # count reads on all TSS (union) and fit a model using replicates within groups
-#' csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
+#' csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
 #'                      outplots = NULL, plotref = "embryo1")
 #' save(csfit, file = "diffTSS_fit.Rdata")
 #' }
 #'
 
-fit_diffTSS <-
-    function(CSobject,
-             TSSfile = NULL,
-             groups,
-             normalization = "internal",
-             CSobjectSpikeIn = NULL,
-             outplots = NULL,
-             plotref) {
+setMethod("fitDiffTSS",
+        signature = "CapSet",
+        function(CSobject,
+            TSSfile,
+            groups,
+            normalization,
+            CSobjectSpikeIn,
+            outplots,
+            plotref) {
         ## assert the input
         stopifnot(is(CSobject, "CapSet"))
 
@@ -180,21 +182,24 @@ fit_diffTSS <-
         ## return the fit
         return(fit)
 
-    }
+        }
+)
 
 
 
 #' Detect differentially expressed Transcription Start Sites between two conditions (test)
 #'
-#' @param fit DGEGLM object (output of \code{\link{fit_diffTSS}} command )
+#' @rdname detectDiffTSS
+#' @param fit DGEGLM object (output of \code{\link{fitDiffTSS}} command )
 #' @param testGroup Test group name
 #' @param contGroup Control group name
-#' @param TSSfile The TSS .bed file used for \code{\link{fit_diffTSS}} command
+#' @param TSSfile The TSS .bed file used for \code{\link{fitDiffTSS}} command
 #' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
 #'
 #' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
-#' @export
 #' @importFrom ggplot2 ggplot aes_string geom_point geom_abline scale_color_manual labs theme_gray theme
+#'
+#' @export
 #' @examples
 #'
 #' # before running this
@@ -210,18 +215,19 @@ fit_diffTSS <-
 #' csfit <- load("diffTSS_fit.Rdata")
 #' dir <- system.file("extdata", package = "icetea")
 #' # detect differentially expressed TSS between groups (return MA plot)
-#' detect_diffTSS(csfit, testGroup = "mut", controlGroup = "wt",
+#' detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt",
 #'                tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
 #'
 #' }
 #'
 
-detect_diffTSS <-
-    function(fit,
-             testGroup,
-             contGroup,
-             TSSfile,
-             MAplot_fdr = NA) {
+setMethod("detectDiffTSS",
+          signature = "DGEGLM",
+          function(fit,
+            testGroup,
+            contGroup,
+            TSSfile,
+            MAplot_fdr = NA) {
         # Import tss locations to test
         mergedall <- rtracklayer::import.bed(TSSfile)
 
@@ -254,4 +260,5 @@ detect_diffTSS <-
         }
 
         return(difftss)
-    }
+          }
+)

@@ -1,5 +1,4 @@
 
-
 #' Annotate the provided Transcription Start Sites
 #'
 #' This function annotates the provided TSS bed file to provide the number of TSS
@@ -31,11 +30,11 @@
 #' # annotate a given TSS bed file
 #' dir <- system.file("extdata", package = "icetea")
 #' tss <- file.path(dir, "testTSS_merged.bed")
-#' annotations <- annotate_TSS(tssBED = tss, TxDb.Dmelanogaster.UCSC.dm6.ensGene,
+#' annotations <- annotateTSS(tssBED = tss, TxDb.Dmelanogaster.UCSC.dm6.ensGene,
 #'                plotValue = "number", outFile = "TSS_annot.pdf")
 #'
 
-annotate_TSS <- function(tssBED,
+annotateTSS <- function(tssBED,
                          txdb,
                          featureRank = c("fiveUTR",
                                          "promoter",

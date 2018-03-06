@@ -286,8 +286,8 @@ tssfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span 
 <div id="differential-tss-expression-analysis" class="section level2">
 <h2>Differential TSS expression analysis</h2>
 <p>For the experiments with two or more groups, ICETEA can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.</p>
-<p>The functions <code>fit_diffTSS</code> and <code>detect_diffTSS</code> utilize edgeR to perform differential expression analysis.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">csfit &lt;-<span class="st"> </span><span class="kw">fit_diffTSS</span>(cs, <span class="dt">groups =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;wt&quot;</span>,<span class="st">&quot;mut&quot;</span>), <span class="dt">each =</span> <span class="dv">2</span>), <span class="dt">normalization =</span> <span class="st">&quot;internal&quot;</span>,
+<p>The functions <code>fitDiffTSS</code> and <code>detect_diffTSS</code> utilize edgeR to perform differential expression analysis.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">csfit &lt;-<span class="st"> </span><span class="kw">fitDiffTSS</span>(cs, <span class="dt">groups =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">&quot;wt&quot;</span>,<span class="st">&quot;mut&quot;</span>), <span class="dt">each =</span> <span class="dv">2</span>), <span class="dt">normalization =</span> <span class="st">&quot;internal&quot;</span>,
                      <span class="dt">outplots =</span> <span class="ot">NULL</span>, <span class="dt">plotref =</span> <span class="st">&quot;embryo1&quot;</span>)
 <span class="kw">save</span>(csfit, <span class="dt">file =</span> <span class="st">&quot;diffTSS_fit.Rdata&quot;</span>)
 
@@ -295,7 +295,7 @@ tssfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span 
                <span class="dt">tssFile =</span> <span class="kw">file.path</span>(dir, <span class="st">&quot;testTSS_merged.bed&quot;</span>), <span class="dt">MAplot_fdr =</span> <span class="fl">0.05</span>)</code></pre></div>
 <div id="using-spike-in-controls" class="section level3">
 <h3>Using spike-In controls</h3>
-<p>For the differential TSS expression analysis, the function <code>fit_diffTSS</code> shown above utilize the <a href>TMM method</a> for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides a way to perform spike-in normalization during differential expression analysis, through the functions ``.</p>
+<p>For the differential TSS expression analysis, the function <code>fitDiffTSS</code> shown above utilize the <a href>TMM method</a> for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides a way to perform spike-in normalization during differential expression analysis, through the functions ``.</p>
 </div>
 </div>
 <div id="additional-useful-functions" class="section level2">

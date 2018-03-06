@@ -102,7 +102,7 @@ get_stackedNum <- function(df) {
 #' a given reference annotation.
 #'
 #' @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
-#' @param detectedTSS Either a CapSet object with TSS information (after running \code{\link{detect_TSS}}
+#' @param detectedTSS Either a CapSet object with TSS information (after running \code{\link{detectTSS}}
 #'                    or a character vector with paths to the BED files containing detcted TSSs
 #' @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
 #' @param outFile Output file name (filename extention would be used to determine type)
@@ -216,7 +216,8 @@ setMethod(
 #' @param tssData GRangesList object with TSS detected per sample
 #' @param distCut max distance cutoff
 #'
-#' @importFrom ggplot2 aes_string stat_ecdf theme_light scale_x_continuous scale_color_brewer ggsave coord_flip
+#' @importFrom ggplot2 aes_string stat_ecdf theme_light scale_x_continuous
+#'             scale_y_continuous scale_color_brewer ggsave coord_flip
 #' @return ggplot object
 #'
 

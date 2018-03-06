@@ -156,32 +156,32 @@ split_fastq <- function(expType,
 }
 
 
-#' Demultiplex (tagged) fastq files using sample barcodes
-#'
+#' Demultiplex and tag fastq files using sample barcodes
+#' @rdname demultiplexFASTQ
 #' @param CSobject CapSet object created using \code{\link{newCapSet}} function
 #' @param outdir path to output directory
-#' @param max_mismatch maximum allowd mismatches
-#' @param ncores No. of cores to use
+#' @param max_mismatch maximum allowed mismatches in the sample barcode
+#' @param ncores No. of cores/threads to use
 #'
 #' @return de-multiplxed fastq files corresponding to each barcode. The files are written
-#'         on disk with the corresponding sample names as specified in sampleBarcodes(CapSet)
-#' @export
+#'         on disk with the corresponding sample names as specified in the CapSet object
 #'
+#' @export
 #' @examples
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #'
 #' # demultiplex allowing one mismatch in sample indexes
 #' dir.create("demult_fastq")
-#' cs <- demultiplex_fastq(cs, outdir =  "demult_fastq", max_mismatch = 1)
+#' cs <- demultiplexFASTQ(cs, outdir =  "demult_fastq", max_mismatch = 1)
 #'
 
-
-demultiplex_fastq <-
-    function(CSobject,
+setMethod("demultiplexFASTQ",
+          signature = "CapSet",
+          function(CSobject,
              outdir,
-             max_mismatch = 0,
-             ncores = 1) {
+             max_mismatch,
+             ncores) {
         protocol <- CSobject@expMethod
         sampleinfo <- sampleInfo(CSobject)
         destinations <- as.character(sampleinfo[, 1])
@@ -234,4 +234,5 @@ demultiplex_fastq <-
         sampleInfo(CSobject) <- sampleinfo
         return(CSobject)
 
-    }
+          }
+)

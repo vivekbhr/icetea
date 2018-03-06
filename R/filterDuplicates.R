@@ -72,6 +72,7 @@ filterDups <- function(bamFile, outFile) {
 
 #' Filter PCR-duplicates from mapped files using internal UMIs
 #'
+#' @rdname filterDuplicates
 #' @description This script considers the read mapping start position and the UMI to determine whether a
 #'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
 #'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
@@ -81,8 +82,8 @@ filterDups <- function(bamFile, outFile) {
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
 #' @importFrom methods validObject
 #' @importFrom Rsamtools countBam ScanBamParam scanBamFlag BamFileList
-#' @export
 #'
+#' @export
 #' @examples
 #'
 #' # before running this
@@ -97,9 +98,12 @@ filterDups <- function(bamFile, outFile) {
 #' cs <- filterDuplicates(cs, outdir = "filtered_bam")
 #'
 
-filterDuplicates <- function(CSobject, outdir) {
-    si <- sampleInfo(CSobject)
-    bamfiles <- si$mapped_file
+setMethod("filterDuplicates",
+          signature = "CapSet",
+          function(CSobject, outdir) {
+
+              si <- sampleInfo(CSobject)
+              bamfiles <- si$mapped_file
 
     # first check if the bam files exist
     lapply(bamfiles, function(f) {
@@ -141,4 +145,5 @@ filterDuplicates <- function(CSobject, outdir) {
     validObject(CSobject)
     return(CSobject)
 
-}
+          }
+)

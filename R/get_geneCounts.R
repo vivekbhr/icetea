@@ -1,5 +1,6 @@
 #' Get gene-level counts from TSS data
 #'
+#' @rdname getGeneCounts
 #' @param CSobject The \code{\link{CapSet}} object to use.
 #' @param transcriptGRL A GRangesList object containing transcripts, created using transcriptsBy(txdb)
 #' @param regionAroundTSS How many bases downstream of TSS to count
@@ -9,8 +10,8 @@
 #' @return data.frame with gene-level counts for all genes in the txdb object
 #'
 #' @importFrom GenomicFeatures transcriptsBy
-#' @export
 #'
+#' @export
 #' @examples
 #'
 #'  # load a txdb object
@@ -24,15 +25,17 @@
 #'  # load a CapSet object
 #'  cs <- exampleCSobject()
 #'  # get gene counts, counting reads around 500 bp of the TSS
-#'  gcounts <- get_geneCounts(cs, dm6trans)
+#'  gcounts <- getGeneCounts(cs, dm6trans)
 #'
 
-get_geneCounts <-
-    function(CSobject,
-             transcriptGRL,
-             regionAroundTSS = 500,
-             single_end = TRUE,
-             outfile = NA) {
+setMethod("getGeneCounts",
+        signature = "CapSet",
+        function(CSobject,
+                transcriptGRL,
+                regionAroundTSS,
+                single_end,
+                outfile) {
+
         # add gene names and unlist
         transcriptGRL <- mapply(function(x, name) {
             x$geneID <- name
@@ -72,4 +75,5 @@ get_geneCounts <-
         }
         return(tsscounts.gene)
 
-    }
+        }
+)

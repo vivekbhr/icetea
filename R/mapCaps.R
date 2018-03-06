@@ -1,5 +1,6 @@
 #' Map the data from 5' profiling techniques
 #'
+#' @rdname mapCaps
 #' @param CSobject An object of class \code{\link{CapSet}}
 #' @param genomeIndex path to the Subread index file. Should end with the basename of the index.
 #' @param outdir output directory path
@@ -14,7 +15,6 @@
 #' @importFrom utils capture.output
 #' @importFrom methods validObject is
 #' @importFrom Rsamtools sortBam indexBam countBam ScanBamParam scanBamFlag
-#' @export
 #'
 #' @examples
 #' \dontrun{
@@ -34,13 +34,14 @@
 #' }
 #'
 
-mapCaps <-
-    function(CSobject,
+setMethod("mapCaps",
+          signature = "CapSet",
+          function(CSobject,
              genomeIndex,
              outdir,
-             externalGTF = NULL,
-             nthreads = 1,
-             logfile = NULL) {
+             externalGTF,
+             nthreads,
+             logfile) {
         ## extract info
         sampleInfo <- sampleInfo(CSobject)
         expMethod <- CSobject@expMethod
@@ -149,4 +150,5 @@ mapCaps <-
 
         validObject(CSobject)
         return(CSobject)
-        }
+          }
+)
