@@ -46,8 +46,10 @@ annotateTSS <- function(tssBED,
                          plotValue = "number",
                          outFile = NA) {
     ## resolve 1:many mapping issue by prioritising some features over others
-    rank_df <- data.frame(feature = featureRank,
-                          rank = c(1, 2, 3, 4, 5, 6, 7))
+    stopifnot(length(featureRank) == 7)
+    rankvec <- 1:7
+    names(rankvec) <- featureRank
+
     # get data
     tss <- rtracklayer::import.bed(tssBED)
     # Annotate
@@ -59,10 +61,10 @@ annotateTSS <- function(tssBED,
         ))
     )
     ## resolve 1:many mapping isues using ranks from rankdf
-    t <- data.frame(QUERYID = db$QUERYID,
+    df <- data.frame(QUERYID = db$QUERYID,
                     LOCATION = db$LOCATION)
-    tt <- getranks(t, rankdf = rank_df)
-    ttt <- splitranks(tt)
+    df$rank <- vapply(as.character(df$LOCATION), getranks, rank_vec = rankvec, FUN.VALUE = numeric(length = 1))
+    df2 <- splitranks(df)
     ## Return a table of tss counts per feature
     final_table <- as.data.frame(table(ttt$LOCATION))
     colnames(final_table) <- c("feature", "value")
@@ -102,12 +104,9 @@ annotateTSS <- function(tssBED,
 #' @return A list of ranks
 #'
 #'
-getranks <- function(x, rankdf) {
-    x$rank <- sapply(x$LOCATION, function(y) {
-        return(rankdf[rankdf$feature == y, "rank"])
-    })
-    return(x)
-}
+getranks <- function(x, rank_vec) {
+                    return(rank_vec[names(rank_vec) == x])
+                }
 
 #' Get features with the best rank for each TSS
 #'
