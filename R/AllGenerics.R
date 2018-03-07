@@ -1,18 +1,23 @@
 #' @rdname plot_TSSprecision
 #' @export
 setGeneric("plot_TSSprecision",
-       function(reference, detectedTSS,
-           distanceCutoff = 500, outFile = NULL, ...) {
-           standardGeneric("plot_TSSprecision")
-       })
+           function(reference,
+                    detectedTSS,
+                    distanceCutoff = 500,
+                    outFile = NULL,
+                    ...) {
+               standardGeneric("plot_TSSprecision")
+           })
 
 #' @rdname sampleInfo
 #' @export
-setGeneric("sampleInfo", function(object,...) standardGeneric("sampleInfo"))
+setGeneric("sampleInfo", function(object, ...)
+    standardGeneric("sampleInfo"))
 
 #' @rdname sampleInfo
 #' @export
-setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInfo<-"))
+setGeneric("sampleInfo<-", function(object, ..., value)
+    standardGeneric("sampleInfo<-"))
 
 #' Retrieve and replace sample information of a CapSet object
 #'
@@ -35,3 +40,88 @@ setGeneric("sampleInfo<-", function(object,...,value) standardGeneric("sampleInf
 #' sampleInfo(cs) <- si
 NULL
 #> NULL
+
+#' @name demultiplexFASTQ
+#' @rdname demultiplexFASTQ
+#' @export
+setGeneric("demultiplexFASTQ",
+           function(CSobject,
+             outdir,
+             max_mismatch = 0,
+             ncores = 1)
+            standardGeneric("demultiplexFASTQ"))
+
+#' @name mapCaps
+#' @rdname mapCaps
+#' @export
+setGeneric("mapCaps",
+           function(CSobject,
+             genomeIndex,
+             outdir,
+             externalGTF = NULL,
+             nthreads = 1,
+             logfile = NULL)
+            standardGeneric("mapCaps"))
+
+#' @name filterDuplicates
+#' @rdname filterDuplicates
+#' @export
+setGeneric("filterDuplicates",
+           function(CSobject,
+                    outdir)
+    standardGeneric("filterDuplicates"))
+
+#' @name detectTSS
+#' @rdname detectTSS
+#' @export
+setGeneric("detectTSS",
+           function(CSobject,
+                    groups,
+                    outfile_prefix = NULL,
+                    foldChange = 2,
+                    restrictChr = NULL)
+            standardGeneric("detectTSS"))
+
+#' @name exportTSS
+#' @rdname exportTSS
+setGeneric("exportTSS",
+           function(CSobject,
+             outfile_prefix,
+             pergroup = FALSE,
+             merged = TRUE)
+            standardGeneric("exportTSS"))
+
+#' @name getGeneCounts
+#' @rdname getGeneCounts
+#' @export
+setGeneric("getGeneCounts",
+            function(CSobject,
+                transcriptGRL,
+                regionAroundTSS = 500,
+                single_end = TRUE,
+                outfile = NA)
+            standardGeneric("getGeneCounts"))
+
+#' @name fitDiffTSS
+#' @rdname fitDiffTSS
+#' @export
+setGeneric("fitDiffTSS",
+            function(CSobject,
+                    TSSfile = NULL,
+                    groups,
+                    normalization = "internal",
+                    CSobjectSpikeIn = NULL,
+                    outplots = NULL,
+                    plotref)
+            standardGeneric("fitDiffTSS"))
+
+#' @name detectDiffTSS
+#' @rdname detectDiffTSS
+#' @export
+setGeneric("detectDiffTSS",
+           function(fit,
+            testGroup,
+            contGroup,
+            TSSfile,
+            MAplot_fdr = NA)
+            standardGeneric("detectDiffTSS"))

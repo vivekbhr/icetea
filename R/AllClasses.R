@@ -48,94 +48,102 @@
 #'
 
 newCapSet <- function(expMethod,
-                    fastq_R1 = NULL,
-                    fastq_R2 = NULL,
-                    idxList = NULL,
-                    sampleNames,
-                    demult_R1 = NA,
-                    demult_R2 = NA,
-                    mapped_file = NA,
-                    filtered_file = NA
-                    ) {
+                      fastq_R1 = NULL,
+                      fastq_R2 = NULL,
+                      idxList = NULL,
+                      sampleNames,
+                      demult_R1 = NA,
+                      demult_R2 = NA,
+                      mapped_file = NA,
+                      filtered_file = NA) {
     ## Get numbers from already provided files
     suppressWarnings({
         # R1
-    if(!is.na(demult_R1)) {
-        message("Checking de-multiplexed R1 reads")
-        if(sum(sapply(demult_R1, file.exists, simplify = TRUE)) != length(demult_R1)) {
-            stop("One or more R1 read files don't exist!")
+        if (!is.na(demult_R1)) {
+            message("Checking de-multiplexed R1 reads")
+            if (sum(vapply(demult_R1, file.exists, logical(1L))) != length(demult_R1)) {
+                stop("One or more R1 read files don't exist!")
+            }
+            r1_counts <- ShortRead::countLines(demult_R1)
+        } else {
+            r1_counts <- NA
         }
-        r1_counts <- ShortRead::countLines(demult_R1)
-    } else {
-        r1_counts <- NA
-    }
-    # R2
-    if(!is.na(demult_R2)) {
-        message("Checking de-multiplexed R2 reads")
-        if(sum(sapply(demult_R2, file.exists, simplify = TRUE)) != length(demult_R2)) {
-            stop("One or more R2 read files don't exist!")
+        # R2
+        if (!is.na(demult_R2)) {
+            message("Checking de-multiplexed R2 reads")
+            if (sum(vapply(demult_R2, file.exists, logical(1L))) != length(demult_R2)) {
+                stop("One or more R2 read files don't exist!")
+            }
+            r2_counts <- ShortRead::countLines(demult_R2)
+            # R1 and R2 have same no of reads?
+            sum(r1_counts == r1_counts) == length(r1_counts)
+        } else {
+            r2_counts <- NA
         }
-        r2_counts <- ShortRead::countLines(demult_R2)
-        # R1 and R2 have same no of reads?
-        sum(r1_counts == r1_counts) == length(r1_counts)
-    } else {
-        r2_counts <- NA
-    }
-    # BAM
-    if(!is.na(mapped_file)) {
-        message("Checking mapped file")
-        if(sum(sapply(mapped_file, file.exists, simplify = TRUE)) != length(mapped_file)) {
-            stop("One or more mapped files don't exist!")
+        # BAM
+        if (!is.na(mapped_file)) {
+            message("Checking mapped file")
+            if (sum(vapply(mapped_file, file.exists, logical(1L))) != length(mapped_file)) {
+                stop("One or more mapped files don't exist!")
+            }
+            mapped_readcounts <- countBam(BamFileList(mapped_file),
+                                          param = ScanBamParam(
+                                              flag = scanBamFlag(
+                                                  isUnmappedQuery = FALSE,
+                                                  isFirstMateRead = TRUE,
+                                                  isSecondaryAlignment = FALSE
+                                              )
+                                          ))[, 6] # "file" and "records"
+        } else {
+            mapped_readcounts <- NA
         }
-        mapped_readcounts <- countBam(BamFileList(mapped_file),
-                param = ScanBamParam(
-                    flag = scanBamFlag(
-                        isUnmappedQuery = FALSE,
-                        isFirstMateRead = TRUE,
-                        isSecondaryAlignment = FALSE)))[,6] # "file" and "records"
-    } else {
-        mapped_readcounts <- NA
-    }
-    # Filtered BAM
-    if(!is.na(filtered_file)) {
-        message("Checking de-duplicated file")
-        if(sum(sapply(filtered_file, file.exists, simplify = TRUE)) != length(filtered_file)) {
-            stop("One or more de-duplicated files don't exist!")
+        # Filtered BAM
+        if (!is.na(filtered_file)) {
+            message("Checking de-duplicated file")
+            if (sum(vapply(filtered_file, file.exists, logical(1L))) != length(filtered_file)) {
+                stop("One or more de-duplicated files don't exist!")
+            }
+            filt_readcounts <- countBam(BamFileList(filtered_file),
+                                        param = ScanBamParam(
+                                            flag = scanBamFlag(
+                                                isUnmappedQuery = FALSE,
+                                                isFirstMateRead = TRUE,
+                                                isSecondaryAlignment = FALSE
+                                            )
+                                        ))[, 6] # "records"
+        } else {
+            filt_readcounts <- NA
         }
-        filt_readcounts <- countBam(BamFileList(filtered_file),
-                param = ScanBamParam(
-                    flag = scanBamFlag(
-                        isUnmappedQuery = FALSE,
-                        isFirstMateRead = TRUE,
-                        isSecondaryAlignment = FALSE)))[,6] # "records"
-    } else {
-        filt_readcounts <- NA
-    }
 
     })
 
     # make sampleinfo DataFrame
-    info <- S4Vectors::DataFrame(row.names = idxList,
-                                samples = sampleNames,
-                                demult_R1 = demult_R1,
-                                demult_R2 = demult_R2,
-                                mapped_file = mapped_file,
-                                filtered_file = filtered_file,
-                                demult_reads = r1_counts,
-                                num_mapped = mapped_readcounts,
-                                num_filtered = filt_readcounts,
-                                num_intss = NA)
+    info <- S4Vectors::DataFrame(
+        row.names = idxList,
+        samples = sampleNames,
+        demult_R1 = demult_R1,
+        demult_R2 = demult_R2,
+        mapped_file = mapped_file,
+        filtered_file = filtered_file,
+        demult_reads = r1_counts,
+        num_mapped = mapped_readcounts,
+        num_filtered = filt_readcounts,
+        num_intss = NA
+    )
 
     # get fastq type (single or paired)
     fastqType <- ifelse(is.null(fastq_R2), "single", "paired")
     # create an instance of CapSet
-    new("CapSet",
-        sampleInfo = info,  # sample Information
+    new(
+        "CapSet",
+        sampleInfo = info,
+        # sample Information
         #fastqType = fastqType,
         fastq_R1 = fastq_R1,
         fastq_R2 = fastq_R2,
         expMethod = expMethod,
-        tss_detected = NULL)
+        tss_detected = NULL
+    )
 }
 
 #' Check capset validity
@@ -158,32 +166,36 @@ check_capSet <- function(object) {
 
     ## validate slots
     # experiment
-    if(!(exp %in% c("CAGE", "RAMPAGE", "MAPCap") )) {
-    msg <- paste0("Experiment type should be among : 'CAGE', 'RAMPAGE' or 'MAPCap' ")
-    errors <- c(errors, msg)
+    if (!(exp %in% c("CAGE", "RAMPAGE", "MAPCap"))) {
+        msg <-
+            paste0("Experiment type should be among : 'CAGE', 'RAMPAGE' or 'MAPCap' ")
+        errors <- c(errors, msg)
     }
     # fastq check
-#    if(!is.null(R1) & !file.exists(R1) ) {
-#    msg <- paste0("Please specify correct fastq file path for fastq_R1 ")
-#    errors <- c(errors, msg)
-#    }
-#    if(!is.null(R2) & !(file.exists(R2) ) ) {
-#    msg <- paste0("Please specify correct fastq file path for fastq_R2 ")
-#    errors <- c(errors, msg)
-#    }
+    #    if(!is.null(R1) & !file.exists(R1) ) {
+    #    msg <- paste0("Please specify correct fastq file path for fastq_R1 ")
+    #    errors <- c(errors, msg)
+    #    }
+    #    if(!is.null(R2) & !(file.exists(R2) ) ) {
+    #    msg <- paste0("Please specify correct fastq file path for fastq_R2 ")
+    #    errors <- c(errors, msg)
+    #    }
     # sampleInfo
-    if(!is(info, "DataFrame")) {
-    msg <- paste0("sampleInfo should be a DataFrame object ")
-    errors <- c(errors, msg)
+    if (!is(info, "DataFrame")) {
+        msg <- paste0("sampleInfo should be a DataFrame object ")
+        errors <- c(errors, msg)
     }
     # TSS info
-    if(!(class(tss) %in% c("NULL", "CompressedGRangesList", "GRangesList")) ) {
+    if (!(class(tss) %in% c("NULL", "CompressedGRangesList", "GRangesList"))) {
         msg <- paste0("tss_detected should be a GRangesList object ")
         errors <- c(errors, msg)
     }
 
     ## return
-    if (length(errors) == 0) TRUE else errors
+    if (length(errors) == 0)
+        TRUE
+    else
+        errors
 }
 
 ## char or NULL class
@@ -201,13 +213,15 @@ setClassUnion("charOrNULL", c("character", "NULL"))
 #' @slot tss_detected A GRangesList object of detected TSS
 #' @importClassesFrom S4Vectors DataFrame
 #'
-CapSet <- setClass("CapSet",
-       slots = c(
-            fastqType = "character",
-            fastq_R1 = "charOrNULL",
-            fastq_R2 = "charOrNULL",
-            expMethod = "character",
-            sampleInfo = "DataFrame",
-            tss_detected = "ANY"
-        ),
-       validity = check_capSet)
+CapSet <- setClass(
+    "CapSet",
+    slots = c(
+        fastqType = "character",
+        fastq_R1 = "charOrNULL",
+        fastq_R2 = "charOrNULL",
+        expMethod = "character",
+        sampleInfo = "DataFrame",
+        tss_detected = "ANY"
+    ),
+    validity = check_capSet
+)

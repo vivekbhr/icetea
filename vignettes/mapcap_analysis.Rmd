@@ -57,7 +57,7 @@ cs <- newCapSet(expMethod = 'MAPCap',
 
 # demultiplex fastq and trim the barcodes
 dir.create("splitting")
-cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "splitting", nthreads = 10)
+cs <- demultiplexFASTQ(cs, max_mismatch = 1, outdir = "splitting", nthreads = 10)
 
 # map fastq
 dir.create("mapping")
@@ -69,7 +69,7 @@ cs <- filterDuplicates(cs, outdir = "removedup")
 
 # detect TSS
 dir.create("tssCalling")
-cs <- detect_TSS(cs, groups = c("wt", "wt", "mut", "mut"), outfile_prefix = "tssCalling")
+cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"), outfile_prefix = "tssCalling")
 ```
 
 
@@ -121,7 +121,7 @@ cs <- newCapSet(expMethod = 'MAPCap',
 ### De-multiplexing the fastq
 
 Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to
-the fastq sequence. The tool `demultiplex_fastq` de-multiplexes the samples using the sample barcode, producing fastq files
+the fastq sequence. The tool `demultiplexFASTQ` de-multiplexes the samples using the sample barcode, producing fastq files
 corresponding to each sample. It also trims off these barcodes and attaches them in the header of the fastq files 
 for further processing. Function returns a modified CapSet object that contains location of demultiplexed files
 along with processing statistics.
@@ -129,7 +129,7 @@ along with processing statistics.
 ```{r demultiplex, eval=TRUE}
 # demultiplex fastq and trim the barcodes
 dir.create("splitting")
-cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = "splitting", ncores = 10)
+cs <- demultiplexFASTQ(cs, max_mismatch = 1, outdir = "splitting", ncores = 10)
 ```
 
 It takes about 6 min (340 sec) to trim and de-multiplex 1M PE reads into 12 sampels (12 pair of fastqs), using 1 thread. This can be done under 45 seconds if 10 threads are used.
@@ -198,15 +198,15 @@ cs <- filterDuplicates(cs, outdir = "removedup")
 ICETEA implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the 
 windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.
 
-This method is implemented in the function `detect_TSS`, which returns a modified `CapSet` object with TSS detection statistics.
+This method is implemented in the function `detectTSS`, which returns a modified `CapSet` object with TSS detection statistics.
 
 ```{r getTSS, eval=TRUE}
 # detect TSS
 dir.create("tssCalling")
-cs <- detect_TSS(cs, groups = c("wt", "wt", "mut", "mut"), 
+cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"), 
                  outfile_prefix = "tssCalling", restrictChr = "X")
 # export the detected TSS bed files
-export_tss(cs, merged = TRUE, outfile_prefix = "testTSS")
+exportTSS(cs, merged = TRUE, outfile_prefix = "testTSS")
 ```
 
 
@@ -247,21 +247,21 @@ plot_TSSprecision(reference = transcripts, detectedTSS = cs)
 
 For the experiments with two or more groups, ICETEA can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.
 
-The functions `fit_diffTSS` and `detect_diffTSS` utilize edgeR to perform differential expression analysis.
+The functions `fitDiffTSS` and `detectDiffTSS` utilize edgeR to perform differential expression analysis.
 
 ```{r diffTSS, eval=FALSE}
-csfit <- fit_diffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
+csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
                      outplots = NULL, plotref = "embryo1")
 save(csfit, file = "diffTSS_fit.Rdata")
 
-detect_diffTSS(csfit, testGroup = "mut", controlGroup = "wt",
+detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt",
                tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
 ```
 
 
 ### Using spike-In controls
 
-For the differential TSS expression analysis, the function `fit_diffTSS` shown above utilize the [TMM method]()
+For the differential TSS expression analysis, the function `fitDiffTSS` shown above utilize the [TMM method]()
 for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides
 a way to perform spike-in normalization during differential expression analysis, through the functions ``.
 
@@ -290,6 +290,6 @@ Given the annotations, TSS counts for each gene can be summarized to gene counts
 ```{r genecounts, eval=FALSE}
 dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
 # get gene counts, counting reads around 500 bp of the TSS
-gcounts <- get_geneCounts(cs, dm6trans)
+gcounts <- getGeneCounts(cs, dm6trans)
 ```
 
