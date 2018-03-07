@@ -104,7 +104,8 @@ setMethod("detectTSS",
                       bin = TRUE
                   )
               colnames(data) <- rownames(design)
-              colData(data) <- c(colData(data), design)
+              SummarizedExperiment::colData(data) <-
+                  c(SummarizedExperiment::colData(data), design)
 
               # Get counts for 2kb local region surrounding each bin
               surrounds <- 2000
@@ -121,7 +122,8 @@ setMethod("detectTSS",
               ))
 
               colnames(wider) <- rownames(design)
-              colData(wider) <- c(colData(wider), design)
+              SummarizedExperiment::colData(wider) <-
+                  c(SummarizedExperiment::colData(wider), design)
 
               ## take out groups --> Generate filter statistics for each group (based on local enrichment)
               filterstat <- lapply(unique(design$group), function(x) {
