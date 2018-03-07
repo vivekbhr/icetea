@@ -4,8 +4,8 @@ language: R
 sudo: false
 cache: packages
 r: bioc-devel
-r_packages:
-    - devtools
+r_github_packages:
+    - r-lib/devtools
 bioc_packages:
     - BiocCheck
 # in order to sync with devtools::check()
