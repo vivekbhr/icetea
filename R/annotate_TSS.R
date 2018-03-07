@@ -18,6 +18,7 @@
 #'
 #' @return A data.frame with number of TSS falling into each feature
 #' @export
+#' @import TxDb.Dmelanogaster.UCSC.dm6.ensGene
 #' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_brewer labs theme
 #'                     theme_gray coord_flip ggsave
 #' @importFrom stats reshape
@@ -49,7 +50,7 @@ annotateTSS <- function(tssBED,
                          outFile = NA) {
     ## resolve 1:many mapping issue by prioritising some features over others
     stopifnot(length(featureRank) == 7)
-    rankvec <- 1:7
+    rankvec <- seq_len(7)
     names(rankvec) <- featureRank
 
     # get data

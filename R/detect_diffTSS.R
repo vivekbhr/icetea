@@ -131,12 +131,12 @@ setMethod("fitDiffTSS",
             GenomicRanges::resize(reads, width = width, fix = fix, ...)
         }
 
-        # now read the data
+        # Read the data
         tsscounts <-
             GenomicAlignments::summarizeOverlaps(features = mergedall,
                                                  reads = bam.files,
                                                  preprocess.reads = ResizeReads)
-        #### ------ Now do EdgeR ------ ####
+        ## EdgeR
         y <- csaw::asDGEList(tsscounts, norm.factors = normfacs)
         designm <- model.matrix( ~ 0 + group, design)
         y <- edgeR::estimateDisp(y, designm)
@@ -197,6 +197,8 @@ setMethod("fitDiffTSS",
 #' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
 #'
 #' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
+#' @importFrom limma makeContrasts
+#' @importFrom edgeR glmQLFTest
 #' @importFrom ggplot2 ggplot aes_string geom_point geom_abline scale_color_manual labs theme_gray theme
 #'
 #' @export
@@ -235,9 +237,9 @@ setMethod("detectDiffTSS",
         # make contrast matrix
         contr <- paste0("group", testGroup , "-group", contGroup)
         contrast <-
-            limma::makeContrasts(contrasts = contr, levels = fit$design)
+            makeContrasts(contrasts = contr, levels = fit$design)
         # test
-        results <- edgeR::glmQLFTest(fit, contrast = contrast)
+        results <- glmQLFTest(fit, contrast = contrast)
         top <- as.data.frame(edgeR::topTags(results, n = Inf))
 
         # sort output by pvalue and return
