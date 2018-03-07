@@ -27,15 +27,15 @@ numReadsInBed <- function(regions, bams = NA) {
 #' @param outfile_prefix Output name prefix for the .Rdata file containing window counts, background counts
 #'                       and filtering statistics calculated during TSS detection.
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
-#' 		'usual' amount of starting material and squencing depth (>=5ug starting material,
-#' 		>= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
-#' 		amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
-#' 		samples with 500ng starting material).
+#'        usual' amount of starting material and squencing depth (>=5ug starting material,
+#'        = 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
+#'        amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
+#'        samples with 500ng starting material).
 #' @param restrictChr Chromosomes to restrict the analysis to.
 #'
 #'
 #' @return .bed files containing TSS position for each group, along with a bed file for consensus
-#' 	   (union) TSS sites of all samples.
+#'        (union) TSS sites of all samples.
 #'
 #' @export
 #' @importFrom utils write.table

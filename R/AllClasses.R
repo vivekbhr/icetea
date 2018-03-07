@@ -61,7 +61,7 @@ newCapSet <- function(expMethod,
         # R1
         if (!is.na(demult_R1)) {
             message("Checking de-multiplexed R1 reads")
-            if (sum(vapply(demult_R1, file.exists, logical(1))) != length(demult_R1)) {
+            if (sum(vapply(demult_R1, file.exists, logical(1L))) != length(demult_R1)) {
                 stop("One or more R1 read files don't exist!")
             }
             r1_counts <- ShortRead::countLines(demult_R1)
@@ -71,7 +71,7 @@ newCapSet <- function(expMethod,
         # R2
         if (!is.na(demult_R2)) {
             message("Checking de-multiplexed R2 reads")
-            if (sum(vapply(demult_R2, file.exists, logical(1))) != length(demult_R2)) {
+            if (sum(vapply(demult_R2, file.exists, logical(1L))) != length(demult_R2)) {
                 stop("One or more R2 read files don't exist!")
             }
             r2_counts <- ShortRead::countLines(demult_R2)
@@ -83,7 +83,7 @@ newCapSet <- function(expMethod,
         # BAM
         if (!is.na(mapped_file)) {
             message("Checking mapped file")
-            if (sum(vapply(mapped_file, file.exists, logical(1))) != length(mapped_file)) {
+            if (sum(vapply(mapped_file, file.exists, logical(1L))) != length(mapped_file)) {
                 stop("One or more mapped files don't exist!")
             }
             mapped_readcounts <- countBam(BamFileList(mapped_file),
@@ -100,7 +100,7 @@ newCapSet <- function(expMethod,
         # Filtered BAM
         if (!is.na(filtered_file)) {
             message("Checking de-duplicated file")
-            if (sum(vapply(filtered_file, file.exists, logical(1))) != length(filtered_file)) {
+            if (sum(vapply(filtered_file, file.exists, logical(1L))) != length(filtered_file)) {
                 stop("One or more de-duplicated files don't exist!")
             }
             filt_readcounts <- countBam(BamFileList(filtered_file),

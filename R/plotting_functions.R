@@ -35,10 +35,10 @@ plot_readStats <- function(CSobject,
     fields_toplot <-
         c("demult_reads", "num_mapped", "num_filtered", "num_intss")
     msg <- "Plotting following information :"
-    fields <- sapply(fields_toplot, function(x)
+    fields <- vapply(fields_toplot, function(x)
         if (x %in% sicols) {
             return(x)
-        })
+        }, character(1L))
     message(cat(msg, fields))
     ## prepare df
     si_stats <- data.frame(

@@ -50,7 +50,7 @@ setMethod("mapCaps",
         demult <- !(is.null(sampleInfo$demult_R1)) # TRUE/FALSE
 
         if (demult) {
-            if (sum(sapply(sampleInfo$demult_R1, file.exists, simplify = TRUE)) != nrow(sampleInfo)) {
+            if (sum(vapply(sampleInfo$demult_R1, file.exists, logical(1))) != nrow(sampleInfo)) {
                 stop(
                     "One or more demultiplxed fastq files don't exist.
                     Please check file paths under sampleInfo(CSobject)"

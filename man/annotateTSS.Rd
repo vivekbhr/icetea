@@ -36,6 +36,8 @@ provided.
 # load a txdb object
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+# limiting the annotation to X chromosome
+seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
 
 # annotate a given TSS bed file
 dir <- system.file("extdata", package = "icetea")

@@ -22,8 +22,8 @@ calling (see example)}
 and filtering statistics calculated during TSS detection.}
 
 \item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
-'usual' amount of starting material and squencing depth (>=5ug starting material,
->= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
+usual' amount of starting material and squencing depth (>=5ug starting material,
+= 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
 amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 samples with 500ng starting material).}
 
@@ -31,7 +31,7 @@ samples with 500ng starting material).}
 }
 \value{
 .bed files containing TSS position for each group, along with a bed file for consensus
-	   (union) TSS sites of all samples.
+       (union) TSS sites of all samples.
 }
 \description{
 Detection of Trancription start sites based on local enrichment

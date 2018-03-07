@@ -18,9 +18,9 @@
 #' @param outplots Output pdf filename for plots. If provided, the plots for BCV, dispersion and
 #'                 MDS plot is created and saved in this file.
 #' @param plotref Name of reference sample to plot for detection of composition bias in the
-#' 		  data. Data is normalized using the TMM method to avoid composition bias.
+#'        data. Data is normalized using the TMM method to avoid composition bias.
 #'
-#' @return Returns an object of class DGEGLM.
+#' @return An object of class \link[edgeR]{DGEGLM-class}.
 #'
 #' @importFrom graphics abline par plot smoothScatter
 #' @importFrom grDevices dev.off pdf

@@ -38,7 +38,7 @@ MDS plot is created and saved in this file.}
 data. Data is normalized using the TMM method to avoid composition bias.}
 }
 \value{
-Returns an object of class DGEGLM.
+An object of class \link[edgeR]{DGEGLM-class}.
 }
 \description{
 Detect differentially expressed Transcription Start Sites between two conditions (fit model)

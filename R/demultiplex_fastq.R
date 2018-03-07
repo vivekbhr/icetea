@@ -143,8 +143,8 @@ split_fastq <- function(expType,
             )
 
         #id2keep <- filter_byIDx(idx_name,
-        #			fq_id = ShortRead::id(fq_R2),
-        #			maxM = max_mismatch)
+        #           fq_id = ShortRead::id(fq_R2),
+        #           maxM = max_mismatch)
         # append to destination
         ShortRead::writeFastq(fq_R1new[id2keep], outfile_R1, "a")
         ShortRead::writeFastq(fq_R2new[id2keep], outfile_R2, "a")

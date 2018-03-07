@@ -26,6 +26,8 @@
 #' # load a txdb object
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+#' # limiting the annotation to X chromosome
+#' seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
 #'
 #' # annotate a given TSS bed file
 #' dir <- system.file("extdata", package = "icetea")
@@ -66,7 +68,7 @@ annotateTSS <- function(tssBED,
     df$rank <- vapply(as.character(df$LOCATION), getranks, rank_vec = rankvec, FUN.VALUE = numeric(length = 1))
     df2 <- splitranks(df)
     ## Return a table of tss counts per feature
-    final_table <- as.data.frame(table(ttt$LOCATION))
+    final_table <- as.data.frame(table(df2$LOCATION))
     colnames(final_table) <- c("feature", "value")
     ## plot if asked
     if (!is.null(plotValue)) {
@@ -99,9 +101,9 @@ annotateTSS <- function(tssBED,
 #' Assign feature ranks on a VariantAnnotation output
 #'
 #' @param x output from VariantAnnotation
-#' @param rankdf the defined rankdf data.frame
+#' @param rank_vec the pre-set vector of ranks
 #'
-#' @return A list of ranks
+#' @return A vector of ranks of length = length of input features
 #'
 #'
 getranks <- function(x, rank_vec) {
