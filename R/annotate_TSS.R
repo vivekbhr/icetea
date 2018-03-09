@@ -18,6 +18,7 @@
 #'
 #' @return A data.frame with number of TSS falling into each feature
 #' @export
+#' @import TxDb.Dmelanogaster.UCSC.dm6.ensGene
 #' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_brewer labs theme
 #'                     theme_gray coord_flip ggsave
 #' @importFrom stats reshape
@@ -26,58 +27,71 @@
 #' # load a txdb object
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+#' # limiting the annotation to X chromosome
+#' seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
 #'
 #' # annotate a given TSS bed file
 #' dir <- system.file("extdata", package = "icetea")
 #' tss <- file.path(dir, "testTSS_merged.bed")
-#' annotations <- annotate_TSS(tssBED = tss, TxDb.Dmelanogaster.UCSC.dm6.ensGene,
+#' annotations <- annotateTSS(tssBED = tss, TxDb.Dmelanogaster.UCSC.dm6.ensGene,
 #'                plotValue = "number", outFile = "TSS_annot.pdf")
 #'
 
-annotate_TSS <- function(tssBED,
+annotateTSS <- function(tssBED,
                          txdb,
-                         featureRank = c("fiveUTR", "promoter", "intron", "coding",
-                                        "spliceSite", "threeUTR", "intergenic"),
+                         featureRank = c("fiveUTR",
+                                         "promoter",
+                                         "intron",
+                                         "coding",
+                                         "spliceSite",
+                                         "threeUTR",
+                                         "intergenic"),
                          plotValue = "number",
                          outFile = NA) {
-
     ## resolve 1:many mapping issue by prioritising some features over others
-    rank_df <- data.frame(feature = featureRank,
-                          rank = c(1,2,3,4,5,6,7))
+    stopifnot(length(featureRank) == 7)
+    rankvec <- seq_len(7)
+    names(rankvec) <- featureRank
+
     # get data
     tss <- rtracklayer::import.bed(tssBED)
     # Annotate
-    db <- VariantAnnotation::locateVariants(query = tss,
-                                            subject = txdb,
-    VariantAnnotation::AllVariants(
-    promoter = VariantAnnotation::PromoterVariants(upstream = 500, downstream = 0)))
+    db <- VariantAnnotation::locateVariants(
+        query = tss,
+        subject = txdb,
+        VariantAnnotation::AllVariants(promoter = VariantAnnotation::PromoterVariants(
+            upstream = 500, downstream = 0
+        ))
+    )
     ## resolve 1:many mapping isues using ranks from rankdf
-    t <- data.frame(QUERYID = db$QUERYID, LOCATION = db$LOCATION)
-    tt <- getranks(t, rankdf = rank_df)
-    ttt <- splitranks(tt)
+    df <- data.frame(QUERYID = db$QUERYID,
+                    LOCATION = db$LOCATION)
+    df$rank <- vapply(as.character(df$LOCATION), getranks, rank_vec = rankvec, FUN.VALUE = numeric(length = 1))
+    df2 <- splitranks(df)
     ## Return a table of tss counts per feature
-    final_table <- as.data.frame(table(ttt$LOCATION))
+    final_table <- as.data.frame(table(df2$LOCATION))
     colnames(final_table) <- c("feature", "value")
     ## plot if asked
     if (!is.null(plotValue)) {
         if (plotValue == "number") {
             n <- "Number "
-        } else if(plotValue == "percent") {
-            final_table$value <- (final_table$value/sum(final_table$value))*100
+        } else if (plotValue == "percent") {
+            final_table$value <- (final_table$value / sum(final_table$value)) * 100
             n <- "% "
         } else {
             warning("Plot type neither 'number' nor 'percent'.")
-            }
+        }
 
-    ggplot(final_table, aes_string("feature", "value", fill = "feature")) +
-    geom_bar(stat = "identity", position = "dodge") +
-    scale_fill_brewer(palette = "Set1") +
-    labs(x = "Feature", y = paste0(n, "of TSS")) +
-    theme(legend.position = "none") +
-    theme_gray(base_size = 16) +
-    coord_flip()
+        ggplot(final_table,
+               aes_string("feature", "value", fill = "feature")) +
+            geom_bar(stat = "identity", position = "dodge") +
+            scale_fill_brewer(palette = "Set1") +
+            labs(x = "Feature", y = paste0(n, "of TSS")) +
+            theme(legend.position = "none") +
+            theme_gray(base_size = 16) +
+            coord_flip()
 
-    ggsave(outFile)
+        ggsave(outFile)
     }
 
     return(final_table)
@@ -88,17 +102,14 @@ annotate_TSS <- function(tssBED,
 #' Assign feature ranks on a VariantAnnotation output
 #'
 #' @param x output from VariantAnnotation
-#' @param rankdf the defined rankdf data.frame
+#' @param rank_vec the pre-set vector of ranks
 #'
-#' @return A list of ranks
+#' @return A vector of ranks of length = length of input features
 #'
 #'
-getranks <- function(x, rankdf) {
-    x$rank <- sapply(x$LOCATION, function(y) {
-    return(rankdf[rankdf$feature == y, "rank"])
-    })
-    return(x)
-}
+getranks <- function(x, rank_vec) {
+                    return(rank_vec[names(rank_vec) == x])
+                }
 
 #' Get features with the best rank for each TSS
 #'
@@ -110,7 +121,7 @@ getranks <- function(x, rankdf) {
 splitranks <- function(x) {
     l <- lapply(split(x, x$QUERYID), unique)
     l2 <- lapply(l, function(y) {
-    return(y[which(y$rank == min(y$rank)),])
+        return(y[which(y$rank == min(y$rank)), ])
     })
     l3 <- plyr::ldply(l2, data.frame)
     return(l3)
@@ -120,7 +131,13 @@ splitranks <- function(x) {
 # Melt the output df from splitranks
 melt <- function(x) {
     vars <- colnames(x[2:ncol(x)])
-    d <- plyr::unrowname(reshape(x, direction = "long", idvar = ".id", varying = vars) )
+    d <-
+        plyr::unrowname(reshape(
+            x,
+            direction = "long",
+            idvar = ".id",
+            varying = vars
+        ))
     d$time <- vars[d$time]
     colnames(d) <- c("variable", "Feature", "value")
 }
