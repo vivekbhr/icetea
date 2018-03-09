@@ -1,5 +1,5 @@
 ---
-title: "Analysing CAGE data using ICETEA"
+title: "Analysing MAPCap data using ICETEA"
 author: 
 - name: "Vivek Bhardwaj"
   affiliation: 
@@ -12,7 +12,6 @@ author:
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
