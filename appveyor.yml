@@ -16,7 +16,7 @@ cache:
 # Adapt as necessary starting from here
 
 build_script:
-  - source("https://install-github.me/r-lib/remotes")
+  - R CMD source("https://install-github.me/r-lib/remotes")
   - travis-tool.sh install_deps
 
 test_script:
