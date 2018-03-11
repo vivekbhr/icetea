@@ -14,3 +14,13 @@ differential TSS analysis can be performed using replicates on any 5’-profilin
 **Right panel :** Showing some of the quality control and visualization outputs from the package. 
 Proportion of sequencing reads used for each step (Top), comparison of TSS accuracy (w.r.t. annotated TSS) 
 between samples (middle), and MA-plots from differential TSS analysis (Bottom).
+
+
+## Installing ICETEA
+
+ICETEA can be installed using biocLite : 
+
+```r
+source("https://bioconductor.org/biocLite.R")
+biocLite("vivekbhr/icetea")
+```
