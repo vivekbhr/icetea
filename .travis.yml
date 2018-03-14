@@ -3,15 +3,18 @@
 language: R
 sudo: false
 cache: packages
-r: bioc-devel
-#r_github_packages:
-#    - r-lib/devtools
+r:
+    - bioc-devel
+    - bioc-release
+r_github_packages:
+#   - r-lib/devtools
+    - r-lib/covr
 bioc_packages:
     - BiocCheck
 # in order to sync with devtools::check()
 #r_check_args: --as-cran --timings --no-manual
 warnings_are_errors: true
-# customize build to add biocCheck? (not tested)
+# customize build to add biocCheck
 script:
     - R CMD build . --no-resave-data --no-manual
     - R CMD check *tar.gz --as-cran --timings --no-manual
@@ -19,3 +22,11 @@ script:
 os:
     - linux
     - osx
+# exclude osx build of devel version, since devtools can't install deps properly
+matrix:
+  exclude:
+  - os: osx
+    r: bioc-devel
+# get codecov
+after_success:
+  - Rscript -e 'covr::coveralls()'
