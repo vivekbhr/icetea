@@ -5,7 +5,6 @@ sudo: false
 cache: packages
 r:
     - bioc-devel
-    - bioc-release
 r_github_packages:
 #   - r-lib/devtools
     - r-lib/covr
