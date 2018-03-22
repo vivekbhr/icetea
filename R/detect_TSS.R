@@ -6,6 +6,8 @@
 #' @param bp_param BPPARAM
 #' @param window_size integer. size of window to use
 #'
+#' @importFrom SummarizedExperiment assay rowRanges
+#'
 #' @return RangedSE object with forward and reverse strand counts
 #'
 strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window_size) {
@@ -46,7 +48,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
                            rowRanges = c(rowRanges(fdata), rowRanges(rdata)),
                            colData = coldat)
     # drop empty bins
-    combined <- combined[rowSums(assay(combined)) > 0]
+    combined <- combined[BiocGenerics::rowSums(assay(combined)) > 0]
     # Suggestion : Drop bins with counts < threshold ?
     combined$totals <- combined$forward.totals + combined$reverse.totals
     return(combined)

@@ -13,7 +13,12 @@ localFilter(data, background, assay.data = 1, assay.back = 1)
 
 \item{background}{RangedSE object (background)}
 
-\item{prior.count}{}
+\item{assay.data}{Arg to pass forward}
+
+\item{assay.back}{Arg to pass forward}
+}
+\value{
+list with data and background abundances
 }
 \description{
 Calculate local enrichment of windows over background

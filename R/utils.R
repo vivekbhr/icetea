@@ -93,14 +93,11 @@ ResizeReads <- function(reads, width = 1, fix = "start", ...) {
 #'
 #' @param data RangedSE object (windows)
 #' @param background RangedSE object (background)
-#' @param assay.data
-#' @param assay.back
-#' @param prior.count
+#' @param assay.data Arg to pass forward
+#' @param assay.back Arg to pass forward
 #'
-#' @return
-#' @export
+#' @return list with data and background abundances
 #'
-#' @examples
 localFilter <- function(data,
                         background,
                         assay.data = 1,
