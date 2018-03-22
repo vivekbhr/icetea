@@ -79,7 +79,8 @@ setGeneric("detectTSS",
                     groups,
                     outfile_prefix = NULL,
                     foldChange = 2,
-                    restrictChr = NULL)
+                    restrictChr = NULL,
+                    ncores = 1)
             standardGeneric("detectTSS"))
 
 #' @name exportTSS
