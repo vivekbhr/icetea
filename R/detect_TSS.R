@@ -217,7 +217,7 @@ setMethod("detectTSS",
               }
 
               return(CSobject)
-}
+    })
 
 #' Export the detected TSS from CapSet object as .bed files
 #'

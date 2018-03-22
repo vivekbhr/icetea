@@ -7,10 +7,10 @@
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
 detectTSS(CSobject, groups, outfile_prefix = NULL, foldChange = 2,
-  restrictChr = NULL)
+  restrictChr = NULL, ncores = 1)
 
 \S4method{detectTSS}{CapSet}(CSobject, groups, outfile_prefix = NULL,
-  foldChange = 2, restrictChr = NULL)
+  foldChange = 2, restrictChr = NULL, ncores = 1)
 }
 \arguments{
 \item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
@@ -28,6 +28,8 @@ amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 samples with 500ng starting material).}
 
 \item{restrictChr}{Chromosomes to restrict the analysis to.}
+
+\item{ncores}{No. of cores/threads to use}
 }
 \value{
 .bed files containing TSS position for each group, along with a bed file for consensus
@@ -48,6 +50,6 @@ Detection of Trancription start sites based on local enrichment
 cs <- exampleCSobject()
 # detect TSS (samples in same group are treated as replicates)
 cs <- detectTSS(cs, groups = rep(c("wt","mut"), each = 2), outfile_prefix = "testTSS",
-           foldChange = 6, restrictChr = "X")
+           foldChange = 6, restrictChr = "X", ncores = 1)
 
 }
