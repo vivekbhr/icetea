@@ -102,25 +102,26 @@ localFilter <- function(data,
                         background,
                         assay.data = 1,
                         assay.back = 1) {
+    # check lengths
+    if (!identical(nrow(data), nrow(background))) {
+        stop("data and background should be of the same length")
+    }
     # get default prior counts
     prior.count <- formals(edgeR::aveLogCPM.DGEList)$prior.count
 
     # no need to get "effective width", fraglength is always 1 for 5' counting
     dwidth <- GenomicRanges::width(SummarizedExperiment::rowRanges(data))
     bwidth <- GenomicRanges::width(SummarizedExperiment::rowRanges(background))
-    # avg logCPM of data
-    abundances <- csaw::scaledAverage(
-                        csaw::asDGEList(
-                            data, assay = assay.data),
-                        scale = 1, prior.count = prior.count)
 
-    if (!identical(nrow(data), nrow(background))) {
-        stop("data and background should be of the same length")
-    }
+    # avg logCPM of data
+    dat.y <- csaw::asDGEList(data, assay = assay.data)
+    dat.y <- edgeR::estimateCommonDisp(dat.y)
+    data.ab <- csaw::scaledAverage(dat.y, scale = 1, prior.count = prior.count)
 
     relative.width <- (bwidth  - dwidth)/dwidth
     bg.y <- csaw::asDGEList(background, assay = assay.back)
-    bg.y$counts <- bg.y$counts - SummarizedExperiment::assay(data, assay = assay.data)
+    bg.y <- edgeR::estimateCommonDisp(bg.y)
+    bg.y$counts <- bg.y$counts - dat.y$counts
 
     # Some protection for negative widths
     # (counts should be zero, so only the prior gets involved in bg.ab).
@@ -132,9 +133,9 @@ localFilter <- function(data,
     # avg logCPM of background
     bg.ab <- csaw::scaledAverage(bg.y, scale = relative.width, prior.count = prior.count)
     # filter stat is the fold change of data over bg
-    filter.stat <- abundances - bg.ab
+    filter.stat <- data.ab - bg.ab
 
-    return(list(abundances = abundances,
+    return(list(abundances = data.ab,
                 back.abundances = bg.ab,
                 filter = filter.stat)
            )

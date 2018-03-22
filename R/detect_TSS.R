@@ -140,12 +140,11 @@ setMethod("detectTSS",
                                       bam_param = bamParams, bp_param = bpParams,
                                       window_size = bin_size)
               # add metadata
-              mdat <- list(spacing = binSize, width = bin_size,
+              mdat <- list(spacing = bin_size, width = bin_size,
                            shift = 0, bin = TRUE, final.ext = 1)
-              metadata(data) <- mdat
+              S4Vectors::metadata(data) <- mdat
               colnames(data) <- rownames(design)
-              SummarizedExperiment::colData(data) <-
-                  c(SummarizedExperiment::colData(data), design)
+              colData(data) <- c(colData(data), design)
 
               # Get counts for 2kb local region surrounding each bin
               neighbors <- suppressWarnings(GenomicRanges::trim(
@@ -154,6 +153,7 @@ setMethod("detectTSS",
               ))
 
               wider <-
+                  suppressWarnings({
                   GenomicAlignments::summarizeOverlaps(
                     features = neighbors,
                     reads = bam.files,
@@ -165,19 +165,18 @@ setMethod("detectTSS",
                     preprocess.reads = ResizeReads,
                     param = bamParams,
                     BPPARAM = bpParams)
+                  })
 
-              metadata(wider) <- mdat
+              S4Vectors::metadata(wider) <- mdat
               # set totals to same value as data (to avoid error from filterWindows)
               colData(wider) <- colData(data)
               colnames(wider) <- rownames(design)
-              SummarizedExperiment::colData(wider) <-
-                  c(SummarizedExperiment::colData(wider), design)
+              colData(wider) <- c(colData(wider), design)
 
               ## take out groups --> Generate filter statistics for each group (based on local enrichment)
               filterstat <- lapply(unique(design$group), function(x) {
-                  stat <- filterWindows(data[, data$group == x],
-                                        wider[, wider$group == x],
-                                        type = "local")
+                  stat <- localFilter(data[, data$group == x],
+                                        wider[, wider$group == x])
                   return(stat)
               })
 
