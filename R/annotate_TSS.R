@@ -82,7 +82,7 @@ annotateTSS <- function(tssBED,
             warning("Plot type neither 'number' nor 'percent'.")
         }
 
-        ggplot(final_table,
+        p <- ggplot(final_table,
                aes_string("feature", "value", fill = "feature")) +
             geom_bar(stat = "identity", position = "dodge") +
             scale_fill_brewer(palette = "Set1") +
@@ -91,7 +91,11 @@ annotateTSS <- function(tssBED,
             theme_gray(base_size = 16) +
             coord_flip()
 
-        ggsave(outFile)
+        if (is.na(outFile)) {
+            print(p)
+        } else {
+            ggsave(plot = p, filename = outFile)
+        }
     }
 
     return(final_table)

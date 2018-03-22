@@ -75,7 +75,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'
 #' @export
 #' @importFrom utils write.table
-#' @importFrom SummarizedExperiment colData rowRanges
+#' @importFrom SummarizedExperiment colData rowRanges colData<-
 #' @importFrom csaw readParam strandedCounts regionCounts filterWindows mergeWindows
 #'
 #' @examples
