@@ -1,3 +1,18 @@
+#' Get platform-specific multicore params
+#'
+#' @param cores No. of cores
+#'
+#' @return BPPARAM
+#'
+getMCparams <- function(cores) {
+
+    param <- switch(Sys.info()[['sysname']],
+                   Windows = {return(BiocParallel::SnowParam(workers = cores))},
+                   Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
+                   Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
+                   )
+}
+
 #' Count the number of reads in a given GRanges
 #'
 #' @param regions The GRanges object

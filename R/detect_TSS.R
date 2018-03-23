@@ -129,7 +129,7 @@ setMethod("detectTSS",
                                 isUnmappedQuery = FALSE,
                                 isSecondaryAlignment = FALSE)
                             )
-              bpParams <- BiocParallel::MulticoreParam(workers = ncores)
+              bpParams <- getMCparams(ncores)
               # window size
               bin_size <- 10L
               # background size
