@@ -91,6 +91,7 @@ filterDups <- function(bamFile, outFile, keepPairs) {
 #'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 #' @param CSobject an object of class \code{\link{CapSet}}
 #' @param outdir output directory for filtered BAM files
+#' @param ncores No. of cores to use
 #' @param keepPairs logical, indicating whether to keep pairs in the paired-end data.
 #'                           (note: the pairs are treated as independent reads during duplicate removal)
 #'
@@ -115,7 +116,7 @@ filterDups <- function(bamFile, outFile, keepPairs) {
 
 setMethod("filterDuplicates",
           signature = "CapSet",
-          function(CSobject, outdir, keepPairs) {
+          function(CSobject, outdir, ncores, keepPairs) {
 
               si <- sampleInfo(CSobject)
               bamfiles <- si$mapped_file
@@ -136,8 +137,14 @@ setMethod("filterDuplicates",
     # then prepare outfile list
     outfiles <-
         file.path(outdir, paste0(si$samples, ".filtered.bam"))
+
     # run the filter duplicates function on all files
-    mapply(filterDups, bamfiles, outfiles, keepPairs)
+    bpParams <- getMCparams(ncores)
+    BiocParallel::bplapply(seq_along(bamfiles),
+                           function(x) {
+                               filterDups(bamfiles[x], outfiles[x], keepPairs)
+    }, BPPARAM = bpParams)
+    #mapply(filterDups, bamfiles, outfiles, keepPairs)
 
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),

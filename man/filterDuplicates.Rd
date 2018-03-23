@@ -6,14 +6,17 @@
 \alias{filterDuplicates,CapSet-method}
 \title{Filter PCR-duplicates from mapped files using internal UMIs}
 \usage{
-filterDuplicates(CSobject, outdir, keepPairs = FALSE)
+filterDuplicates(CSobject, outdir, ncores = 1, keepPairs = FALSE)
 
-\S4method{filterDuplicates}{CapSet}(CSobject, outdir, keepPairs = FALSE)
+\S4method{filterDuplicates}{CapSet}(CSobject, outdir, ncores = 1,
+  keepPairs = FALSE)
 }
 \arguments{
 \item{CSobject}{an object of class \code{\link{CapSet}}}
 
 \item{outdir}{output directory for filtered BAM files}
+
+\item{ncores}{No. of cores to use}
 
 \item{keepPairs}{logical, indicating whether to keep pairs in the paired-end data.
 (note: the pairs are treated as independent reads during duplicate removal)}

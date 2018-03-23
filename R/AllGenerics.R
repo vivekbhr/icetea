@@ -69,6 +69,7 @@ setGeneric("mapCaps",
 setGeneric("filterDuplicates",
            function(CSobject,
                     outdir,
+                    ncores = 1,
                     keepPairs = FALSE)
     standardGeneric("filterDuplicates"))
 
