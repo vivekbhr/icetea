@@ -4,7 +4,7 @@
 \alias{filterDups}
 \title{Filter PCR-duplicates from BAM file using internal UMIs}
 \usage{
-filterDups(bamFile, outFile)
+filterDups(bamFile, outFile, keepPairs)
 }
 \arguments{
 \item{bamFile}{Input BAM file}

@@ -68,7 +68,8 @@ setGeneric("mapCaps",
 #' @export
 setGeneric("filterDuplicates",
            function(CSobject,
-                    outdir)
+                    outdir,
+                    keepPairs = FALSE)
     standardGeneric("filterDuplicates"))
 
 #' @name detectTSS
