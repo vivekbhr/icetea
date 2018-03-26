@@ -49,19 +49,7 @@ filterdups_func <- function(bamdf) {
 filterDups <- function(bamFile, outFile, keepPairs) {
     message(paste0("Removing PCR duplicates : ", bamFile))
 
-    # get baminfo
-    if (isTRUE(keepPairs)) {
-        bamFlags <- scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isSecondaryAlignment = FALSE
-                             )
-    } else {
-        bamFlags <- scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isFirstMateRead = TRUE,
-                                 isSecondaryAlignment = FALSE
-                             )
-    }
+    bamFlags <- getBamFlags(paired = keepPairs)
     sparam <-
         Rsamtools::ScanBamParam(
             what = c("qname", "rname", "pos","strand"),
@@ -144,15 +132,11 @@ setMethod("filterDuplicates",
                            function(x) {
                                filterDups(bamfiles[x], outfiles[x], keepPairs)
     }, BPPARAM = bpParams)
-    #mapply(filterDups, bamfiles, outfiles, keepPairs)
 
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
                          param = ScanBamParam(
-                             flag = scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isSecondaryAlignment = FALSE
-                             )
+                             flag = getBamFlags(keepPairs)
                          ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)

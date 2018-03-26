@@ -13,6 +13,29 @@ getMCparams <- function(cores) {
                    )
 }
 
+#' Get flags to read from bam
+#'
+#' @param paired logical. Keep Paired reads?
+#'
+#' @return bamFlags
+#'
+getBamFlags <- function(paired) {
+        # get baminfo
+    if (isTRUE(paired)) {
+        bamFlags <- scanBamFlag(
+                                 isUnmappedQuery = FALSE,
+                                 isSecondaryAlignment = FALSE
+                             )
+    } else {
+        bamFlags <- scanBamFlag(
+                                 isUnmappedQuery = FALSE,
+                                 isFirstMateRead = TRUE,
+                                 isSecondaryAlignment = FALSE
+                             )
+    }
+    return(bamFlags)
+}
+
 #' Count the number of reads in a given GRanges
 #'
 #' @param regions The GRanges object
@@ -20,13 +43,14 @@ getMCparams <- function(cores) {
 #'
 #' @return Total counts within given ranges per BAM file.
 #'
-numReadsInBed <- function(regions, bams = NA) {
+numReadsInBed <- function(regions, bams = NA, pairedEnd = FALSE) {
     counts <-
         GenomicAlignments::summarizeOverlaps(
             GenomicRanges::GRangesList(regions),
             reads = Rsamtools::BamFileList(as.character(bams)),
             mode = "Union",
-            inter.feature = FALSE
+            inter.feature = FALSE,
+            param = Rsamtools::ScanBamParam(flag = getBamFlags(paired = pairedEnd))
         )
     numreads <- SummarizedExperiment::assay(counts)
     return(t(numreads))
