@@ -204,7 +204,7 @@ This method is implemented in the function `detectTSS`, which returns a modified
 # detect TSS
 dir.create("tssCalling")
 cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"), 
-                 outfile_prefix = "tssCalling", restrictChr = "X")
+                 outfile_prefix = "tssCalling", restrictChr = "X", ncores = 2)
 # export the detected TSS bed files
 exportTSS(cs, merged = TRUE, outfile_prefix = "testTSS")
 ```
