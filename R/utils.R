@@ -40,6 +40,7 @@ getBamFlags <- function(paired) {
 #'
 #' @param regions The GRanges object
 #' @param bams path to bam files from where the reads have to be counted
+#' @param pairedEnd logical. whether to keep both reads of paired-end data
 #'
 #' @return Total counts within given ranges per BAM file.
 #'

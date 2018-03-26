@@ -42,6 +42,7 @@ filterdups_func <- function(bamdf) {
 #'
 #' @param bamFile Input BAM file
 #' @param outFile Output (filtered) BAM file
+#' @param keepPairs Keep R2?
 #' @importFrom Rsamtools scanBamFlag
 #' @return Filtered BAM file (with only R1), after PCR duplicate removal
 #'

@@ -10,6 +10,8 @@ numReadsInBed(regions, bams = NA, pairedEnd = FALSE)
 \item{regions}{The GRanges object}
 
 \item{bams}{path to bam files from where the reads have to be counted}
+
+\item{pairedEnd}{logical. whether to keep both reads of paired-end data}
 }
 \value{
 Total counts within given ranges per BAM file.

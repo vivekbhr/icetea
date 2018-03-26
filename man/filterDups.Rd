@@ -10,6 +10,8 @@ filterDups(bamFile, outFile, keepPairs)
 \item{bamFile}{Input BAM file}
 
 \item{outFile}{Output (filtered) BAM file}
+
+\item{keepPairs}{Keep R2?}
 }
 \value{
 Filtered BAM file (with only R1), after PCR duplicate removal
