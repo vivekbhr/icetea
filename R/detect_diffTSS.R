@@ -80,7 +80,7 @@ setMethod("fitDiffTSS",
                 stop("Please indicate reference sample for plotting of composition bias!")
             ## Internal normalization for composition bias : TMM
             # useful to try different bin sizes and see if the values are close to unity (low composition effect)
-            regionparam <- csaw::readParam(minq = 30, restrict = NULL)
+            regionparam <- csaw::readParam(restrict = NULL)
             binned <-
                 csaw::windowCounts(bam.files,
                                    bin = TRUE,
@@ -121,16 +121,6 @@ setMethod("fitDiffTSS",
         }
 
         ## get 5' read counts on the locations from the bam.files
-        # function to resize reads
-        ResizeReads <- function(reads,
-                                width = 1,
-                                fix = "start",
-                                ...) {
-            reads <- as(reads, "GRanges")
-            stopifnot(all(GenomicRanges::strand(reads) != "*"))
-            GenomicRanges::resize(reads, width = width, fix = fix, ...)
-        }
-
         # Read the data
         tsscounts <-
             GenomicAlignments::summarizeOverlaps(features = mergedall,
