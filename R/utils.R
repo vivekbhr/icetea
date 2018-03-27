@@ -94,22 +94,21 @@ activeChrs <- function(bam.files, restrict)
 getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
 
     keptChrs <- activeChrs(bamFiles, restrict = restrictChr)
-    instances <- as.integer(keptChrs/binSize)
-
     gr.bins.plus <- lapply(names(keptChrs), function(x){
+        instances <- as.integer(keptChrs[x]/binSize)
         gr <- GenomicRanges::GRanges(seqnames = x,
-                        ranges = IRanges::successiveIRanges(rep(binSize, keptChrs[x])),
+                        ranges = IRanges::successiveIRanges(rep(binSize, instances)),
                         strand = "+"
                         )
         return(gr)
         })
     gr.bins.plus <- suppressWarnings({do.call("c", gr.bins.plus)})
     GenomeInfoDb::seqlengths(gr.bins.plus) <- keptChrs
+    gr.bins.plus <- GenomicRanges::trim(gr.bins.plus)
     gr.bins.minus <- gr.bins.plus
     GenomicRanges::strand(gr.bins.minus) <- "-"
-    return(list(gr.plus = GenomicRanges::trim(gr.bins.plus),
-                gr.minus = GenomicRanges::trim(gr.bins.minus))
-    )
+    return(list(gr.plus = gr.bins.plus,
+                gr.minus = gr.bins.minus))
 }
 
 #' preprocess reads to count only 5' overlaps
