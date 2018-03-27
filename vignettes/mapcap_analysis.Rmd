@@ -200,7 +200,7 @@ windows that show an X-fold enrichment over a local background of 2 kb. Multiple
 
 This method is implemented in the function `detectTSS`, which returns a modified `CapSet` object with TSS detection statistics.
 
-```{r getTSS, eval=TRUE}
+```{r getTSS, eval=FALSE}
 # detect TSS
 dir.create("tssCalling")
 cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"), 
