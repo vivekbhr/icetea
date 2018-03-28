@@ -137,7 +137,7 @@ setMethod("filterDuplicates",
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
                          param = ScanBamParam(
-                             flag = getBamFlags(keepPairs)
+                             flag = getBamFlags(paired = FALSE)
                          ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)
