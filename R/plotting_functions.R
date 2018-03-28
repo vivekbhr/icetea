@@ -27,19 +27,16 @@ plotReadStats <- function(CSobject,
     stopifnot(is(CSobject, "CapSet"))
     stopifnot(plotType %in% c("stack", "dodge"))
     stopifnot(plotValue %in% c("numbers", "proportions"))
+    fields_toplot <- c("demult_reads", "num_mapped", "num_filtered", "num_intss")
 
-    ## get info on how many columns present
-    si <- sampleInfo(CSobject)
-
-    sicols <- colnames(si)
-    fields_toplot <-
-        c("demult_reads", "num_mapped", "num_filtered", "num_intss")
+    ## get info on how many columns to plot
+    si <- sampleInfo(CSobject)[fields_toplot]
+    # subset si for non-na cols
+    nacols <- apply(si, 2, function(x) all(is.na(x)))
+    si <- si[!nacols]
     msg <- "Plotting following information :"
-    fields <- vapply(fields_toplot, function(x)
-        if (x %in% sicols) {
-            return(x)
-        }, character(1L))
-    message(cat(msg, fields))
+    message(cat(msg, colnames(si) ))
+
     ## prepare df
     si_stats <- data.frame(
         sample = si$samples,
