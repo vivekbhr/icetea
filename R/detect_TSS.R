@@ -137,7 +137,8 @@ setMethod("detectTSS",
 
               # Count reads into sliding windows
               data <- strandBinCounts(bam.files, restrictChr,
-                                      bam_param = bamParams, bp_param = bpParams,
+                                      bam_param = bamParams,
+                                      bp_param = bpParams,
                                       window_size = bin_size)
               # add metadata
               mdat <- list(spacing = bin_size, width = bin_size,

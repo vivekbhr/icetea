@@ -4,7 +4,7 @@
 #' @param index_list A list of indexes for splitting (character vector)
 #' @param outfile_list A list of output file names (with order corresponding to that of index_list)
 #' @param max_mismatch No. of mismatches allowed in index (maxium 1 recommended)
-#' @param nthreads Number of threads
+#' @param ncores Number of cores to use for parallel processing
 #'
 #' @return Filtered files
 #' @export
@@ -24,7 +24,7 @@ splitBAM_byIndex <-
              index_list,
              outfile_list,
              max_mismatch = 0,
-             nthreads = 1) {
+             ncores = 1) {
         ## Write a CLOSURE that return the function to search idx in readname
         message("Creating Filtering Rules")
         make_FilterFunc <- function(idx_name, maxM = max_mismatch) {
@@ -70,7 +70,7 @@ splitBAM_byIndex <-
         message("Filtering the BAM file")
         destinations <- outfile_list
 
-        param = BiocParallel::MulticoreParam(workers = nthreads)
+        param <- getMCparams(ncores)
         BiocParallel::bplapply(seq_along(destinations),
                                function(i, file, destinations, filtrules) {
                                    Rsamtools::filterBam(file, destinations[i],

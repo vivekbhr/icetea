@@ -11,7 +11,7 @@ splitBAM_byRepindex(bamFile, outfile_prefix, nthreads = 1)
 
 \item{outfile_prefix}{A prefix for output file (replicates IDs will be added as RR/YY)}
 
-\item{nthreads}{Number of threads}
+\item{ncores}{Number of cores to use for parallel processing}
 }
 \value{
 Filtered files by replicate Index
