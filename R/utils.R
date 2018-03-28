@@ -26,11 +26,13 @@ getMCparams <- function(cores) {
 getBamFlags <- function(paired) {
         # get baminfo
     if (isTRUE(paired)) {
+        # if paired given, count both reads
         bamFlags <- scanBamFlag(
                                  isUnmappedQuery = FALSE,
                                  isSecondaryAlignment = FALSE
                              )
     } else {
+        # else count only R1
         bamFlags <- scanBamFlag(
                                  isUnmappedQuery = FALSE,
                                  isFirstMateRead = TRUE,
@@ -60,7 +62,6 @@ numReadsInBed <- function(regions, bams = NA, pairedEnd = FALSE) {
     numreads <- SummarizedExperiment::assay(counts)
     return(t(numreads))
 }
-
 
 #' Match BAM headers bw files and get active chromosome list (from restrict)
 #' (written by Aaron Lun, 12 Dec 2014, copied and modified here)

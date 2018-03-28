@@ -64,7 +64,7 @@ newCapSet <- function(expMethod,
             if (sum(vapply(demult_R1, file.exists, logical(1L))) != length(demult_R1)) {
                 stop("One or more R1 read files don't exist!")
             }
-            r1_counts <- ShortRead::countLines(demult_R1)
+            r1_counts <- as.integer(ShortRead::countLines(demult_R1)/4)
         } else {
             r1_counts <- NA
         }
@@ -88,11 +88,7 @@ newCapSet <- function(expMethod,
             }
             mapped_readcounts <- countBam(BamFileList(mapped_file),
                                           param = ScanBamParam(
-                                              flag = scanBamFlag(
-                                                  isUnmappedQuery = FALSE,
-                                                  isFirstMateRead = TRUE,
-                                                  isSecondaryAlignment = FALSE
-                                              )
+                                              flag = getBamFlags(paired = FALSE)
                                           ))[, 6] # "file" and "records"
         } else {
             mapped_readcounts <- NA
@@ -105,11 +101,7 @@ newCapSet <- function(expMethod,
             }
             filt_readcounts <- countBam(BamFileList(filtered_file),
                                         param = ScanBamParam(
-                                            flag = scanBamFlag(
-                                                isUnmappedQuery = FALSE,
-                                                isFirstMateRead = TRUE,
-                                                isSecondaryAlignment = FALSE
-                                            )
+                                            flag = getBamFlags(paired = FALSE)
                                         ))[, 6] # "records"
         } else {
             filt_readcounts <- NA
