@@ -12,11 +12,11 @@
 #' @examples
 #'
 #' bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
-#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", nthreads = 10)
+#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", ncores = 1)
 #'
 
 splitBAM_byRepindex <-
-    function(bamFile, outfile_prefix, nthreads = 1) {
+    function(bamFile, outfile_prefix, ncores = 1) {
         ## Write a closure that return the function to search idx in readname
         message("Creating Filtering Rules")
         make_FilterFunc <- function(rep_name) {

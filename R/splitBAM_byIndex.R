@@ -15,7 +15,7 @@
 #' splitBAM_byIndex(bamFile = bam,
 #'                  index_list = c("CAAGTG", "CAAGTT"),
 #'                  outfile_list = c("test_filt1.bam","test_filt2.bam"),
-#'                  nthreads = 10)
+#'                  ncores = 1)
 #'
 
 
