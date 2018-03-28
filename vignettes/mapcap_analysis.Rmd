@@ -250,7 +250,7 @@ For the experiments with two or more groups, ICETEA can also be used to perform 
 The functions `fitDiffTSS` and `detectDiffTSS` utilize edgeR to perform differential expression analysis.
 
 ```{r diffTSS, eval=FALSE}
-csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
+csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "windowTMM",
                      outplots = NULL, plotref = "embryo1")
 save(csfit, file = "diffTSS_fit.Rdata")
 
@@ -266,25 +266,22 @@ for normalization of TSS counts. In some cases however, spike-in normalizations 
 a way to perform spike-in normalization during differential expression analysis.
 
 Spike-In samples could be processed in the same way as the normal samples, using the `CapSet` object as described above.
-In order to evaluate whether spike-in reads are produced in consistant proportion to total reads, we provide a convinient function `plotSpikeProportion`.
-
-```{r spikeInEval, eval=FALSE}
-
-```
-
-
-Normalization factors can be obtained from the spike-in reads using `getNormFactors` and provided to the `firDiffTSS`
+Normalization factors can be obtained from the spike-in reads using `calcNormFactors` and provided to the `fitDiffTSS`
 function during detection of differential TSS between samples.
 
 ```{r spikeNorm, eval=FALSE}
+## get gene counts for spike-in RNA mapped to human genome
+library("TxDb.Hsapiens.UCSC.hg38.knownGene")
+normfacs <- calcNormFactors(cs_spike, features = genes(TxDb.Hsapiens.UCSC.hg38.knownGene))
 
+csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = NULL, normFactors = normfacs,
+                     outplots = NULL, plotref = "embryo1")
 ```
-
 
 
 ## Additional useful functions
 
-### sample information
+### Sample information
 
 Sample Information correspondng to the CapSet object can be obtained as a data.frame using the `sampleInfo` function. In case of underlying files being deleted or moved to another folder, we can reset the sample information.
 
@@ -295,7 +292,7 @@ si$mapped_file <- list.files(dir, pattern = ".bam$", full.names = TRUE)
 sampleInfo(cs) <- si
 ```
 
-### getting the gene counts
+### Getting the gene counts
 
 Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.
 
@@ -304,4 +301,20 @@ dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
 # get gene counts, counting reads around 500 bp of the TSS
 gcounts <- getGeneCounts(cs, dm6trans)
 ```
+
+### Annotating the TSS distribution
+
+Detected TSS, which are exported as bed files, can be quickly annotated using the function `annotateTSS`. 
+`annotateTSS` reports the numbers/proportions of detected TSS falling into different genomic features (provided
+by a TxDb object). In order to break ties between overlapping features, we can provide a vector of feature names
+in the decreasing order of preference.
+
+```{r annotateTSS, eval = TRUE}
+annotateTSS <- function(tssBED = tssfile,
+                         txdb = TxDb.Dmelanogaster.UCSC.dm6.ensGene,
+                         plotValue = "number",
+                         outFile = NA)
+```
+
+
 
