@@ -213,20 +213,20 @@ exportTSS(cs, merged = TRUE, outfile_prefix = "testTSS")
 ## Plotting and QC
 
 The `sampleInfo` field of the CapSet object stores information about the read numbers kept at each step of processing, this 
-information can be easily plotted using the function `plot_readStats`
+information can be easily plotted using the function `plotReadStats`
 
 We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.
 
 ```{r plotstats, eval=TRUE}
 # separate barchart for numbers
-plot_readStats(cs, plotValue = "numbers", plotType = "dodge")
+plotReadStats(cs, plotValue = "numbers", plotType = "dodge")
 # stacked barchart for proportions
-plot_readStats(cs, plotValue = "proportions", plotType = "stack" )
+plotReadStats(cs, plotValue = "proportions", plotType = "stack" )
 ```
 
 In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected
 TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can 
-be used to compare samples. This can be done using the function `plot_TSSprecision`, which takes the *known* TSS annotations as 
+be used to compare samples. This can be done using the function `plotTSSprecision`, which takes the *known* TSS annotations as 
 a TxDB object.
 
 ```{r plotPrecision, eval=TRUE}
@@ -238,7 +238,7 @@ transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
 tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
-plot_TSSprecision(reference = transcripts, detectedTSS = cs)
+plotTSSprecision(reference = transcripts, detectedTSS = cs)
 ```
 
 
@@ -263,11 +263,23 @@ detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt",
 
 For the differential TSS expression analysis, the function `fitDiffTSS` shown above utilize the [TMM method]()
 for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides
-a way to perform spike-in normalization during differential expression analysis, through the functions ``.
+a way to perform spike-in normalization during differential expression analysis.
 
-```{r spikeIn, eval=FALSE}
+Spike-In samples could be processed in the same way as the normal samples, using the `CapSet` object as described above.
+In order to evaluate whether spike-in reads are produced in consistant proportion to total reads, we provide a convinient function `plotSpikeProportion`.
+
+```{r spikeInEval, eval=FALSE}
 
 ```
+
+
+Normalization factors can be obtained from the spike-in reads using `getNormFactors` and provided to the `firDiffTSS`
+function during detection of differential TSS between samples.
+
+```{r spikeNorm, eval=FALSE}
+
+```
+
 
 
 ## Additional useful functions

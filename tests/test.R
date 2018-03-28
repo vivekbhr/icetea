@@ -26,6 +26,5 @@
 #		     outplots = "test", plotref = "embryo1")
 
 # plots
-#plot_TSSprecision(reference = dm6trans_all, detectedTSS = cs)
-#plot_readStats(cs)
-
+#plotTSSprecision(reference = dm6trans_all, detectedTSS = cs)
+#plotReadStats(cs)

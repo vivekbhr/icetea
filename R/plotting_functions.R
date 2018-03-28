@@ -16,10 +16,10 @@
 #'
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
-#' plot_readStats(cs, plotType = "dodge", plotValue = "numbers", outFile = "test_numbers.pdf")
+#' plotReadStats(cs, plotType = "dodge", plotValue = "numbers", outFile = "test_numbers.pdf")
 #'
 
-plot_readStats <- function(CSobject,
+plotReadStats <- function(CSobject,
                            plotType = c("stack", "dodge"),
                            plotValue = c("numbers", "proportions"),
                            outFile = NULL) {
@@ -108,7 +108,7 @@ get_stackedNum <- function(df) {
 #' @param outFile Output file name (filename extention would be used to determine type)
 #'                If outfile not specified, the plot would be returned on the screen
 #' @param sampleNames Labels for input samples (in the same order as the input bed files)
-#' @rdname plot_TSSprecision
+#' @rdname plotTSSprecision
 #' @return A ggplot object, or a file. Plot showing perent of TSS detected per sample with respect to
 #'         their cumulative distance to TSS of the provided reference
 #'
@@ -124,13 +124,13 @@ get_stackedNum <- function(df) {
 #' # Plotting the precision using a pre computed set of TSS (.bed files) :
 #'
 #' tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
-#' plot_TSSprecision(reference = transcripts, detectedTSS = tssfile,
+#' plotTSSprecision(reference = transcripts, detectedTSS = tssfile,
 #' 		sampleNames = "testTSS", distanceCutoff = 500,
 #' 		outFile = "TSS_detection_precision.png")
 #'
 
 setMethod(
-    plot_TSSprecision,
+    plotTSSprecision,
     signature = signature("GRanges", "character"),
     definition = function(reference,
                           detectedTSS,
@@ -160,7 +160,7 @@ setMethod(
 #' \code{\link{CapSet}} object, with respect to a given reference annotation.
 #'
 #' @docType methods
-#' @rdname plot_TSSprecision
+#' @rdname plotTSSprecision
 #' @param ... Additional arguments
 #'
 #' @export
@@ -176,12 +176,12 @@ setMethod(
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # plot
-#' plot_TSSprecision(reference = transcripts, detectedTSS = cs,
+#' plotTSSprecision(reference = transcripts, detectedTSS = cs,
 #'                   outFile = "TSS_detection_precision.png")
 #'
 
 setMethod(
-    plot_TSSprecision,
+    plotTSSprecision,
     signature = signature("GRanges", "CapSet"),
     definition = function(reference,
                           detectedTSS,

@@ -1,12 +1,12 @@
-#' @rdname plot_TSSprecision
+#' @rdname plotTSSprecision
 #' @export
-setGeneric("plot_TSSprecision",
+setGeneric("plotTSSprecision",
            function(reference,
                     detectedTSS,
                     distanceCutoff = 500,
                     outFile = NULL,
                     ...) {
-               standardGeneric("plot_TSSprecision")
+               standardGeneric("plotTSSprecision")
            })
 
 #' @rdname sampleInfo
