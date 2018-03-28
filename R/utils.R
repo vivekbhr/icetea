@@ -5,12 +5,16 @@
 #' @return BPPARAM
 #'
 getMCparams <- function(cores) {
-
-    param <- switch(Sys.info()[['sysname']],
+    if (cores == 1) {
+        param <- BiocParallel::SerialParam()
+    } else {
+        param <- switch(Sys.info()[['sysname']],
                    Windows = {return(BiocParallel::SnowParam(workers = cores))},
                    Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
                    Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
                    )
+    }
+    return(param)
 }
 
 #' Get flags to read from bam
