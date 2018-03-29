@@ -4,7 +4,7 @@
 \alias{ResizeReads}
 \title{preprocess reads to count only 5' overlaps}
 \usage{
-ResizeReads(reads, width = 1, fix = "start", ...)
+ResizeReads(reads, width = 1, fix = "start")
 }
 \arguments{
 \item{reads}{GAlignment object}

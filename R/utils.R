@@ -125,10 +125,10 @@ getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
 #'
 #' @return Resized reads as GRanges
 #'
-ResizeReads <- function(reads, width = 1, fix = "start", ...) {
+ResizeReads <- function(reads, width = 1, fix = "start") {
     reads <- as(reads, "GRanges")
     stopifnot(all(GenomicRanges::strand(reads) != "*"))
-    GenomicRanges::resize(reads, width = width, fix = fix, ...)
+    GenomicRanges::resize(reads, width = width, fix = fix)
 }
 
 #' Calculate local enrichment of windows over background
