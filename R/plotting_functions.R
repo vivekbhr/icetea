@@ -11,6 +11,8 @@
 #'                If outfile not specified, the plot would be retured on the screen
 #'
 #' @return A ggplot object, or a file. Plot showing the number/proportion of reads in each category, per sample
+#'
+#' @importFrom reshape2 melt
 #' @export
 #'
 #' @examples

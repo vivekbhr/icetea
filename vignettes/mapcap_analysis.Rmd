@@ -274,8 +274,9 @@ function during detection of differential TSS between samples.
 library("TxDb.Hsapiens.UCSC.hg38.knownGene")
 normfacs <- calcNormFactors(cs_spike, features = genes(TxDb.Hsapiens.UCSC.hg38.knownGene))
 
-csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = NULL, normFactors = normfacs,
-                     outplots = NULL, plotref = "embryo1")
+csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), 
+                    normalization = NULL, normFactors = normfacs,
+                    outplots = NULL, plotref = "embryo1")
 ```
 
 
@@ -304,10 +305,7 @@ gcounts <- getGeneCounts(cs, dm6trans)
 
 ### Annotating the TSS distribution
 
-Detected TSS, which are exported as bed files, can be quickly annotated using the function `annotateTSS`. 
-`annotateTSS` reports the numbers/proportions of detected TSS falling into different genomic features (provided
-by a TxDb object). In order to break ties between overlapping features, we can provide a vector of feature names
-in the decreasing order of preference.
+Detected or differentially expressed TSS, which are exported as bed files, can be quickly annotated using the function `annotateTSS`. `annotateTSS` reports the numbers/proportions of detected TSS falling into different genomic features (provided by a TxDb object). In order to break ties between overlapping features, we can provide a vector of feature names in the decreasing order of preference.
 
 ```{r annotateTSS, eval = TRUE}
 annotateTSS(tssBED = tssfile,

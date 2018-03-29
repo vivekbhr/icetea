@@ -218,7 +218,7 @@ setMethod("fitDiffTSS",
 ## visualize Effect of TMM normalization on composition bias
 plotCompBias <- function(dgelist, samples, plotref) {
 
-        normfacs <- y$samples$norm.factors
+        normfacs <- dgelist$samples$norm.factors
         abundances <- edgeR::aveLogCPM(dgelist)
         adjc <- edgeR::cpm(dgelist, log = TRUE)
         colnames(adjc) <- samples
