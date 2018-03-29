@@ -47,8 +47,8 @@ setGeneric("plotTSSprecision",
 #' @export
 setGeneric("plotReadStats",
            function(CSobject,
-                    plotType = c("stack", "dodge"),
-                    plotValue = c("numbers", "proportions"),
+                    plotType = "dodge",
+                    plotValue = "numbers",
                     outFile = NULL) {
                standardGeneric("plotReadStats")
            })

@@ -310,10 +310,10 @@ by a TxDb object). In order to break ties between overlapping features, we can p
 in the decreasing order of preference.
 
 ```{r annotateTSS, eval = TRUE}
-annotateTSS <- function(tssBED = tssfile,
-                         txdb = TxDb.Dmelanogaster.UCSC.dm6.ensGene,
-                         plotValue = "number",
-                         outFile = NA)
+annotateTSS(tssBED = tssfile,
+            txdb = TxDb.Dmelanogaster.UCSC.dm6.ensGene,
+            plotValue = "number",
+            outFile = NULL)
 ```
 
 

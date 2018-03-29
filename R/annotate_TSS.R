@@ -47,7 +47,7 @@ annotateTSS <- function(tssBED,
                                          "threeUTR",
                                          "intergenic"),
                          plotValue = "number",
-                         outFile = NA) {
+                         outFile = NULL) {
     ## resolve 1:many mapping issue by prioritising some features over others
     stopifnot(length(featureRank) == 7)
     rankvec <- seq_len(7)
@@ -91,7 +91,7 @@ annotateTSS <- function(tssBED,
             theme_gray(base_size = 16) +
             coord_flip()
 
-        if (is.na(outFile)) {
+        if (is.null(outFile)) {
             print(p)
         } else {
             ggsave(plot = p, filename = outFile)

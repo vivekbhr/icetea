@@ -23,9 +23,9 @@ setMethod(
     plotReadStats,
     signature = "CapSet",
     definition = function(CSobject,
-                           plotType = c("stack", "dodge"),
-                           plotValue = c("numbers", "proportions"),
-                           outFile = NULL) {
+                           plotType,
+                           plotValue,
+                           outFile) {
     ## evaluate expressions
     stopifnot(plotType %in% c("stack", "dodge"))
     stopifnot(plotValue %in% c("numbers", "proportions"))

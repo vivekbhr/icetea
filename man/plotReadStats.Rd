@@ -6,11 +6,11 @@
 \alias{plotReadStats,CapSet-method}
 \title{Plot read statistics from the CapSet object}
 \usage{
-plotReadStats(CSobject, plotType = c("stack", "dodge"),
-  plotValue = c("numbers", "proportions"), outFile = NULL)
+plotReadStats(CSobject, plotType = "dodge", plotValue = "numbers",
+  outFile = NULL)
 
-\S4method{plotReadStats}{CapSet}(CSobject, plotType = c("stack", "dodge"),
-  plotValue = c("numbers", "proportions"), outFile = NULL)
+\S4method{plotReadStats}{CapSet}(CSobject, plotType = "dodge",
+  plotValue = "numbers", outFile = NULL)
 }
 \arguments{
 \item{CSobject}{The \code{\link{CapSet}} object}
