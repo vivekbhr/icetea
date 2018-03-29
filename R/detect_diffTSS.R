@@ -20,7 +20,7 @@
 #'  dm6genes <- genes(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 #'
 #' # get norm factors by counting reads on genes
-#' cs <- exampleCSObject()
+#' cs <- exampleCSobject()
 #' normfacs <- calcNormFactors(cs, dm6genes, method = "RLE")
 #'
 
