@@ -121,7 +121,6 @@ getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
 #' @param reads GAlignment object
 #' @param width New read length
 #' @param fix 'Start' for 5'
-#' @param ... Other
 #'
 #' @return Resized reads as GRanges
 #'

@@ -12,8 +12,6 @@ ResizeReads(reads, width = 1, fix = "start")
 \item{width}{New read length}
 
 \item{fix}{'Start' for 5'}
-
-\item{...}{Other}
 }
 \value{
 Resized reads as GRanges
