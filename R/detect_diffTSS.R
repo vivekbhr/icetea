@@ -36,7 +36,7 @@ setMethod("calcNormFactors",
 
         ## get 5' read counts on the TSS from the bam.files
         counts <-
-            GenomicAlignments::summarizeOverlaps(features = refRanges,
+            GenomicAlignments::summarizeOverlaps(features = features,
                                                  reads = bam.files,
                                                  preprocess.reads = ResizeReads)
         # make DGElist
