@@ -12,6 +12,7 @@ install:
 
 cache:
   #- C:\RLibrary
+  cache: tools\helloworld.cmd -> appveyor.yml
 
 # Adapt as necessary starting from here
 

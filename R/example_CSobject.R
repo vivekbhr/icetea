@@ -15,7 +15,8 @@ exampleCSobject <- function(expMethod = "MAPCap") {
     demult_reads <- c(60, 80, 180, 140)
     num_mapped <- c(56, 79, 178, 138)
     num_filtered <- c(47, 56, 145, 91)
-    num_intss <- c(46, 53, 138, 88)
+    # reads in tss are the expected reads when TSScalling is done with 2-fold enrichment
+    num_intss <- c(23, 32, 41, 40)
 
     dir <- system.file("extdata", package = "icetea")
     cs <- newCapSet(
