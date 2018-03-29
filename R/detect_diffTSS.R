@@ -2,7 +2,7 @@
 #'
 #' @rdname calcNormFactors
 #' @param CSobject An object of class \code{\link{CapSet}}
-#' @param features A \link[GenomicRanges]{GRanges}.object to count the reads on.
+#' @param features A \link[GenomicRanges]{GRanges-class}.object to count the reads on.
 #' @param method Method to use for normalization. Options : "TMM","RLE","upperquartile","none"
 #' @param ... Additional arguments passed to \link[edgeR]{calcNormFactors}
 #'
@@ -69,7 +69,7 @@ setMethod("calcNormFactors",
 #' @param plotref Name of reference sample to plot for detection of composition bias in the
 #'        data. Data is normalized using the TMM method to avoid composition bias.
 #'
-#' @return An object of class \link[edgeR]{DGEGLM}.
+#' @return An object of class \link[edgeR]{DGEGLM-class}.
 #'
 #' @importFrom graphics abline par plot smoothScatter
 #' @importFrom grDevices dev.off pdf

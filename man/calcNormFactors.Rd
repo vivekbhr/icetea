@@ -13,7 +13,7 @@ calcNormFactors(CSobject, features, method = "TMM", ...)
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
 
-\item{features}{A \link[GenomicRanges]{GRanges}.object to count the reads on.}
+\item{features}{A \link[GenomicRanges]{GRanges-class}.object to count the reads on.}
 
 \item{method}{Method to use for normalization. Options : "TMM","RLE","upperquartile","none"}
 
