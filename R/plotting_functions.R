@@ -1,5 +1,6 @@
 #' Plot read statistics from the CapSet object
 #'
+#' @rdname plotReadStats
 #' @param CSobject The \code{\link{CapSet}} object
 #' @param plotType The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
 #'                  or a bar chart with "dodged" positions (analogous to ggplot)
@@ -18,19 +19,20 @@
 #' cs <- exampleCSobject()
 #' plotReadStats(cs, plotType = "dodge", plotValue = "numbers", outFile = "test_numbers.pdf")
 #'
-
-plotReadStats <- function(CSobject,
+setMethod(
+    plotReadStats,
+    signature = "CapSet",
+    definition = function(CSobject,
                            plotType = c("stack", "dodge"),
                            plotValue = c("numbers", "proportions"),
                            outFile = NULL) {
     ## evaluate expressions
-    stopifnot(is(CSobject, "CapSet"))
     stopifnot(plotType %in% c("stack", "dodge"))
     stopifnot(plotValue %in% c("numbers", "proportions"))
     fields_toplot <- c("demult_reads", "num_mapped", "num_filtered", "num_intss")
 
     ## get info on how many columns to plot
-    si <- sampleInfo(CSobject)[fields_toplot]
+    si <- sampleInfo(CSobject)[c("samples",fields_toplot)]
     # subset si for non-na cols
     nacols <- apply(si, 2, function(x) all(is.na(x)))
     si <- si[!nacols]
@@ -81,7 +83,7 @@ plotReadStats <- function(CSobject,
         return(p)
     }
 
-}
+})
 
 ## get cumulative differences of values from a DF, to plot stacked barchart of numbers
 get_stackedNum <- function(df) {

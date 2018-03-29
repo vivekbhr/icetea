@@ -218,7 +218,7 @@ information can be easily plotted using the function `plotReadStats`
 We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.
 
 ```{r plotstats, eval=TRUE}
-# separate barchart for numbers
+# separated barchart for numbers
 plotReadStats(cs, plotValue = "numbers", plotType = "dodge")
 # stacked barchart for proportions
 plotReadStats(cs, plotValue = "proportions", plotType = "stack" )

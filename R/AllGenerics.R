@@ -1,13 +1,3 @@
-#' @rdname plotTSSprecision
-#' @export
-setGeneric("plotTSSprecision",
-           function(reference,
-                    detectedTSS,
-                    distanceCutoff = 500,
-                    outFile = NULL,
-                    ...) {
-               standardGeneric("plotTSSprecision")
-           })
 
 #' @rdname sampleInfo
 #' @export
@@ -40,6 +30,28 @@ setGeneric("sampleInfo<-", function(object, ..., value)
 #' sampleInfo(cs) <- si
 NULL
 #> NULL
+
+#' @rdname plotTSSprecision
+#' @export
+setGeneric("plotTSSprecision",
+           function(reference,
+                    detectedTSS,
+                    distanceCutoff = 500,
+                    outFile = NULL,
+                    ...) {
+               standardGeneric("plotTSSprecision")
+           })
+
+#' @name plotReadStats
+#' @rdname plotReadStats
+#' @export
+setGeneric("plotReadStats",
+           function(CSobject,
+                    plotType = c("stack", "dodge"),
+                    plotValue = c("numbers", "proportions"),
+                    outFile = NULL) {
+               standardGeneric("plotReadStats")
+           })
 
 #' @name demultiplexFASTQ
 #' @rdname demultiplexFASTQ
