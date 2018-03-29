@@ -61,7 +61,7 @@ newCapSet <- function(expMethod,
 
         if (!is.null(idxList)) {
             # Check validity of index seq
-            idxList <- as.character(Biostrings::DNAStringSet(idxlist))
+            idxList <- as.character(Biostrings::DNAStringSet(idxList))
             # the above func would throw an error if seq not valid
         }
         # R1
