@@ -102,60 +102,57 @@ setMethod("detectTSS",
                    restrictChr,
                    ncores
                    ) {
-              # check whether group and outfile_prefix is provided
-              if (missing(outfile_prefix))
-                  stop("Please provide outfile_prefix!")
-              if (missing(groups))
-                  stop("Please provide groups!")
+            # check whether group and outfile_prefix is provided
+            if (missing(outfile_prefix))
+                stop("Please provide outfile_prefix!")
+            if (missing(groups))
+                stop("Please provide groups!")
 
-              # convert group to char
-              si <- sampleInfo(CSobject)
-              design <-
-                  data.frame(row.names = si$samples, group = as.character(groups))
+            # convert group to char
+            si <- sampleInfo(CSobject)
+            design <-
+                data.frame(row.names = si$samples, group = as.character(groups))
 
-              if (is.null(si$filtered_file)) {
-                  message("Filtered files not found under sampleInfo(CSobject). Using mapped files")
-                  bam.files <- si$mapped_file
-              } else {
-                  bam.files <- si$filtered_file
-              }
-              if (sum(file.exists(bam.files)) != length(bam.files)) {
-                  stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
-              }
+            if (is.null(si$filtered_file)) {
+                message("Filtered files not found under sampleInfo(CSobject). Using mapped files")
+                bam.files <- si$mapped_file
+            } else {
+                bam.files <- si$filtered_file
+            }
+            if (sum(file.exists(bam.files)) != length(bam.files)) {
+                stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
+            }
 
-              # Counting params
-               bamParams <- Rsamtools::ScanBamParam(
-                         flag = Rsamtools::scanBamFlag(
-                                isUnmappedQuery = FALSE,
-                                isSecondaryAlignment = FALSE)
-                            )
-              bpParams <- getMCparams(ncores)
-              # window size
-              bin_size <- 10L
-              # background size
-              surrounds <- 2000L
+            # Counting params
+            bamParams <- Rsamtools::ScanBamParam(
+                                flag = getBamFlags(paired = FALSE))
+            bpParams <- getMCparams(ncores)
+            # window size
+            bin_size <- 10L
+            # background size
+            surrounds <- 2000L
 
-              # Count reads into sliding windows
-              data <- strandBinCounts(bam.files, restrictChr,
-                                      bam_param = bamParams,
-                                      bp_param = bpParams,
-                                      window_size = bin_size)
+            # Count reads into sliding windows
+            data <- strandBinCounts(bam.files, restrictChr,
+                                    bam_param = bamParams,
+                                    bp_param = bpParams,
+                                    window_size = bin_size)
               # add metadata
-              mdat <- list(spacing = bin_size, width = bin_size,
-                           shift = 0, bin = TRUE, final.ext = 1)
-              S4Vectors::metadata(data) <- mdat
-              colnames(data) <- rownames(design)
-              colData(data) <- c(colData(data), design)
+            mdat <- list(spacing = bin_size, width = bin_size,
+                        shift = 0, bin = TRUE, final.ext = 1)
+            S4Vectors::metadata(data) <- mdat
+            colnames(data) <- rownames(design)
+            colData(data) <- c(colData(data), design)
 
-              # Get counts for 2kb local region surrounding each bin
-              neighbors <- suppressWarnings(GenomicRanges::trim(
-                  GenomicRanges::resize(rowRanges(data),
+            # Get counts for 2kb local region surrounding each bin
+            neighbors <- suppressWarnings(GenomicRanges::trim(
+                GenomicRanges::resize(rowRanges(data),
                                         surrounds, fix = "center")
-              ))
+            ))
 
-              wider <-
-                  suppressWarnings({
-                  GenomicAlignments::summarizeOverlaps(
+            wider <-
+                suppressWarnings({
+                GenomicAlignments::summarizeOverlaps(
                     features = neighbors,
                     reads = bam.files,
                     mode = "IntersectionStrict",
@@ -168,57 +165,57 @@ setMethod("detectTSS",
                     BPPARAM = bpParams)
                   })
 
-              S4Vectors::metadata(wider) <- mdat
-              # set totals to same value as data (to avoid error from filterWindows)
-              colData(wider) <- colData(data)
-              colnames(wider) <- rownames(design)
-              colData(wider) <- c(colData(wider), design)
+            S4Vectors::metadata(wider) <- mdat
+            # set totals to same value as data (to avoid error from filterWindows)
+            colData(wider) <- colData(data)
+            colnames(wider) <- rownames(design)
+            colData(wider) <- c(colData(wider), design)
 
-              ## take out groups --> Generate filter statistics for each group (based on local enrichment)
-              filterstat <- lapply(unique(design$group), function(x) {
-                  stat <- localFilter(data[, data$group == x],
+            ## take out groups --> Generate filter statistics for each group (based on local enrichment)
+            filterstat <- lapply(unique(design$group), function(x) {
+                stat <- localFilter(data[, data$group == x],
                                         wider[, wider$group == x])
                   return(stat)
-              })
+            })
 
-              # Require X-fold enrichment over local background to keep the window (similar to MACS)
-              keep <- lapply(filterstat, function(x) {
-                  kp <- x$filter > log2(foldChange)
-                  return(kp)
-              })
+            # Require X-fold enrichment over local background to keep the window (similar to MACS)
+            keep <- lapply(filterstat, function(x) {
+                kp <- x$filter > log2(foldChange)
+                return(kp)
+            })
 
-              filtered.data <- lapply(keep, function(keep) {
-                  return(data[keep,])
-              })
+            filtered.data <- lapply(keep, function(keep) {
+                return(data[keep,])
+            })
 
-              ## merge nearby windows (within bin_size) to get broader TSS
-              merged <- lapply(filtered.data, function(d) {
-                  return(mergeWindows(d, tol = bin_size, ignore.strand = FALSE))
-              })
-              # update the Capset object
-              merged <- lapply(merged, function(x)
-                  return(x$region))
-              names(merged) <- unique(as.character(groups))
-              CSobject@tss_detected <- GenomicRanges::GRangesList(merged)
+            ## merge nearby windows (within bin_size) to get broader TSS
+            merged <- lapply(filtered.data, function(d) {
+                return(mergeWindows(d, tol = bin_size, ignore.strand = FALSE))
+            })
+            # update the Capset object
+            merged <- lapply(merged, function(x)
+                return(x$region))
+            names(merged) <- unique(as.character(groups))
+            CSobject@tss_detected <- GenomicRanges::GRangesList(merged)
 
-              ## Calculate prop reads in TSS per group
-              message("Counting reads within detected TSS")
-              mergedall <- base::Reduce(S4Vectors::union, merged)
-              si$num_intss <- as.numeric(numReadsInBed(mergedall, bam.files))
-              sampleInfo(CSobject) <- si
+            ## Calculate prop reads in TSS per group
+            message("Counting reads within detected TSS")
+            mergedall <- base::Reduce(S4Vectors::union, merged)
+            si$num_intss <- as.numeric(numReadsInBed(mergedall, bam.files))
+            sampleInfo(CSobject) <- si
 
-              # Add the results as a list and save as .Rdata
-              output <- list(
-                  counts.windows = data,
-                  counts.background = wider,
-                  filter.stats = S4Vectors::DataFrame(filterstat[[1]])
-              )
-              if (!(is.null(outfile_prefix))) {
-                  message("Writing filtering information as .Rdata")
-                  save(output, file = paste0(outfile_prefix, ".Rdata"))
-              }
+            # Add the results as a list and save as .Rdata
+            output <- list(
+                counts.windows = data,
+                counts.background = wider,
+                filter.stats = S4Vectors::DataFrame(filterstat[[1]])
+            )
+            if (!(is.null(outfile_prefix))) {
+                message("Writing filtering information as .Rdata")
+                save(output, file = paste0(outfile_prefix, ".Rdata"))
+            }
 
-              return(CSobject)
+            return(CSobject)
     })
 
 #' Export the detected TSS from CapSet object as .bed files
