@@ -4,14 +4,14 @@
 \alias{splitBAM_byRepindex}
 \title{Split the composite BAM file using replicate indexes (MAPCap data)}
 \usage{
-splitBAM_byRepindex(bamFile, outfile_prefix, nthreads = 1)
+splitBAM_byRepindex(bamFile, outfile_prefix, ncores = 1)
 }
 \arguments{
 \item{bamFile}{Path to a mapped BAM file}
 
 \item{outfile_prefix}{A prefix for output file (replicates IDs will be added as RR/YY)}
 
-\item{nthreads}{Number of threads}
+\item{ncores}{Number of cores to use for parallel processing}
 }
 \value{
 Filtered files by replicate Index
@@ -22,6 +22,6 @@ Split the composite BAM file using replicate indexes (MAPCap data)
 \examples{
 
 bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
-splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", nthreads = 10)
+splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", ncores = 1)
 
 }

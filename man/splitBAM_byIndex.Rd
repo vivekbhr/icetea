@@ -5,7 +5,7 @@
 \title{Split the composite BAM file using internal indexes (MAPCap)}
 \usage{
 splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0,
-  nthreads = 1)
+  ncores = 1)
 }
 \arguments{
 \item{bamFile}{Path to a mapped BAM file}
@@ -16,7 +16,7 @@ splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0,
 
 \item{max_mismatch}{No. of mismatches allowed in index (maxium 1 recommended)}
 
-\item{nthreads}{Number of threads}
+\item{ncores}{Number of cores to use for parallel processing}
 }
 \value{
 Filtered files
@@ -30,6 +30,6 @@ bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
 splitBAM_byIndex(bamFile = bam,
                  index_list = c("CAAGTG", "CAAGTT"),
                  outfile_list = c("test_filt1.bam","test_filt2.bam"),
-                 nthreads = 10)
+                 ncores = 1)
 
 }

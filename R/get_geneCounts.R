@@ -36,17 +36,9 @@ setMethod("getGeneCounts",
                 single_end,
                 outfile) {
 
-        # add gene names and unlist
-        transcriptGRL <- mapply(function(x, name) {
-            x$geneID <- name
-            return(x)
-        }, transcriptGRL, names(transcriptGRL))
-
         # get XX bp region around transcripts to count the reads
         transcriptGR <-
-            unlist(GenomicRanges::GRangesList(transcriptGRL))
-        transcriptGR <-
-            GenomicRanges::resize(transcriptGR, regionAroundTSS, fix = "start")
+            GenomicRanges::resize(unlist(transcriptGRL), regionAroundTSS, fix = "start")
         # get bamfiles
         si <- sampleInfo(CSobject)
         bamfiles <- si$filtered_file

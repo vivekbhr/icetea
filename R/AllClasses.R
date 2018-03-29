@@ -58,13 +58,19 @@ newCapSet <- function(expMethod,
                       filtered_file = NA) {
     ## Get numbers from already provided files
     suppressWarnings({
+
+        if (!is.null(idxList)) {
+            # Check validity of index seq
+            idxList <- as.character(Biostrings::DNAStringSet(idxList))
+            # the above func would throw an error if seq not valid
+        }
         # R1
         if (!is.na(demult_R1)) {
             message("Checking de-multiplexed R1 reads")
             if (sum(vapply(demult_R1, file.exists, logical(1L))) != length(demult_R1)) {
                 stop("One or more R1 read files don't exist!")
             }
-            r1_counts <- ShortRead::countLines(demult_R1)
+            r1_counts <- as.integer(ShortRead::countLines(demult_R1)/4)
         } else {
             r1_counts <- NA
         }
@@ -88,11 +94,7 @@ newCapSet <- function(expMethod,
             }
             mapped_readcounts <- countBam(BamFileList(mapped_file),
                                           param = ScanBamParam(
-                                              flag = scanBamFlag(
-                                                  isUnmappedQuery = FALSE,
-                                                  isFirstMateRead = TRUE,
-                                                  isSecondaryAlignment = FALSE
-                                              )
+                                              flag = getBamFlags(paired = FALSE)
                                           ))[, 6] # "file" and "records"
         } else {
             mapped_readcounts <- NA
@@ -105,11 +107,7 @@ newCapSet <- function(expMethod,
             }
             filt_readcounts <- countBam(BamFileList(filtered_file),
                                         param = ScanBamParam(
-                                            flag = scanBamFlag(
-                                                isUnmappedQuery = FALSE,
-                                                isFirstMateRead = TRUE,
-                                                isSecondaryAlignment = FALSE
-                                            )
+                                            flag = getBamFlags(paired = FALSE)
                                         ))[, 6] # "records"
         } else {
             filt_readcounts <- NA
@@ -132,7 +130,7 @@ newCapSet <- function(expMethod,
     )
 
     # get fastq type (single or paired)
-    fastqType <- ifelse(is.null(fastq_R2), "single", "paired")
+    #fastqType <- ifelse(is.null(fastq_R2), "single", "paired")
     # create an instance of CapSet
     new(
         "CapSet",

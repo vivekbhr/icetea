@@ -1,3 +1,52 @@
+#' Calculate normalization factors from CapSet object
+#'
+#' @rdname calcNormFactors
+#' @param CSobject An object of class \code{\link{CapSet}}
+#' @param features A \link[GenomicRanges]{GRanges-class}.object to count the reads on.
+#' @param method Method to use for normalization. Options : "TMM","RLE","upperquartile","none"
+#' @param ... Additional arguments passed to \link[edgeR]{calcNormFactors}
+#'
+#' @return Numeric vector of calculated normalization factors.
+#' @export
+#'
+#' @examples
+#'
+#'  # load a txdb object
+#'  library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+#'  seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
+#'
+#'  # get genes (only X chromsome, for simplicity)
+#'  seqlevels(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "X"
+#'  dm6genes <- genes(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
+#'
+#' # get norm factors by counting reads on genes
+#' cs <- exampleCSobject()
+#' normfacs <- calcNormFactors(cs, dm6genes, method = "RLE")
+#'
+
+setMethod("calcNormFactors",
+        signature = "CapSet",
+        function(CSobject,
+                features,
+                method,
+                ...) {
+        # get bam files
+        si <- sampleInfo(CSobject)
+        bam.files <- si$filtered_file
+
+        ## get 5' read counts on the TSS from the bam.files
+        counts <-
+            GenomicAlignments::summarizeOverlaps(features = features,
+                                                 reads = bam.files,
+                                                 preprocess.reads = ResizeReads)
+        # make DGElist
+        y <- edgeR::DGEList(counts = assay(counts))
+        normfacs <- edgeR::calcNormFactors(y, method = method, ...)
+        return(normfacs)
+        }
+)
+
+
 #' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 #'
 #' @rdname fitDiffTSS
@@ -7,13 +56,13 @@
 #' @param groups Character vector indicating the group into which each sample within the CSobject falls.
 #'               the groups would be use to create a design matrix. As an example, replicates for one
 #'               condition could be in the same group.
-#' @param normalization Either a character indicating the type of normalization to perform ("internal",
-#'                 "external" or "none"), or a numeric vector vector with pre-computed normalization factors.
-#'                 If internal normalization is chosen, the normalization factors are calculated using the TMM
-#'                 method on large windows of the genome. For "external" normalization, the normalization factors
-#'                 from the provided spike-in samples are used. "none" performs no normalization.
-#'
-#' @param CSobjectSpikeIn Another CapSet object produced using the spike-in mapping.
+#' @param normalization A character indicating the type of normalization to perform . Options are "windowTMM",
+#'                 "globalTMM" or NULL (don't compute normalization factors).
+#'                 If "windowTMM" is chosen, the normalization factors are calculated using the TMM
+#'                 method on 10 kb windows of the genome. "globalTMM" compute TMM normalization using counts
+#'                 from all the evaluated TSS. If NULL, the external normalization factors can be used (using
+#'                 `normFactors`).
+#' @param normFactors external normalization factors (from Spike-Ins, for example).
 #'
 #' @param outplots Output pdf filename for plots. If provided, the plots for BCV, dispersion and
 #'                 MDS plot is created and saved in this file.
@@ -53,11 +102,9 @@ setMethod("fitDiffTSS",
             TSSfile,
             groups,
             normalization,
-            CSobjectSpikeIn,
+            normFactors,
             outplots,
             plotref) {
-        ## assert the input
-        stopifnot(is(CSobject, "CapSet"))
 
         # get bam files and design
         si <- sampleInfo(CSobject)
@@ -67,20 +114,41 @@ setMethod("fitDiffTSS",
 
         # Import tss locations to test
         if (is.null(TSSfile)) {
+            if (is.null(CSobject@tss_detected)) stop("Detected TSS absent or not provided.")
             merged <- CSobject@tss_detected
             stopifnot(!(is.null(merged)))
             mergedall <- base::Reduce(S4Vectors::union, merged)
         } else {
+            stopifnot(file.exists(TSSfile))
             mergedall <- rtracklayer::import.bed(TSSfile)
         }
 
-        if (normalization == "internal") {
+        ## get 5' read counts on the TSS from the bam.files
+        tsscounts <-
+            GenomicAlignments::summarizeOverlaps(features = mergedall,
+                                                 reads = bam.files,
+                                                 preprocess.reads = ResizeReads)
+        # make DGElist
+        y <- edgeR::DGEList(counts = assay(tsscounts))
+        ## Get norm factors
+        if (is.null(normalization)) {
+            ## if normalization method not provided, look for external Norm factors
+            normfacs <- normFactors
+            # norm factors should be either NULL or a numeric vector
+            if (!is.null(normfacs)) {
+                stopifnot(is.numeric(normfacs) & length(normfacs) == length(groups))
+            }
+            y$samples$norm.factors <- normfacs
+            plotCompBias(dgelist = y, samples, plotref)
+
+        } else if (normalization == "windowTMM") {
+            ## normalization factors calculated using TMM on large Windows
             # fail early if plotref is not given
             if (is.null(plotref))
                 stop("Please indicate reference sample for plotting of composition bias!")
             ## Internal normalization for composition bias : TMM
             # useful to try different bin sizes and see if the values are close to unity (low composition effect)
-            regionparam <- csaw::readParam(minq = 30, restrict = NULL)
+            regionparam <- csaw::readParam(restrict = NULL)
             binned <-
                 csaw::windowCounts(bam.files,
                                    bin = TRUE,
@@ -88,60 +156,22 @@ setMethod("fitDiffTSS",
                                    param = regionparam)
             normfacs <- csaw::normOffsets(binned) # close to unity
             names(normfacs) <- samples
-
-            ## visualize Effect of TMM normalization on composition bias
             y.bin <- csaw::asDGEList(binned)
-            bin.ab <- edgeR::aveLogCPM(y.bin)
-            adjc <- edgeR::cpm(y.bin, log = TRUE)
-            colnames(adjc) <- samples
 
-            # plot ref sample vs all other samples
-            message("plotting the composition effect")
-            sampnumber <- ncol(adjc) - 1
-            cols_toplot <- grep(plotref, samples, invert = TRUE)
-            n <- ceiling(sampnumber / 3) #roundup to make divisible by 3
+            y$samples$norm.factors <- normfacs
+            plotCompBias(dgelist = y.bin, samples, plotref)
 
-            par(cex.lab = 1.5, mfrow = c(n, 3))
-            lapply(cols_toplot, function(x) {
-                smoothScatter(
-                    bin.ab,
-                    adjc[, plotref] - adjc[, x],
-                    ylim = c(-6, 6),
-                    xlab = "Average abundance",
-                    ylab = paste0("Log-ratio (", plotref, " vs ", x, ")")
-                )
+        } else if (normalization %in% c("TMM", "RLE", "upperquartile", "none")) {
+            ## normalization factors calculated using TMM on all TSSs
+            y <- edgeR::calcNormFactors(y, method = normalization)
+            plotCompBias(dgelist = y, samples, plotref)
 
-                abline(h = log2(normfacs[plotref] / normfacs[x]),
-                       col = "red")
+        } else stop("Unknown normalization method!")
 
-            })
-
-        } else {
-            normfacs <- NULL
-        }
-
-        ## get 5' read counts on the locations from the bam.files
-        # function to resize reads
-        ResizeReads <- function(reads,
-                                width = 1,
-                                fix = "start",
-                                ...) {
-            reads <- as(reads, "GRanges")
-            stopifnot(all(GenomicRanges::strand(reads) != "*"))
-            GenomicRanges::resize(reads, width = width, fix = fix, ...)
-        }
-
-        # Read the data
-        tsscounts <-
-            GenomicAlignments::summarizeOverlaps(features = mergedall,
-                                                 reads = bam.files,
-                                                 preprocess.reads = ResizeReads)
-        ## EdgeR
-        y <- csaw::asDGEList(tsscounts, norm.factors = normfacs)
+        # proceed with edgeR
         designm <- model.matrix( ~ 0 + group, design)
         y <- edgeR::estimateDisp(y, designm)
         fit <- edgeR::glmQLFit(y, designm, robust = TRUE)
-
         # check prior degrees of freedom (avoid Infs)
         message("Prior degrees of freedom : ")
         print(summary(fit$df.prior))
@@ -185,7 +215,33 @@ setMethod("fitDiffTSS",
         }
 )
 
+## visualize Effect of TMM normalization on composition bias
+plotCompBias <- function(dgelist, samples, plotref) {
 
+        normfacs <- dgelist$samples$norm.factors
+        abundances <- edgeR::aveLogCPM(dgelist)
+        adjc <- edgeR::cpm(dgelist, log = TRUE)
+        colnames(adjc) <- samples
+
+        # plot ref sample vs all other samples
+        message("plotting the composition effect")
+        sampnumber <- ncol(adjc) - 1
+        cols_toplot <- grep(plotref, samples, invert = TRUE)
+        n <- ceiling(sampnumber / 3) #roundup to make divisible by 3
+
+        par(cex.lab = 1.5, mfrow = c(n, 3))
+        lapply(cols_toplot, function(x) {
+            smoothScatter(
+                abundances,
+                adjc[, plotref] - adjc[, x],
+                ylim = c(-6, 6),
+                xlab = "Average abundance",
+                ylab = paste0("Log-ratio (", plotref, " vs ", x, ")")
+            )
+
+        abline(h = log2(normfacs[plotref] / normfacs[x]), col = "red")
+        })
+}
 
 #' Detect differentially expressed Transcription Start Sites between two conditions (test)
 #'

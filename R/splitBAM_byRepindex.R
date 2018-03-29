@@ -4,7 +4,7 @@
 #'
 #' @param bamFile Path to a mapped BAM file
 #' @param outfile_prefix A prefix for output file (replicates IDs will be added as RR/YY)
-#' @param nthreads Number of threads
+#' @param ncores Number of cores to use for parallel processing
 #'
 #' @return Filtered files by replicate Index
 #' @export
@@ -12,11 +12,11 @@
 #' @examples
 #'
 #' bam <- system.file("extdata", "bam/embryo1.bam", package = "icetea")
-#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", nthreads = 10)
+#' splitBAM_byRepindex(bamFile = bam, outfile_prefix = "testSplit", ncores = 1)
 #'
 
 splitBAM_byRepindex <-
-    function(bamFile, outfile_prefix, nthreads = 1) {
+    function(bamFile, outfile_prefix, ncores = 1) {
         ## Write a closure that return the function to search idx in readname
         message("Creating Filtering Rules")
         make_FilterFunc <- function(rep_name) {
@@ -60,7 +60,7 @@ splitBAM_byRepindex <-
         destinations <-
             paste0(outfile_prefix, "_", names(repindex_list), ".bam")
 
-        param = BiocParallel::MulticoreParam(workers = nthreads)
+        param <- getMCparams(ncores)
         BiocParallel::bplapply(seq_along(destinations),
                                function(i, file, destinations, filtrules) {
                                    Rsamtools::filterBam(file, destinations[i],

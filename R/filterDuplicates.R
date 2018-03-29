@@ -11,7 +11,8 @@ filterdups_func <- function(bamdf) {
     getdupstats <- function(bamdf) {
         ## split the df by pos (get one list per pos)
         pos <- factor(bamdf$pos, levels = unique(as.numeric(bamdf$pos)))
-        bamdf.bypos <- S4Vectors::split(bamdf, pos)
+        strand <- factor(bamdf$strand, levels = unique(as.character(bamdf$strand)))
+        bamdf.bypos <- S4Vectors::split(bamdf, bamdf[,c('pos', 'strand')])
         ## extract umis from each df
         getumi <- function(x) {
             hdr <- vapply(strsplit(x$qname, "#"), "[[", character(1), 2)
@@ -41,19 +42,20 @@ filterdups_func <- function(bamdf) {
 #'
 #' @param bamFile Input BAM file
 #' @param outFile Output (filtered) BAM file
-#'
+#' @param keepPairs Keep R2?
+#' @importFrom Rsamtools scanBamFlag
 #' @return Filtered BAM file (with only R1), after PCR duplicate removal
 #'
 
-filterDups <- function(bamFile, outFile) {
+filterDups <- function(bamFile, outFile, keepPairs) {
     message(paste0("Removing PCR duplicates : ", bamFile))
-    # get baminfo
+
+    bamFlags <- getBamFlags(paired = keepPairs)
     sparam <-
         Rsamtools::ScanBamParam(
-            what = c("qname", "rname", "pos"),
+            what = c("qname", "rname", "pos","strand"),
             #, "isize", "qwidth", "mapq"
-            flag = Rsamtools::scanBamFlag(isUnmappedQuery = FALSE,
-                                          isFirstMateRead = TRUE)
+            flag = bamFlags
         )
 
     ## create rule
@@ -78,6 +80,9 @@ filterDups <- function(bamFile, outFile) {
 #'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 #' @param CSobject an object of class \code{\link{CapSet}}
 #' @param outdir output directory for filtered BAM files
+#' @param ncores No. of cores to use
+#' @param keepPairs logical, indicating whether to keep pairs in the paired-end data.
+#'                           (note: the pairs are treated as independent reads during duplicate removal)
 #'
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
 #' @importFrom methods validObject
@@ -100,7 +105,7 @@ filterDups <- function(bamFile, outFile) {
 
 setMethod("filterDuplicates",
           signature = "CapSet",
-          function(CSobject, outdir) {
+          function(CSobject, outdir, ncores, keepPairs) {
 
               si <- sampleInfo(CSobject)
               bamfiles <- si$mapped_file
@@ -121,17 +126,18 @@ setMethod("filterDuplicates",
     # then prepare outfile list
     outfiles <-
         file.path(outdir, paste0(si$samples, ".filtered.bam"))
+
     # run the filter duplicates function on all files
-    mapply(filterDups, bamfiles, outfiles)
+    bpParams <- getMCparams(ncores)
+    BiocParallel::bplapply(seq_along(bamfiles),
+                           function(x) {
+                               filterDups(bamfiles[x], outfiles[x], keepPairs)
+    }, BPPARAM = bpParams)
 
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
                          param = ScanBamParam(
-                             flag = scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isFirstMateRead = TRUE,
-                                 isSecondaryAlignment = FALSE
-                             )
+                             flag = getBamFlags(paired = FALSE)
                          ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)

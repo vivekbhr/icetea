@@ -190,7 +190,7 @@ setMethod("demultiplexFASTQ",
         ## get the fastq to split (raise error if fastq untrimmed/not existing)
         fastq_R1 <- CSobject@fastq_R1
         fastq_R2 <- CSobject@fastq_R2
-        param = BiocParallel::MulticoreParam(workers = ncores)
+        param <- getMCparams(ncores)
         message("de-multiplexing the FASTQ file")
 
         ## filter and write

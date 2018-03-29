@@ -1,5 +1,6 @@
 #' Plot read statistics from the CapSet object
 #'
+#' @rdname plotReadStats
 #' @param CSobject The \code{\link{CapSet}} object
 #' @param plotType The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
 #'                  or a bar chart with "dodged" positions (analogous to ggplot)
@@ -10,36 +11,36 @@
 #'                If outfile not specified, the plot would be retured on the screen
 #'
 #' @return A ggplot object, or a file. Plot showing the number/proportion of reads in each category, per sample
+#'
+#' @importFrom reshape2 melt
 #' @export
 #'
 #' @examples
 #'
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
-#' plot_readStats(cs, plotType = "dodge", plotValue = "numbers", outFile = "test_numbers.pdf")
+#' plotReadStats(cs, plotType = "dodge", plotValue = "numbers", outFile = "test_numbers.pdf")
 #'
-
-plot_readStats <- function(CSobject,
-                           plotType = c("stack", "dodge"),
-                           plotValue = c("numbers", "proportions"),
-                           outFile = NULL) {
+setMethod(
+    plotReadStats,
+    signature = "CapSet",
+    definition = function(CSobject,
+                           plotType,
+                           plotValue,
+                           outFile) {
     ## evaluate expressions
-    stopifnot(is(CSobject, "CapSet"))
     stopifnot(plotType %in% c("stack", "dodge"))
     stopifnot(plotValue %in% c("numbers", "proportions"))
+    fields_toplot <- c("demult_reads", "num_mapped", "num_filtered", "num_intss")
 
-    ## get info on how many columns present
-    si <- sampleInfo(CSobject)
-
-    sicols <- colnames(si)
-    fields_toplot <-
-        c("demult_reads", "num_mapped", "num_filtered", "num_intss")
+    ## get info on how many columns to plot
+    si <- sampleInfo(CSobject)[c("samples",fields_toplot)]
+    # subset si for non-na cols
+    nacols <- apply(si, 2, function(x) all(is.na(x)))
+    si <- si[!nacols]
     msg <- "Plotting following information :"
-    fields <- vapply(fields_toplot, function(x)
-        if (x %in% sicols) {
-            return(x)
-        }, character(1L))
-    message(cat(msg, fields))
+    message(cat(msg, colnames(si) ))
+
     ## prepare df
     si_stats <- data.frame(
         sample = si$samples,
@@ -84,7 +85,7 @@ plot_readStats <- function(CSobject,
         return(p)
     }
 
-}
+})
 
 ## get cumulative differences of values from a DF, to plot stacked barchart of numbers
 get_stackedNum <- function(df) {
@@ -108,7 +109,7 @@ get_stackedNum <- function(df) {
 #' @param outFile Output file name (filename extention would be used to determine type)
 #'                If outfile not specified, the plot would be returned on the screen
 #' @param sampleNames Labels for input samples (in the same order as the input bed files)
-#' @rdname plot_TSSprecision
+#' @rdname plotTSSprecision
 #' @return A ggplot object, or a file. Plot showing perent of TSS detected per sample with respect to
 #'         their cumulative distance to TSS of the provided reference
 #'
@@ -124,13 +125,13 @@ get_stackedNum <- function(df) {
 #' # Plotting the precision using a pre computed set of TSS (.bed files) :
 #'
 #' tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
-#' plot_TSSprecision(reference = transcripts, detectedTSS = tssfile,
+#' plotTSSprecision(reference = transcripts, detectedTSS = tssfile,
 #' 		sampleNames = "testTSS", distanceCutoff = 500,
 #' 		outFile = "TSS_detection_precision.png")
 #'
 
 setMethod(
-    plot_TSSprecision,
+    plotTSSprecision,
     signature = signature("GRanges", "character"),
     definition = function(reference,
                           detectedTSS,
@@ -160,7 +161,7 @@ setMethod(
 #' \code{\link{CapSet}} object, with respect to a given reference annotation.
 #'
 #' @docType methods
-#' @rdname plot_TSSprecision
+#' @rdname plotTSSprecision
 #' @param ... Additional arguments
 #'
 #' @export
@@ -176,12 +177,12 @@ setMethod(
 #' # load a previously saved CapSet object
 #' cs <- exampleCSobject()
 #' # plot
-#' plot_TSSprecision(reference = transcripts, detectedTSS = cs,
+#' plotTSSprecision(reference = transcripts, detectedTSS = cs,
 #'                   outFile = "TSS_detection_precision.png")
 #'
 
 setMethod(
-    plot_TSSprecision,
+    plotTSSprecision,
     signature = signature("GRanges", "CapSet"),
     definition = function(reference,
                           detectedTSS,

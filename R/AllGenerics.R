@@ -1,13 +1,3 @@
-#' @rdname plot_TSSprecision
-#' @export
-setGeneric("plot_TSSprecision",
-           function(reference,
-                    detectedTSS,
-                    distanceCutoff = 500,
-                    outFile = NULL,
-                    ...) {
-               standardGeneric("plot_TSSprecision")
-           })
 
 #' @rdname sampleInfo
 #' @export
@@ -41,6 +31,28 @@ setGeneric("sampleInfo<-", function(object, ..., value)
 NULL
 #> NULL
 
+#' @rdname plotTSSprecision
+#' @export
+setGeneric("plotTSSprecision",
+           function(reference,
+                    detectedTSS,
+                    distanceCutoff = 500,
+                    outFile = NULL,
+                    ...) {
+               standardGeneric("plotTSSprecision")
+           })
+
+#' @name plotReadStats
+#' @rdname plotReadStats
+#' @export
+setGeneric("plotReadStats",
+           function(CSobject,
+                    plotType = "dodge",
+                    plotValue = "numbers",
+                    outFile = NULL) {
+               standardGeneric("plotReadStats")
+           })
+
 #' @name demultiplexFASTQ
 #' @rdname demultiplexFASTQ
 #' @export
@@ -68,7 +80,9 @@ setGeneric("mapCaps",
 #' @export
 setGeneric("filterDuplicates",
            function(CSobject,
-                    outdir)
+                    outdir,
+                    ncores = 1,
+                    keepPairs = FALSE)
     standardGeneric("filterDuplicates"))
 
 #' @name detectTSS
@@ -79,7 +93,8 @@ setGeneric("detectTSS",
                     groups,
                     outfile_prefix = NULL,
                     foldChange = 2,
-                    restrictChr = NULL)
+                    restrictChr = NULL,
+                    ncores = 1)
             standardGeneric("detectTSS"))
 
 #' @name exportTSS
@@ -102,6 +117,16 @@ setGeneric("getGeneCounts",
                 outfile = NA)
             standardGeneric("getGeneCounts"))
 
+#' @name calcNormFactors
+#' @rdname calcNormFactors
+#' @export
+setGeneric("calcNormFactors",
+            function(CSobject,
+                    features,
+                    method = "TMM",
+                    ...)
+            standardGeneric("calcNormFactors"))
+
 #' @name fitDiffTSS
 #' @rdname fitDiffTSS
 #' @export
@@ -110,7 +135,7 @@ setGeneric("fitDiffTSS",
                     TSSfile = NULL,
                     groups,
                     normalization = "internal",
-                    CSobjectSpikeIn = NULL,
+                    normFactors = NULL,
                     outplots = NULL,
                     plotref)
             standardGeneric("fitDiffTSS"))

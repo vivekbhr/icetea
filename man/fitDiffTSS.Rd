@@ -7,10 +7,10 @@
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
 fitDiffTSS(CSobject, TSSfile = NULL, groups, normalization = "internal",
-  CSobjectSpikeIn = NULL, outplots = NULL, plotref)
+  normFactors = NULL, outplots = NULL, plotref)
 
 \S4method{fitDiffTSS}{CapSet}(CSobject, TSSfile = NULL, groups,
-  normalization = "internal", CSobjectSpikeIn = NULL, outplots = NULL,
+  normalization = "internal", normFactors = NULL, outplots = NULL,
   plotref)
 }
 \arguments{
@@ -23,13 +23,14 @@ empty, the union of detected TSS present within the provided CSobject would be p
 the groups would be use to create a design matrix. As an example, replicates for one
 condition could be in the same group.}
 
-\item{normalization}{Either a character indicating the type of normalization to perform ("internal",
-"external" or "none"), or a numeric vector vector with pre-computed normalization factors.
-If internal normalization is chosen, the normalization factors are calculated using the TMM
-method on large windows of the genome. For "external" normalization, the normalization factors
-from the provided spike-in samples are used. "none" performs no normalization.}
+\item{normalization}{A character indicating the type of normalization to perform . Options are "windowTMM",
+"globalTMM" or NULL (don't compute normalization factors).
+If "windowTMM" is chosen, the normalization factors are calculated using the TMM
+method on 10 kb windows of the genome. "globalTMM" compute TMM normalization using counts
+from all the evaluated TSS. If NULL, the external normalization factors can be used (using
+`normFactors`).}
 
-\item{CSobjectSpikeIn}{Another CapSet object produced using the spike-in mapping.}
+\item{normFactors}{external normalization factors (from Spike-Ins, for example).}
 
 \item{outplots}{Output pdf filename for plots. If provided, the plots for BCV, dispersion and
 MDS plot is created and saved in this file.}

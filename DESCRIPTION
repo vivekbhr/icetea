@@ -32,6 +32,7 @@ Imports:
     GenomicRanges,
     rtracklayer,
     SummarizedExperiment,
+    GenomeInfoDb,
     VariantAnnotation,
     limma,
     edgeR,
@@ -40,11 +41,12 @@ Imports:
 Suggests:
     knitr,
     rmarkdown,
-    Rsubread (>= 1.29.0)
+    Rsubread (>= 1.29.0),
+    testthat
 VignetteBuilder: knitr
 biocViews: Transcription, GeneExpression, Sequencing,
     RNASeq, Transcriptomics, DifferentialExpression
 URL: https://github.com/vivekbhr/icetea
-License: GPL-3
+License: GPL-3 + file LICENSE
 LazyData: true
 RoxygenNote: 6.0.1
