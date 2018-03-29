@@ -11,8 +11,7 @@ install:
   ps: Bootstrap
 
 cache:
-  #- C:\RLibrary
-  tools\helloworld.cmd -> appveyor.yml
+  - C:\RLibrary -> appveyor.yml
 
 # Adapt as necessary starting from here
 
