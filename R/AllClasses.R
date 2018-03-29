@@ -58,6 +58,12 @@ newCapSet <- function(expMethod,
                       filtered_file = NA) {
     ## Get numbers from already provided files
     suppressWarnings({
+
+        if (!is.null(idxList)) {
+            # Check validity of index seq
+            idxList <- as.character(Biostrings::DNAStringSet(idxlist))
+            # the above func would throw an error if seq not valid
+        }
         # R1
         if (!is.na(demult_R1)) {
             message("Checking de-multiplexed R1 reads")
@@ -124,7 +130,7 @@ newCapSet <- function(expMethod,
     )
 
     # get fastq type (single or paired)
-    fastqType <- ifelse(is.null(fastq_R2), "single", "paired")
+    #fastqType <- ifelse(is.null(fastq_R2), "single", "paired")
     # create an instance of CapSet
     new(
         "CapSet",

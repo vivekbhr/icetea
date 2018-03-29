@@ -1,11 +1,3 @@
-#dir <- system.file("extdata", package = "icetea")
-#si <- data.frame(row.names = c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG"),
-#		 fnames = c("embryo1", "embryo2", "embryo3", "embryo4"))
-## working examples
-#cs <- newCapSet(expMethod = 'MAPCap', fastqType = 'paired',
-#		fastq_R1 = file.path(dir, 'mapcap_test_R1.fastq.gz'),
-#		fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
-#		sampleInfo = si)
 #cs <- demultiplex_fastq(cs, max_mismatch = 1, outdir = file.path(dir, 'demult_fastq'))
 #cs <- mapCaps(cs, "/data/akhtar/bhardwaj/my_annotations/drosophila_dm6/subread_index/dm6",
 #	      file.path(dir, "bam"), nthreads = 10)
