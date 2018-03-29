@@ -40,7 +40,7 @@ setMethod("calcNormFactors",
                                                  reads = bam.files,
                                                  preprocess.reads = ResizeReads)
         # make DGElist
-        y <- edgeR::DGEList(counts = assay(tsscounts))
+        y <- edgeR::DGEList(counts = assay(counts))
         normfacs <- edgeR::calcNormFactors(y, method = method, ...)
         return(normfacs)
         }
