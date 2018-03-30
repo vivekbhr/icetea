@@ -7,11 +7,11 @@
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
 fitDiffTSS(CSobject, TSSfile = NULL, groups, normalization = "internal",
-  normFactors = NULL, outplots = NULL, plotref)
+  normFactors = NULL, outplots = NULL, plotRefSample, ncores)
 
 \S4method{fitDiffTSS}{CapSet}(CSobject, TSSfile = NULL, groups,
   normalization = "internal", normFactors = NULL, outplots = NULL,
-  plotref)
+  plotRefSample, ncores)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
@@ -26,17 +26,20 @@ condition could be in the same group.}
 \item{normalization}{A character indicating the type of normalization to perform . Options are "windowTMM",
 "globalTMM" or NULL (don't compute normalization factors).
 If "windowTMM" is chosen, the normalization factors are calculated using the TMM
-method on 10 kb windows of the genome. "globalTMM" compute TMM normalization using counts
-from all the evaluated TSS. If NULL, the external normalization factors can be used (using
-`normFactors`).}
+method on 10 kb windows of the genome. "globalTMM" computes TMM normalization using counts
+from all the evaluated TSSs. If NULL, the external normalization factors can be used
+ (provided using `normFactors`).}
 
 \item{normFactors}{external normalization factors (from Spike-Ins, for example).}
 
 \item{outplots}{Output pdf filename for plots. If provided, the plots for BCV, dispersion and
 MDS plot is created and saved in this file.}
 
-\item{plotref}{Name of reference sample to plot for detection of composition bias in the
-data. Data is normalized using the TMM method to avoid composition bias.}
+\item{plotRefSample}{Name of reference sample to plot for detection of composition bias in the
+data. Samples could be normalized using one of the provided normalization methods to
+control for composition bias.}
+
+\item{ncores}{No. of cores/threads to use}
 }
 \value{
 An object of class \link[edgeR]{DGEGLM-class}.
@@ -58,7 +61,7 @@ cs <- exampleCSobject()
 
 # count reads on all TSS (union) and fit a model using replicates within groups
 csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
-                     outplots = NULL, plotref = "embryo1")
+                     outplots = NULL, plotRefSample = "embryo1")
 save(csfit, file = "diffTSS_fit.Rdata")
 }
 

@@ -59,15 +59,17 @@ setMethod("calcNormFactors",
 #' @param normalization A character indicating the type of normalization to perform . Options are "windowTMM",
 #'                 "globalTMM" or NULL (don't compute normalization factors).
 #'                 If "windowTMM" is chosen, the normalization factors are calculated using the TMM
-#'                 method on 10 kb windows of the genome. "globalTMM" compute TMM normalization using counts
-#'                 from all the evaluated TSS. If NULL, the external normalization factors can be used (using
-#'                 `normFactors`).
+#'                 method on 10 kb windows of the genome. "globalTMM" computes TMM normalization using counts
+#'                 from all the evaluated TSSs. If NULL, the external normalization factors can be used
+#'                  (provided using `normFactors`).
 #' @param normFactors external normalization factors (from Spike-Ins, for example).
 #'
 #' @param outplots Output pdf filename for plots. If provided, the plots for BCV, dispersion and
 #'                 MDS plot is created and saved in this file.
-#' @param plotref Name of reference sample to plot for detection of composition bias in the
-#'        data. Data is normalized using the TMM method to avoid composition bias.
+#' @param plotRefSample Name of reference sample to plot for detection of composition bias in the
+#'        data. Samples could be normalized using one of the provided normalization methods to
+#'        control for composition bias.
+#' @param ncores No. of cores/threads to use
 #'
 #' @return An object of class \link[edgeR]{DGEGLM-class}.
 #'
@@ -91,7 +93,7 @@ setMethod("calcNormFactors",
 #'
 #' # count reads on all TSS (union) and fit a model using replicates within groups
 #' csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "internal",
-#'                      outplots = NULL, plotref = "embryo1")
+#'                      outplots = NULL, plotRefSample = "embryo1")
 #' save(csfit, file = "diffTSS_fit.Rdata")
 #' }
 #'
@@ -104,7 +106,8 @@ setMethod("fitDiffTSS",
             normalization,
             normFactors,
             outplots,
-            plotref) {
+            plotRefSample,
+            ncores) {
 
         # get bam files and design
         si <- sampleInfo(CSobject)
@@ -124,10 +127,12 @@ setMethod("fitDiffTSS",
         }
 
         ## get 5' read counts on the TSS from the bam.files
+        bp_param <- getMCparams(ncores)
         tsscounts <-
             GenomicAlignments::summarizeOverlaps(features = mergedall,
                                                  reads = bam.files,
-                                                 preprocess.reads = ResizeReads)
+                                                 preprocess.reads = ResizeReads,
+                                                 BPPARAM = bp_param)
         # make DGElist
         y <- edgeR::DGEList(counts = assay(tsscounts))
         ## Get norm factors
@@ -139,15 +144,16 @@ setMethod("fitDiffTSS",
                 stopifnot(is.numeric(normfacs) & length(normfacs) == length(groups))
             }
             y$samples$norm.factors <- normfacs
-            plotCompBias(dgelist = y, samples, plotref)
+            plotCompBias(dgelist = y, samples, plotRefSample)
 
         } else if (normalization == "windowTMM") {
             ## normalization factors calculated using TMM on large Windows
-            # fail early if plotref is not given
-            if (is.null(plotref))
+            # fail early if plotRefSample is not given
+            if (is.null(plotRefSample))
                 stop("Please indicate reference sample for plotting of composition bias!")
             ## Internal normalization for composition bias : TMM
-            # useful to try different bin sizes and see if the values are close to unity (low composition effect)
+            # useful to try different bin sizes and see if the values are close to unity
+            # (low composition effect)
             regionparam <- csaw::readParam(restrict = NULL)
             binned <-
                 csaw::windowCounts(bam.files,
@@ -159,12 +165,12 @@ setMethod("fitDiffTSS",
             y.bin <- csaw::asDGEList(binned)
 
             y$samples$norm.factors <- normfacs
-            plotCompBias(dgelist = y.bin, samples, plotref)
+            plotCompBias(dgelist = y.bin, samples, plotRefSample)
 
         } else if (normalization %in% c("TMM", "RLE", "upperquartile", "none")) {
             ## normalization factors calculated using TMM on all TSSs
             y <- edgeR::calcNormFactors(y, method = normalization)
-            plotCompBias(dgelist = y, samples, plotref)
+            plotCompBias(dgelist = y, samples, plotRefSample)
 
         } else stop("Unknown normalization method!")
 
@@ -216,7 +222,7 @@ setMethod("fitDiffTSS",
 )
 
 ## visualize Effect of TMM normalization on composition bias
-plotCompBias <- function(dgelist, samples, plotref) {
+plotCompBias <- function(dgelist, samples, plotRefSample) {
 
         normfacs <- dgelist$samples$norm.factors
         abundances <- edgeR::aveLogCPM(dgelist)
@@ -226,20 +232,20 @@ plotCompBias <- function(dgelist, samples, plotref) {
         # plot ref sample vs all other samples
         message("plotting the composition effect")
         sampnumber <- ncol(adjc) - 1
-        cols_toplot <- grep(plotref, samples, invert = TRUE)
+        cols_toplot <- grep(plotRefSample, samples, invert = TRUE)
         n <- ceiling(sampnumber / 3) #roundup to make divisible by 3
 
         par(cex.lab = 1.5, mfrow = c(n, 3))
         lapply(cols_toplot, function(x) {
             smoothScatter(
                 abundances,
-                adjc[, plotref] - adjc[, x],
+                adjc[, plotRefSample] - adjc[, x],
                 ylim = c(-6, 6),
                 xlab = "Average abundance",
-                ylab = paste0("Log-ratio (", plotref, " vs ", x, ")")
+                ylab = paste0("Log-ratio (", plotRefSample, " vs ", x, ")")
             )
 
-        abline(h = log2(normfacs[plotref] / normfacs[x]), col = "red")
+        abline(h = log2(normfacs[plotRefSample] / normfacs[x]), col = "red")
         })
 }
 

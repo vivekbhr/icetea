@@ -137,7 +137,8 @@ setGeneric("fitDiffTSS",
                     normalization = "internal",
                     normFactors = NULL,
                     outplots = NULL,
-                    plotref)
+                    plotRefSample,
+                    ncores)
             standardGeneric("fitDiffTSS"))
 
 #' @name detectDiffTSS
