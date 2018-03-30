@@ -1,19 +1,22 @@
 ---
-title: "Analysing MAPCap data using icetea"
+title: "Analysing transcript 5'-profiling data using icetea"
 author: 
 - name: "Vivek Bhardwaj"
   affiliation: 
   - "Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany"
   - "Faculty of Biology, University of Freiburg, Schänzlestraße 1, 79104, Freiburg, Germany"
-- name: "Thomas Manke"
-  affiliation: 
-  - "Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany"
-  email: "manke@ie-freiburg.mpg.de"
-date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+  email: "bhardwaj@ie-freiburg.mpg.de"
+date: "`r format(Sys.Date(), '%d/%m/%Y')`"
+abstract: >
+  Transcript 5'-profiling techniques detect 5' sites of the expressed transcripts in the genome, allowing us to detect transcription start sites in the genome at high resolution. *CAGE* (Cap Analysis of Gene Expression) is one such technique. Programs for analysis of CAGE data use the clustering of CAGE tags (CTSS) to annotate transcription start sites and detect promoter shifts. Recently, faster and more efficient 5'-profiling techniques have been developed which allow early sample multiplexing, removal of PCR duplicates using random barcodes, and use paired-end sequencing. **icetea** can be used to process such data. It also implements a new method for detection of transcription start sites based on local enrichment of genomic windows, that can take advantage of biological replicates. It further allows users to perform differential expression analysis of transcription start sites between groups of samples, therefore integrating transcript annotation and expression analysis. While icetea analysis is mostly useful for multiplexed, paired-end experiments with replicates, conventional CAGE data can also be analysed. *icetea* analysis compliments other programs that perform promoter profiling and expression analysis based on clusteing of CAGE tags. 
+output: 
+  rmarkdown::html_document:
+    highlight: pygments
+    toc: true
+
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{Analysing MAPCap data using icetea}
+  %\VignetteIndexEntry{Analysing transcript 5'-profiling data using icetea}
   %\VignetteEncoding{UTF-8}
 ---
 
@@ -24,20 +27,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-## Abstract
-**ICETEA** can be used to analyse sequencing data generated from conventional as well as modern CAGE protocols.
-Here we show the usability of ICETEA in analysis of MAPCap data.
+## Introduction
 
-**MAPCap** (Multiplexed Affinity Purification of Capped RNA) is a newly developed CAGE protocol that allows fast and 
-accutate detection of transcription start sites and gene expression analysis of a set of multiplexed samples.
+Here we show the usability of *icetea* in the analysis of data from a recently developed paired-end, multiplexed 5'-profiling protocol called MAPCap. **MAPCap** (Multiplexed Affinity Purification of Capped RNA) allows fast and accutate detection of transcription start sites and expression analysis of multiplexed, low-input RNA samples.
+
+<a name="top"/>
 
 ## Quick Start
 
-Here we show a set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the 
-raw fastq files, we can either perform quality trimming using a standard program (eg. cutadapt/trimgalore) or simply 
-begin the analysis by creating a `CapSet` object. The `CapSet` object takes raw/quality trimmed fastq file paths as input,
-along with a simple dataframe (called `sampleInfo`) which contains demultiplexing barcodes as rownames and another column 
-called `samples` which contain the corresponding sample names. The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the TSS.
+Below is the set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the raw fastq files, we can either perform quality trimming using a standard program (eg. cutadapt/trimgalore) or simply begin the analysis by creating a `CapSet` object. The minimal information required to create a `CapSet` object is the path to raw/trimmed FASTQ files and a vector of sample names. For multiplexed FASTQ files, additionally a vector of sample indexes should be provided to proceed with de-multiplexing. 
+
+The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the transcription start sites.
 
 ```{r quickIntro, eval=FALSE}
 # load the package 
@@ -73,34 +73,28 @@ cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"), outfile_prefix = "tssC
 ```
 
 
-
 ## Help and citations
 
 ### How to get help
 
 ICETEA questions could be posted to the [Bioconductor support site](https://support.bioconductor.org), which serves as a searchable knowledge base of questions and answers.
 
-Posting a question and tagging with “ICETEA” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.
+Posting a question and tagging with “icetea” will automatically send an alert to the package authors to respond on the support site. See the first question in the list of Frequently Asked Questions (FAQ) for information about how to construct an informative post.
 
 
 ### How to cite ICETEA
 
 Please cite ICETEA as follows:
 
+<a name="capset"/>
 
+## The CapSet object 
 
-## Detailed description of the above workflow
-
-### Creating a CapSet object
-
-The workflow begins by creating an object of class `CapSet` using the function `newCapSet`. This contains information about the experiment method (CAGE, RAMPAGE or MAPCap), along with fastq type (`single` or `paired` end) and the path of the fastq files. It also contains a sampleInfo dataframe.
-
-The sampleInfo is a dataframe containing the demultiplexing barcodes as rownames and the corresponding samplenames within a column 
-called `samples`.
+The workflow begins by creating an object of class `CapSet` using the function `newCapSet`. This object contains information about the experiment method (CAGE, RAMPAGE or MAPCap), along with the path of the multiplexed fastq files. To allow de-multiplexing as , the demultiplexing barcodes should be provided to `idxList` and the corresponding samplenames should be provided to `sampleNames`.
 
 With this information, create the CapSet object as follows.
 
-```{r makeCS, eval=TRUE}
+```{r makeCS, eval=TRUE, results = "hold"}
 # provide demultiplexing barcodes and sample names
 idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
 dir <- system.file("extdata", package="icetea")
@@ -114,19 +108,46 @@ cs <- newCapSet(expMethod = 'MAPCap',
                 fastq_R2 = file.path(dir, 'mapcap_test_R2.fastq.gz'),
                 idxList = idxlist,
                 sampleNames = fnames)
+```
+
+The `CapSet` object is designed to allow the steps in the analysis to proceed like a pipeline. It holds the information on the output files from each step, which are then passed on to the next step. This information is stored in a DataFrame object, which can be retreived and manipulated using the function `sampleInfo`. In case of underlying files being deleted or moved to another folder, we can reset the sample information this way.
+
+```{r sampleinfo, eval=TRUE, results = "hold"}
+si <- sampleInfo(cs)
+dir <- system.file("extdata/bam", package = "icetea")
+si$mapped_file <- list.files(dir, pattern = ".bam$", full.names = TRUE)
+sampleInfo(cs) <- si
+```
+
+The `CapSet` object doesn't need to be created at the beginning of the workflow. Users can perform the initial, computationally expensive steps of FASTQ de-multiplexing, mapping and PCR de-duplication outside of the R environment. The `CapSet` object can be created at any point of the workflow, using the output files from current step. 
+
+After mapping and de-duplication : 
+
+```{r cs2, eval = TRUE, results = "hold"}
+dir <- system.file("extdata/filtered_bam", package = "icetea")
+cs2 <- newCapSet(expMethod = 'MAPCap',
+                 filtered_file = list.files(dir, pattern = ".bam$", full.names = TRUE),
+                 sampleNames = fnames)
 
 ```
 
+Providing output files from previous steps are not necessory, but providing them allows calculating additional metadata (like number of mapped reads) which could be useful for plotting (see section [QC](#QC) )
 
-### De-multiplexing the fastq
+## Analysis workflow
 
-Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to
-the fastq sequence. The tool `demultiplexFASTQ` de-multiplexes the samples using the sample barcode, producing fastq files
-corresponding to each sample. It also trims off these barcodes and attaches them in the header of the fastq files 
-for further processing. Function returns a modified CapSet object that contains location of demultiplexed files
-along with processing statistics.
+<a name="demult"/>
 
-```{r demultiplex, eval=TRUE}
+### De-multiplexing the fastq 
+
+Experiments like MAPCap and RAMPAGE produce multiplexed fastq files with sample indicies and PCR barcodes attached to the fastq sequence. The tool `demultiplexFASTQ` de-multiplexes the samples using the sample barcode, producing fastq files corresponding to each sample. It also trims off these barcodes and attaches them in the header of the fastq files for further processing. 
+
+For RAMPAGE protocol, the modified header looks like this : `<read ID>#<sample barcode>:<pseudo-random barcode>`
+For MAPCap protocol, the modified header looks like this : `<read ID>#<sample barcode>:<random barcode>:<replicate barcode>`
+For conventional CAGE protocols, we assume that standard Illumina de-multiplexing has already been performed and this step is not required.
+
+Function returns a modified CapSet object that contains location of demultiplexed files along with processing statistics.
+
+```{r demultiplex, eval=TRUE, results = "hold"}
 # demultiplex fastq and trim the barcodes
 dir.create("splitting")
 cs <- demultiplexFASTQ(cs, max_mismatch = 1, outdir = "splitting", ncores = 10)
@@ -139,7 +160,7 @@ Optionally, we can skip the above process and perform post-mapping de-multiplexi
 ### Mapping the fastqs
 
 The demultiplexed fastqs can now be mapped using the `mapCaps` function. This function is a wrapper over the `subjunc`
-function from `Rsubread` package. It additionally performes sorting and collects mapping statistics of the mapped files, 
+function from `Rsubread` package. It additionally performs sorting and collects mapping statistics of the mapped files, 
 stored in the modified `CapSet` object.
 
 In order to run the function we first create a subread index of our genome.
@@ -161,14 +182,13 @@ cs <- mapCaps(cs, subread_idx, outdir = "mapping", nthreads = 20, logfile = "map
 save(cs, file = "myCapSet.Rdata")
 ```
 
-**Note:** The package Rsubread is not available for windows. Windows users would need to map their demultiplexed files using another tool.
+**Note:** The package `Rsubread` is not available for windows. Windows users would need to map their demultiplexed files using another tool.
 
-**Note:** Since fastq de-multiplexing is an optinal step, we can perform mapping directly on the multiplexed files
-and perform the de-multiplexing afterwards (see below).
+**Note:** Optionally, we can perform mapping directly on the multiplexed files and perform the de-multiplexing afterwards (see below). This option is only recommended where the FASTQ files are not very large (for example, where overall sequencing depth is low, below 10 Mil).
 
 ### (optional) Post mapping de-multiplexing
 
-Demultiplxeing can also be performed on the BAM files after mapping, using the `splitBAM_byIndex` and `splitBAM_byRepindex` functions.
+Demultiplxeing can be performed on the BAM files after mapping, using the `splitBAM_byIndex` and (for MAPCap) `splitBAM_byRepindex` functions. These functions assume that the reads have been trimmed and the sample barcodes have been attached to the header in the way as [described above](#demult).
 
 ```{r splitbam, eval=FALSE}
 splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 1, nthreads = 10)
@@ -176,16 +196,11 @@ splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 1, nthreads =
 
 ### Filtering PCR duplicates
 
-Experiments like MAPCap and RAMPAGE provide us a way to remove sequencing reads which are PCR duplicates from the 
-mapped data. random UMIs are added to the read sequence for this purpose. In MAPCap, pre-designed random barcodes 
-present in the oligos serve as the UMIs, while in RAMPAGE, the sequences used as RT-PCR primers are treated as 
-pseudo-random barcodes. PCR duplicates are recognized by identifying reads that map to the same start and end site, 
-and contain the same random UMI.
+Experiments like MAPCap and RAMPAGE provide us a way to remove sequencing reads which are PCR duplicates from the mapped data. Random barcodes present in the read sequence are used for this purpose. In MAPCap, pre-designed random barcodes present in the oligos serve as UMIs, while in RAMPAGE, the sequences used as RT-PCR primers are treated as pseudo-random barcodes. PCR duplicates are recognized as reads that map to the same 5' position and contain the same random barcode.
 
-The function `filterDuplicates` removes these PCR duplicate sequences (keeping only one copy in these cases), and 
-creates de-duplicated BAM files. It returns the modified `CapSet` object with de-duplication statistics.
+The function `filterDuplicates` removes these PCR duplicate sequences (keeping only one copy in these cases), and creates de-duplicated BAM files. It returns the modified `CapSet` object with de-duplication statistics. `filterDuplicates` works in a strand-specific way. By default, it filters the R2 read from the paired-end BAM files, along with secondary alignments. Both reads can be allowed to kept using the option `keepPairs = TRUE`. Note that in this case, each read in a pair is evaluated seperately, and the run-time is significantly longer.
 
-```{r filterdups, eval=TRUE}
+```{r filterdups, eval=TRUE, results = "hold"}
 # load a previously saved CapSet object (or create new one)
 cs <- exampleCSobject()
 # filter PCR duplicates and save output in a new directory
@@ -193,14 +208,16 @@ dir.create("removedup")
 cs <- filterDuplicates(cs, outdir = "removedup")
 ```
 
+Tagging of read IDs using the random barcodes and subsequent removal of PCR duplicates can also be performed using the 
+command line tools, like [UMItools](https://github.com/CGATOxford/UMI-tools).
+
 ### Detection of TSS
 
-ICETEA implements a new method of detection of transcription start sites, which is a adopted from recently described methods for peak calling and differential binding analysis methods. Genome is divided into 10 base-pair windows and the TSS are detected as the 
-windows that show an X-fold enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.
+ICETEA implements a new method of detection of transcription start sites, which is adopted from the recently described methods for differential transcription factor binding analysis in ChIP-Seq data. Genome is divided into 10 base-pair windows and the TSSs are detected as the windows that show a user-defined fold-enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.
 
 This method is implemented in the function `detectTSS`, which returns a modified `CapSet` object with TSS detection statistics.
 
-```{r getTSS, eval=TRUE}
+```{r getTSS, eval=TRUE, results = "hold"}
 # detect TSS
 dir.create("tssCalling")
 cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"), 
@@ -209,27 +226,27 @@ cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"),
 exportTSS(cs, merged = TRUE, outfile_prefix = "testTSS")
 ```
 
+<a name="QC"/>
 
-## Plotting and QC
+## Plotting and QC 
 
-The `sampleInfo` field of the CapSet object stores information about the read numbers kept at each step of processing, this 
-information can be easily plotted using the function `plotReadStats`
+The `sampleInfo` field of the CapSet object stores information about the read numbers kept at each step of processing, this information can be easily plotted using the function `plotReadStats`
 
 We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.
 
-```{r plotstats, eval=TRUE}
+```{r plotstats, eval=TRUE, results = "hold", fig.width=8, fig.height=6}
 # separated barchart for numbers
 plotReadStats(cs, plotValue = "numbers", plotType = "dodge")
+```
+
+```{r plotstats2, eval=TRUE, results = "hide", fig.width=8, fig.height=6}
 # stacked barchart for proportions
 plotReadStats(cs, plotValue = "proportions", plotType = "stack" )
 ```
 
-In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected
-TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can 
-be used to compare samples. This can be done using the function `plotTSSprecision`, which takes the *known* TSS annotations as 
-a TxDB object.
+In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can be used to compare samples. This can be done using the function `plotTSSprecision`, which takes the *known* TSS annotations as a TxDB object.
 
-```{r plotPrecision, eval=TRUE}
+```{r plotPrecision, eval=TRUE, results = "hold", fig.width=8, fig.height=6}
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 # only analyse genes on chrX to make the analysis faster
@@ -245,15 +262,17 @@ plotTSSprecision(reference = transcripts, detectedTSS = cs)
 
 ## Differential TSS expression analysis
 
-For the experiments with two or more groups, ICETEA can also be used to perform differential TSS expression analysis for a group of samples. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.
+For the experiments with two or more groups, *icetea* can be used to perform differential TSS expression analysis between groups. The requirements for differential TSS expression analysis is the same as that for differential expression analysis of RNA-Seq data. At least two or more biological replicates per group is required.
 
-The functions `fitDiffTSS` and `detectDiffTSS` utilize edgeR to perform differential expression analysis.
+The functions `fitDiffTSS` and `detectDiffTSS` utilize [edgeR](http://bioconductor.org/packages/release/bioc/html/edgeR.html) to perform differential TSS expression analysis.
 
 ```{r diffTSS, eval=FALSE}
+## fitDiffTSS returns a DGEGLM object
 csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "windowTMM",
                      outplots = NULL, plotref = "embryo1")
 save(csfit, file = "diffTSS_fit.Rdata")
 
+## This object is then used by the detectDiffTSS function to return differentially expressed TSSs
 detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt",
                tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
 ```
@@ -261,13 +280,9 @@ detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt",
 
 ### Using spike-In controls
 
-For the differential TSS expression analysis, the function `fitDiffTSS` shown above utilize the [TMM method]()
-for normalization of TSS counts. In some cases however, spike-in normalizations are preferred. ICETEA provides
-a way to perform spike-in normalization during differential expression analysis.
+For the differential TSS expression analysis, the function `fitDiffTSS` shown above can utilize one of the available internal normalization methods. In some cases however, external (spike-in) normalizations are preferred. *icetea* provides a way to perform spike-in normalization during differential expression analysis.
 
-Spike-In samples could be processed in the same way as the normal samples, using the `CapSet` object as described above.
-Normalization factors can be obtained from the spike-in reads using `calcNormFactors` and provided to the `fitDiffTSS`
-function during detection of differential TSS between samples.
+Spike-In samples could be processed in the same way as the normal samples, using the `CapSet` object as described above.Normalization factors can be obtained from the spike-in reads using `calcNormFactors` and provided to the `fitDiffTSS` function during detection of differential TSS between samples.
 
 ```{r spikeNorm, eval=FALSE}
 ## get gene counts for spike-in RNA mapped to human genome
@@ -282,22 +297,12 @@ csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2),
 
 ## Additional useful functions
 
-### Sample information
-
-Sample Information correspondng to the CapSet object can be obtained as a data.frame using the `sampleInfo` function. In case of underlying files being deleted or moved to another folder, we can reset the sample information.
-
-```{r sampleinfo, eval=TRUE}
-si <- sampleInfo(cs)
-dir <- system.file("extdata/bam", package = "icetea")
-si$mapped_file <- list.files(dir, pattern = ".bam$", full.names = TRUE)
-sampleInfo(cs) <- si
-```
-
 ### Getting the gene counts
 
 Given the annotations, TSS counts for each gene can be summarized to gene counts. The following function sums up the TSS counts per gene from a given txdb object and returns gene counts.
 
 ```{r genecounts, eval=FALSE}
+# get transcripts
 dm6trans <- transcriptsBy(TxDb.Dmelanogaster.UCSC.dm6.ensGene, "gene")
 # get gene counts, counting reads around 500 bp of the TSS
 gcounts <- getGeneCounts(cs, dm6trans)
@@ -305,10 +310,11 @@ gcounts <- getGeneCounts(cs, dm6trans)
 
 ### Annotating the TSS distribution
 
-Detected or differentially expressed TSS, which are exported as bed files, can be quickly annotated using the function `annotateTSS`. `annotateTSS` reports the numbers/proportions of detected TSS falling into different genomic features (provided by a TxDb object). In order to break ties between overlapping features, we can provide a vector of feature names in the decreasing order of preference.
+Detected or differentially expressed TSS, which are exported as bed files, can be quickly annotated using the function `annotateTSS`. `annotateTSS` reports the numbers/proportions of detected TSS falling into different genomic features (provided by a TxDb object) as a data.frame and optionally as a plot. In order to break ties between overlapping features, we can provide a vector of feature names in the decreasing order of preference.
 
-```{r annotateTSS, eval = TRUE}
-annotateTSS(tssBED = tssfile,
+```{r annotateTSS, eval = TRUE, results = "hold", fig.width=10, fig.height=8}
+# save the output as data.frame (outdf) + plot on screen
+outdf <- annotateTSS(tssBED = tssfile,
             txdb = TxDb.Dmelanogaster.UCSC.dm6.ensGene,
             plotValue = "number",
             outFile = NULL)
