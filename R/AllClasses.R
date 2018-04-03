@@ -180,7 +180,11 @@ check_capSet <- function(object) {
     if (!(all(colnames(info) %in% si_names))) {
         stop("Column names in sampleInfo DataFrame are not correct!")
     }
-
+    si_types <- c("character", "integer", "numeric", "logical")
+    col_classes <- vapply(info, class, character(1L))
+    if (!(all(col_classes %in% si_types))) {
+        stop("Column classes in sampleInfo DataFrame are not correct!")
+    }
     # TSS info
     if (!(class(tss) %in% c("NULL", "CompressedGRangesList", "GRangesList"))) {
         msg <- paste0("tss_detected should be a GRangesList object ")
