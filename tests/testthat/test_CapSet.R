@@ -21,4 +21,10 @@ test_that("CapSet object produces correct errors", {
     index2 <- index
     index2[1] <- "ATCGXX"
     expect_error(newCapSet(exp, r1, r2, index2, fnames))
+    ## sampleInfo setter and getter
+    si <- sampleInfo(cs)
+    expect_type(si, "DataFrame")
+    si$num_intss <- as.matrix(si$num_intss)
+    expect_error(sampleInfo(cs) <- si)
 })
+
