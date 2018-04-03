@@ -4,7 +4,7 @@
 #' @param CSobject An object of class \code{\link{CapSet}}
 #' @param genomeIndex path to the Subread index file. Should end with the basename of the index.
 #' @param outdir output directory path
-#' @param nthreads number of threads to use for mapping.
+#' @param ncores number of cores/threads to use for mapping.
 #' @param logfile a log file to write the processing message.
 #' @param externalGTF (optional) provide external annotation file in `GTF`` format to
 #'                    increase alignment accuracy
@@ -40,7 +40,7 @@ setMethod("mapCaps",
              genomeIndex,
              outdir,
              externalGTF,
-             nthreads,
+             ncores,
              logfile) {
         ## extract info
         sampleInfo <- sampleInfo(CSobject)
@@ -99,7 +99,7 @@ setMethod("mapCaps",
                     TH1 = 1,
                     TH2 = 1,
                     maxMismatches = 3,
-                    nthreads = 10,
+                    nthreads = ncores,
                     indels = 5,
                     complexIndels = FALSE,
                     phredOffset = 33,
