@@ -71,7 +71,7 @@ setGeneric("mapCaps",
              genomeIndex,
              outdir,
              externalGTF = NULL,
-             nthreads = 1,
+             ncores = 1,
              logfile = NULL)
             standardGeneric("mapCaps"))
 
@@ -135,11 +135,11 @@ setGeneric("fitDiffTSS",
             function(CSobject,
                     TSSfile = NULL,
                     groups,
-                    normalization = "internal",
+                    normalization = NULL,
                     normFactors = NULL,
                     outplots = NULL,
                     plotRefSample,
-                    ncores)
+                    ncores = 1)
             standardGeneric("fitDiffTSS"))
 
 #' @name detectDiffTSS

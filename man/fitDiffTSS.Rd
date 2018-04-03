@@ -6,12 +6,12 @@
 \alias{fitDiffTSS,CapSet-method}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
-fitDiffTSS(CSobject, TSSfile = NULL, groups, normalization = "internal",
-  normFactors = NULL, outplots = NULL, plotRefSample, ncores)
+fitDiffTSS(CSobject, TSSfile = NULL, groups, normalization = NULL,
+  normFactors = NULL, outplots = NULL, plotRefSample, ncores = 1)
 
 \S4method{fitDiffTSS}{CapSet}(CSobject, TSSfile = NULL, groups,
-  normalization = "internal", normFactors = NULL, outplots = NULL,
-  plotRefSample, ncores)
+  normalization = NULL, normFactors = NULL, outplots = NULL,
+  plotRefSample, ncores = 1)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
