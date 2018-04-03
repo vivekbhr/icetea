@@ -6,11 +6,11 @@
 \alias{detectTSS,CapSet-method}
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
-detectTSS(CSobject, groups, outfile_prefix = NULL, foldChange = 2,
-  restrictChr = NULL, ncores = 1)
+detectTSS(CSobject, groups, outfile_prefix = NULL, windowSize = 10L,
+  foldChange = 2, restrictChr = NULL, ncores = 1)
 
 \S4method{detectTSS}{CapSet}(CSobject, groups, outfile_prefix = NULL,
-  foldChange = 2, restrictChr = NULL, ncores = 1)
+  windowSize = 10L, foldChange = 2, restrictChr = NULL, ncores = 1)
 }
 \arguments{
 \item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
@@ -20,6 +20,12 @@ calling (see example)}
 
 \item{outfile_prefix}{Output name prefix for the .Rdata file containing window counts, background counts
 and filtering statistics calculated during TSS detection.}
+
+\item{windowSize}{Size of the window to bin the genome for TSS detection. By default, a window size of
+10 is used for binning the genome, however smaller window sizes can optionally be provided
+for higher resolution TSS detection. Note that the background size is set to 200x the
+window size (2kb for 10bp windows) to calculate local enrichment. Adjacent enriched windows
+are merged with a distance cutoff, which is the same as window size to get final TSS widths.}
 
 \item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
 usual' amount of starting material and squencing depth (>=5ug starting material,

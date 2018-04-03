@@ -92,6 +92,7 @@ setGeneric("detectTSS",
            function(CSobject,
                     groups,
                     outfile_prefix = NULL,
+                    windowSize = 10L,
                     foldChange = 2,
                     restrictChr = NULL,
                     ncores = 1)

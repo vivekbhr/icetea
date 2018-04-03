@@ -62,6 +62,11 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'               calling (see example)
 #' @param outfile_prefix Output name prefix for the .Rdata file containing window counts, background counts
 #'                       and filtering statistics calculated during TSS detection.
+#' @param windowSize Size of the window to bin the genome for TSS detection. By default, a window size of
+#'                   10 is used for binning the genome, however smaller window sizes can optionally be provided
+#'                   for higher resolution TSS detection. Note that the background size is set to 200x the
+#'                   window size (2kb for 10bp windows) to calculate local enrichment. Adjacent enriched windows
+#'                   are merged with a distance cutoff, which is the same as window size to get final TSS widths.
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #'        usual' amount of starting material and squencing depth (>=5ug starting material,
 #'        = 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
@@ -98,6 +103,7 @@ setMethod("detectTSS",
           function(CSobject,
                    groups,
                    outfile_prefix,
+                   windowSize,
                    foldChange,
                    restrictChr,
                    ncores
@@ -129,9 +135,9 @@ setMethod("detectTSS",
                                 flag = getBamFlags(paired = FALSE))
             bpParams <- getMCparams(ncores)
             # window size
-            bin_size <- 10L
-            # background size
-            surrounds <- 2000L
+            bin_size <- windowSize
+            # background size (200x)
+            surrounds <- 200*bin_size
 
             # Count reads into sliding windows
             data <- strandBinCounts(bam.files, restrictChr,
