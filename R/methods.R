@@ -33,7 +33,13 @@ setMethod("sampleInfo",
 setReplaceMethod("sampleInfo",
                  signature = "CapSet",
                  function(object, value) {
+
                     df <- S4Vectors::DataFrame(value)
+                    si_types <- c("character", "integer", "numeric")
+                    col_classes <- vapply(df, class, character(1L))
+                    if (!(all(col_classes %in% si_types))) {
+                        stop("Column classes in sampleInfo DataFrame are not correct!")
+                    }
                     object@sampleInfo <- df
                     validObject(object)
                     return(object)
