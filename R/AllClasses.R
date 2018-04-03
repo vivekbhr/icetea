@@ -170,21 +170,20 @@ check_capSet <- function(object) {
         errors <- c(errors, msg)
     }
     # sampleInfo
-    si_names <- c("samples", "demult_R1", "demult_R2",
-                  "mapped_file", "filtered_file", "demult_reads",
-                  "num_mapped", "num_filtered", "num_intss" )
-    si_types <- c("character", "integer", "numeric")
-    if (!(all(colnames(info) %in% si_names))) {
-        stop("Column names in sampleInfo DataFrame are not correct!")
-    }
-    col_classes <- vapply(info, class, character(1L))
-    if (!(all(col_classes %in% si_names))) {
-        stop("Column classes in sampleInfo DataFrame are not correct!")
-    }
-    # sampleInfo
     if (!is(info, "DataFrame")) {
         msg <- paste0("sampleInfo should be a DataFrame object ")
         errors <- c(errors, msg)
+    }
+    si_names <- c("samples", "demult_R1", "demult_R2",
+                  "mapped_file", "filtered_file", "demult_reads",
+                  "num_mapped", "num_filtered", "num_intss" )
+    if (!(all(colnames(info) %in% si_names))) {
+        stop("Column names in sampleInfo DataFrame are not correct!")
+    }
+    si_types <- c("character", "integer", "numeric")
+    col_classes <- vapply(info, class, character(1L))
+    if (!(all(col_classes %in% si_types))) {
+        stop("Column classes in sampleInfo DataFrame are not correct!")
     }
     # TSS info
     if (!(class(tss) %in% c("NULL", "CompressedGRangesList", "GRangesList"))) {
