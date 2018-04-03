@@ -6,6 +6,7 @@
 #' @param regionAroundTSS How many bases downstream of TSS to count
 #' @param single_end Logical, indicating whether reads are single end
 #' @param outfile Tab-separated output file name (if required)
+#' @param ncores No. of cores/threads to use
 #'
 #' @return data.frame with gene-level counts for all genes in the txdb object
 #'
@@ -34,7 +35,8 @@ setMethod("getGeneCounts",
                 transcriptGRL,
                 regionAroundTSS,
                 single_end,
-                outfile) {
+                outfile,
+                ncores) {
 
         # get XX bp region around transcripts to count the reads
         transcriptGR <-
@@ -44,9 +46,11 @@ setMethod("getGeneCounts",
         bamfiles <- si$filtered_file
 
         # count reads
+        bpParams <- getMCparams(ncores)
         tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
                                                           reads = Rsamtools::BamFileList(bamfiles),
-                                                          singleEnd = single_end)
+                                                          singleEnd = single_end,
+                                                          BPPARAM = bpParams)
         tsscounts.df <- SummarizedExperiment::assay(tsscounts)
 
         # sum all the TSS counts to gene counts

@@ -114,7 +114,8 @@ setGeneric("getGeneCounts",
                 transcriptGRL,
                 regionAroundTSS = 500,
                 single_end = TRUE,
-                outfile = NA)
+                outfile = NA,
+                ncores = 1)
             standardGeneric("getGeneCounts"))
 
 #' @name calcNormFactors
