@@ -169,15 +169,18 @@ check_capSet <- function(object) {
             paste0("Experiment type should be among : 'CAGE', 'RAMPAGE' or 'MAPCap' ")
         errors <- c(errors, msg)
     }
-    # fastq check
-    #    if(!is.null(R1) & !file.exists(R1) ) {
-    #    msg <- paste0("Please specify correct fastq file path for fastq_R1 ")
-    #    errors <- c(errors, msg)
-    #    }
-    #    if(!is.null(R2) & !(file.exists(R2) ) ) {
-    #    msg <- paste0("Please specify correct fastq file path for fastq_R2 ")
-    #    errors <- c(errors, msg)
-    #    }
+    # sampleInfo
+    si_names <- c("samples", "demult_R1", "demult_R2",
+                  "mapped_file", "filtered_file", "demult_reads",
+                  "num_mapped", "num_filtered", "num_intss" )
+    si_types <- c("character", "integer", "numeric")
+    if (!(all(colnames(info) %in% si_names))) {
+        stop("Column names in sampleInfo DataFrame are not correct!")
+    }
+    col_classes <- vapply(info, class, character(1L))
+    if (!(all(col_classes %in% si_names))) {
+        stop("Column classes in sampleInfo DataFrame are not correct!")
+    }
     # sampleInfo
     if (!is(info, "DataFrame")) {
         msg <- paste0("sampleInfo should be a DataFrame object ")

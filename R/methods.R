@@ -31,10 +31,10 @@ setMethod("sampleInfo",
 #' @exportMethod "sampleInfo<-"
 #'
 setReplaceMethod("sampleInfo",
-                 signature = "CapSet", #value = c("data.frame", "DataFrame") ),
+                 signature = "CapSet",
                  function(object, value) {
-                     df <- S4Vectors::DataFrame(value)
-                     object@sampleInfo <- df
-                     validObject(object)
-                     return(object)
+                    df <- S4Vectors::DataFrame(value)
+                    object@sampleInfo <- df
+                    validObject(object)
+                    return(object)
                  })
