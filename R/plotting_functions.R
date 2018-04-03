@@ -42,24 +42,27 @@ setMethod(
     message(cat(msg, colnames(si) ))
 
     ## prepare df
-    si_stats <- data.frame(
-        sample = si$samples,
-        demutiplexed_reads = si$demult_reads,
-        mapped_reads = si$num_mapped
-    )
+    si_stats <- data.frame(sample = si$samples)
+
     ## fill additional cols if present
-    if (!(is.null(si$num_filtered)))
-        si_stats$duplicate_free_reads <- si$num_filtered
-    if (!(is.null(si$num_intss)))
-        si_stats$reads_within_TSS <- si$num_intss
+    if (!any(is.na(si$demult_reads))) si_stats$demultiplexed_reads <- si$demult_reads
+    if (!any(is.na(si$mapped_reads))) si_stats$mapped_reads <- si$num_mapped
+    if (!any(is.na(si$num_filtered))) si_stats$duplicate_free_reads <- si$num_filtered
+    if (!any(is.na(si$num_intss))) si_stats$reads_within_TSS <- si$num_intss
 
     if (plotValue == "proportions") {
-        si_stats[-1] <- si_stats[-1] / si_stats$demutiplexed_reads
+        # plot proportion w.r.t lowst category
+        basecat <- "demultiplexed_reads"
+        if (is.null(si[, basecat])) basecat <- "mapped_reads"
+        if (is.null(si[, basecat])) basecat <- "duplicate_free_reads"
+        if (is.null(si[, basecat])) stop("Can't plot proportions with only one category")
+
+        si_stats[-1] <- si_stats[-1] / si[, basecat]
         # for stacked chart it's important to plot the cumulative difference of the numbers
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
         }
-        y_label <- "Proportion of demultiplexed reads"
+        y_label <- paste0("Proportion of ", basecat, " reads")
     } else {
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
