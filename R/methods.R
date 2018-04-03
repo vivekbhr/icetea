@@ -35,7 +35,7 @@ setReplaceMethod("sampleInfo",
                  function(object, value) {
 
                     df <- S4Vectors::DataFrame(value)
-                    si_types <- c("character", "integer", "numeric")
+                    si_types <- c("character", "integer", "numeric", "logical")
                     col_classes <- vapply(df, class, character(1L))
                     if (!(all(col_classes %in% si_types))) {
                         stop("Column classes in sampleInfo DataFrame are not correct!")
