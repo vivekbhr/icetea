@@ -113,12 +113,13 @@ setMethod("detectTSS",
             design <-
                 data.frame(row.names = si$samples, group = as.character(groups))
 
-            if (is.null(si$filtered_file)) {
-                message("Filtered files not found under sampleInfo(CSobject). Using mapped files")
+            if (all(is.na(si$filtered_file))) {
+                warning("Filtered files not found under sampleInfo(CSobject). Using mapped files")
                 bam.files <- si$mapped_file
             } else {
                 bam.files <- si$filtered_file
             }
+            if (any(is.na(bam.files))) stop("Some or all of the bam files are not defined!")
             if (sum(file.exists(bam.files)) != length(bam.files)) {
                 stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
             }

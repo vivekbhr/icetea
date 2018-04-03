@@ -111,7 +111,17 @@ setMethod("fitDiffTSS",
 
         # get bam files and design
         si <- sampleInfo(CSobject)
-        bam.files <- si$filtered_file
+        if (all(is.na(si$filtered_file))) {
+                warning("Filtered files not found under sampleInfo(CSobject). Using mapped files")
+                bam.files <- si$mapped_file
+            } else {
+                bam.files <- si$filtered_file
+            }
+        if (any(is.na(bam.files))) stop("Some or all of the bam files are not defined!")
+        if (sum(file.exists(bam.files)) != length(bam.files)) {
+                stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
+        }
+
         samples <- as.character(si$samples)
         design <- data.frame(row.names = samples, group = groups)
 

@@ -107,9 +107,9 @@ setMethod("filterDuplicates",
           signature = "CapSet",
           function(CSobject, outdir, ncores, keepPairs) {
 
-              si <- sampleInfo(CSobject)
-              bamfiles <- si$mapped_file
-
+            si <- sampleInfo(CSobject)
+            bamfiles <- si$mapped_file
+            if (any(is.na(bamfiles))) stop("Some or all of the bam files are not defined!")
     # first check if the bam files exist
     lapply(bamfiles, function(f) {
         if (!(file.exists(f)))
