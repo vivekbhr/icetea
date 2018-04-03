@@ -122,7 +122,7 @@ getChromWindows <- function(bamFiles, restrictChr = NULL, binSize, stepSize) {
                                        ranges = IRanges::IRanges(start = 1, end = keptChrs),
                                        strand = "+")
     gr.bins.plus <- GenomicRanges::slidingWindows(gr.total, width = binSize, step = stepSize)
-    gr.bins.plus <- suppressWarnings({do.call("c", gr.bins.plus)})
+    gr.bins.plus <- unlist(gr.bins.plus)
     gr.bins.minus <- gr.bins.plus
     GenomicRanges::strand(gr.bins.minus) <- "-"
     return(list(gr.plus = gr.bins.plus,
