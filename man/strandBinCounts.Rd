@@ -4,7 +4,8 @@
 \alias{strandBinCounts}
 \title{Perform stranded Bin counts}
 \usage{
-strandBinCounts(bam.files, restrictChrs, bam_param, bp_param, window_size)
+strandBinCounts(bam.files, restrictChrs, bam_param, bp_param, window_size,
+  sliding = FALSE)
 }
 \arguments{
 \item{bam.files}{character vector. BAM files to use}

@@ -5,21 +5,30 @@
 #' @param bam_param ScanBAMParams
 #' @param bp_param BPPARAM
 #' @param window_size integer. size of window to use
+#' @param sliding logical. perform sliding window counts?
 #'
 #' @importFrom SummarizedExperiment assay rowRanges
 #'
 #' @return RangedSE object with forward and reverse strand counts
 #'
-strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window_size) {
+strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window_size, sliding = FALSE) {
 
-    windows <- getChromBins(bam.files, restrictChr = restrictChrs, binSize = window_size)
+    if (sliding == FALSE) {
+        windows <- getChromBins(bam.files, restrictChr = restrictChrs, binSize = window_size)
+        ignoreMultiMap <- TRUE
+    } else {
+        windows <- getChromWindows(bam.files, restrictChr = restrictChrs,
+                                   binSize = window_size, stepSize = floor(window_size/2) )
+        ignoreMultiMap <- FALSE
+    }
+
     fdata <-
         GenomicAlignments::summarizeOverlaps(
             features = windows$gr.plus,
             reads = bam.files,
             mode = "IntersectionStrict",
             ignore.strand = FALSE,
-            inter.feature = TRUE,
+            inter.feature = ignoreMultiMap,
             singleEnd = TRUE,
             fragments = FALSE,
             preprocess.reads = ResizeReads,
@@ -32,7 +41,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
             reads = bam.files,
             mode = "IntersectionStrict",
             ignore.strand = FALSE,
-            inter.feature = TRUE,
+            inter.feature = ignoreMultiMap,
             singleEnd = TRUE,
             fragments = FALSE,
             preprocess.reads = ResizeReads,
@@ -143,7 +152,8 @@ setMethod("detectTSS",
             data <- strandBinCounts(bam.files, restrictChr,
                                     bam_param = bamParams,
                                     bp_param = bpParams,
-                                    window_size = bin_size)
+                                    window_size = bin_size,
+                                    sliding = TRUE)
               # add metadata
             mdat <- list(spacing = bin_size, width = bin_size,
                         shift = 0, bin = TRUE, final.ext = 1)
