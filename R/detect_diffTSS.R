@@ -144,7 +144,7 @@ setMethod("fitDiffTSS",
                 stopifnot(is.numeric(normfacs) & length(normfacs) == length(groups))
             }
             y$samples$norm.factors <- normfacs
-            plotCompBias(dgelist = y, samples, plotRefSample)
+            print(plotCompBias(dgelist = y, samples, plotRefSample))
 
         } else if (normalization == "windowTMM") {
             ## normalization factors calculated using TMM on large Windows
@@ -165,12 +165,12 @@ setMethod("fitDiffTSS",
             y.bin <- csaw::asDGEList(binned)
 
             y$samples$norm.factors <- normfacs
-            plotCompBias(dgelist = y.bin, samples, plotRefSample)
+            print(plotCompBias(dgelist = y.bin, samples, plotRefSample))
 
         } else if (normalization %in% c("TMM", "RLE", "upperquartile", "none")) {
             ## normalization factors calculated using TMM on all TSSs
             y <- edgeR::calcNormFactors(y, method = normalization)
-            plotCompBias(dgelist = y, samples, plotRefSample)
+            print(plotCompBias(dgelist = y, samples, plotRefSample))
 
         } else stop("Unknown normalization method!")
 
