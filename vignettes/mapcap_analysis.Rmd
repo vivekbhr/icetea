@@ -5,7 +5,9 @@ author:
   affiliation: 
   - "Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany"
   - "Faculty of Biology, University of Freiburg, Schänzlestraße 1, 79104, Freiburg, Germany"
-  email: "bhardwaj@ie-freiburg.mpg.de"
+- name: "Thomas Manke"
+  affiliation: 
+  - "Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany"
 date: "`r format(Sys.Date(), '%d/%m/%Y')`"
 abstract: >
   Transcript 5'-profiling techniques detect 5' sites of the expressed transcripts in the genome, allowing us to detect transcription start sites in the genome at high resolution. *CAGE* (Cap Analysis of Gene Expression) is one such technique. Programs for analysis of CAGE data use the clustering of CAGE tags (CTSS) to annotate transcription start sites and detect promoter shifts. Recently, faster and more efficient 5'-profiling techniques have been developed which allow early sample multiplexing, removal of PCR duplicates using random barcodes, and use paired-end sequencing. **icetea** can be used to process such data. It also implements a new method for detection of transcription start sites based on local enrichment of genomic windows, that can take advantage of biological replicates. It further allows users to perform differential expression analysis of transcription start sites between groups of samples, therefore integrating transcript annotation and expression analysis. While icetea analysis is mostly useful for multiplexed, paired-end experiments with replicates, conventional CAGE data can also be analysed. *icetea* analysis compliments other programs that perform promoter profiling and expression analysis based on clusteing of CAGE tags. 
