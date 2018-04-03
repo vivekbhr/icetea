@@ -61,6 +61,11 @@ splitBAM_byRepindex <-
             paste0(outfile_prefix, "_", names(repindex_list), ".bam")
 
         param <- getMCparams(ncores)
+        # register parallel backend
+        if (!BiocParallel::bpisup()) {
+            BiocParallel::bpstart()
+            on.exit(BiocParallel::bpstop())
+        }
         BiocParallel::bplapply(seq_along(destinations),
                                function(i, file, destinations, filtrules) {
                                    Rsamtools::filterBam(file, destinations[i],

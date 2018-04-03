@@ -129,6 +129,12 @@ setMethod("filterDuplicates",
 
     # run the filter duplicates function on all files
     bpParams <- getMCparams(ncores)
+    # register parallel backend
+    if (!BiocParallel::bpisup()) {
+        BiocParallel::bpstart()
+        on.exit(BiocParallel::bpstop())
+    }
+
     BiocParallel::bplapply(seq_along(bamfiles),
                            function(x) {
                                filterDups(bamfiles[x], outfiles[x], keepPairs)

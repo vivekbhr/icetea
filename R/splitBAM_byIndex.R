@@ -71,6 +71,11 @@ splitBAM_byIndex <-
         destinations <- outfile_list
 
         param <- getMCparams(ncores)
+        # register parallel backend
+        if (!BiocParallel::bpisup()) {
+            BiocParallel::bpstart()
+            on.exit(BiocParallel::bpstop())
+        }
         BiocParallel::bplapply(seq_along(destinations),
                                function(i, file, destinations, filtrules) {
                                    Rsamtools::filterBam(file, destinations[i],
