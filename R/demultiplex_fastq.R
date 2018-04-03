@@ -192,6 +192,11 @@ setMethod("demultiplexFASTQ",
         fastq_R2 <- CSobject@fastq_R2
         param <- getMCparams(ncores)
         message("de-multiplexing the FASTQ file")
+        # register parallel backend
+        if (!BiocParallel::bpisup()) {
+        BiocParallel::bpstart()
+        on.exit(BiocParallel::bpstop())
+        }
 
         ## filter and write
         info <-
