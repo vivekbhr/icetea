@@ -53,11 +53,11 @@ setMethod(
     if (plotValue == "proportions") {
         # plot proportion w.r.t lowst category
         basecat <- "demultiplexed_reads"
-        if (is.null(si[, basecat])) basecat <- "mapped_reads"
-        if (is.null(si[, basecat])) basecat <- "duplicate_free_reads"
-        if (is.null(si[, basecat])) stop("Can't plot proportions with only one category")
+        if (is.null(si_stats[, basecat])) basecat <- "mapped_reads"
+        if (is.null(si_stats[, basecat])) basecat <- "duplicate_free_reads"
+        if (is.null(si_stats[, basecat])) stop("Can't plot proportions with only one category")
 
-        si_stats[-1] <- si_stats[-1] / si[, basecat]
+        si_stats[-1] <- si_stats[-1] / si_stats[, basecat]
         # for stacked chart it's important to plot the cumulative difference of the numbers
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
