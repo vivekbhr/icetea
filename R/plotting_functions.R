@@ -122,8 +122,7 @@ get_stackedNum <- function(df) {
 #'
 #' @export
 #' @examples
-#' # load a previously saved CapSet object
-#' cs <- exampleCSobject()
+#'
 #' # load a txdb object
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
@@ -133,8 +132,8 @@ get_stackedNum <- function(df) {
 #'
 #' tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
 #' plotTSSprecision(reference = transcripts, detectedTSS = tssfile,
-#' 		sampleNames = "testTSS", distanceCutoff = 500,
-#' 		outFile = "TSS_detection_precision.png")
+#'                 sampleNames = "testTSS", distanceCutoff = 500,
+#'                 outFile = "TSS_detection_precision.png")
 #'
 
 setMethod(
@@ -145,8 +144,9 @@ setMethod(
                           distanceCutoff = 500,
                           outFile = NULL,
                           sampleNames) {
-        # read bed files
-        tssData <- lapply(detectedTSS, rtracklayer::import.bed)
+        # read bed files as GRangesList
+        tssData <- GenomicRanges::GRangesList(
+            lapply(detectedTSS, rtracklayer::import.bed) )
         names(tssData) <- sampleNames
         # get plot
         plt <-
@@ -197,7 +197,7 @@ setMethod(
                           outFile = NULL,
                           ...) {
         # get the data out
-        tssData <- detectedTSS@tss_detected
+        tssData <- GenomicRanges::GRangesList(detectedTSS@tss_detected)
 
         if (is.null(tssData)) {
             stop("CapSet object does not contain the detected TSS information")
@@ -242,9 +242,18 @@ plotPrecision <- function(ref, tssData, distCut) {
     })
 
     # melt to df
-    tssdistances <- as.data.frame(do.call(rbind, tssdistances))
-    colnames(tssdistances) <- c("sample", "distances")
-
+    samplenames <- vapply(tssdistances, length, integer(1L))
+    samplenames <- rep(names(samplenames), samplenames)
+    sampledists <- do.call(c, tssdistances)
+    tssdistances <- data.frame(sample = samplenames, distances = sampledists)
+    #colnames(tssdistances) <- c("sample", "distances")
+    # print message for removed values
+    removed <- tssdistances$distances > distCut
+    message(paste0("There are ", sum(removed),
+                   " regions with distance > ", distCut,
+                   " to the closest TSS. They are all being reduced to ", distCut,
+                   " for the calculation."))
+    tssdistances$distances[removed] <- distCut
     # plot ECDF with distance cutoff
     p <-
         ggplot(tssdistances, aes_string("distances", col = "sample")) +
