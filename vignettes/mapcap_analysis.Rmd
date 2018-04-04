@@ -241,7 +241,7 @@ plotReadStats(cs, plotValue = "numbers", plotType = "dodge")
 plotReadStats(cs, plotValue = "proportions", plotType = "stack" )
 ```
 
-In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can be used to compare samples. This can be done using the function `plotTSSprecision`, which takes the *known* TSS annotations as a `TxDB` object.
+In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can be used to compare samples. This can be done using the function `plotTSSprecision`, which takes the *known* TSS annotations as a `TxDB` object, along with either a `CapSet` object or a BED file, for TSS positions.
 
 ```{r plotPrecision, eval=TRUE, results = "hold", fig.width=8, fig.height=6}
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
@@ -252,7 +252,7 @@ transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
 tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
-plotTSSprecision(reference = transcripts, detectedTSS = cs)
+plotTSSprecision(reference = transcripts, detectedTSS = tssfile)
 ```
 
 
