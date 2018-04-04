@@ -45,10 +45,10 @@ setMethod(
     si_stats <- data.frame(sample = si$samples)
 
     ## fill additional cols if present
-    if (!any(is.na(si$demult_reads))) si_stats$demultiplexed_reads <- si$demult_reads
-    if (!any(is.na(si$mapped_reads))) si_stats$mapped_reads <- si$num_mapped
-    if (!any(is.na(si$num_filtered))) si_stats$duplicate_free_reads <- si$num_filtered
-    if (!any(is.na(si$num_intss))) si_stats$reads_within_TSS <- si$num_intss
+    if (!is.null(si$demult_reads)) si_stats$demultiplexed_reads <- si$demult_reads
+    if (!is.null(si$num_mapped)) si_stats$mapped_reads <- si$num_mapped
+    if (!is.null(si$num_filtered)) si_stats$duplicate_free_reads <- si$num_filtered
+    if (!is.null(si$num_intss)) si_stats$reads_within_TSS <- si$num_intss
 
     if (plotValue == "proportions") {
         # plot proportion w.r.t lowst category
@@ -266,7 +266,7 @@ plotPrecision <- function(ref, tssData, distCut) {
             x = "Distances from nearby TSS (in bp)",
             y = "Cumulative Fraction",
             title = "TSS precisions",
-            col = "Category"
+            col = "Sample"
         )
     return(p)
 
