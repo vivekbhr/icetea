@@ -252,7 +252,7 @@ transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 # Plotting the precision using a pre computed set of TSS (.bed files) :
 tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
-plotTSSprecision(reference = transcripts, detectedTSS = tssfile)
+plotTSSprecision(reference = transcripts, detectedTSS = tssfile, sampleNames = "testsample")
 ```
 
 
