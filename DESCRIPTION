@@ -17,8 +17,6 @@ Imports:
     methods,
     graphics,
     grDevices,
-    plyr,
-    reshape2,
     ggplot2,
     GenomicFeatures,
     ShortRead,

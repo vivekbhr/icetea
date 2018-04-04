@@ -127,21 +127,6 @@ splitranks <- function(x) {
     l2 <- lapply(l, function(y) {
         return(y[which(y$rank == min(y$rank)), ])
     })
-    l3 <- plyr::ldply(l2, data.frame)
+    l3 <- do.call(rbind, l2)
     return(l3)
-}
-
-
-# Melt the output df from splitranks
-melt <- function(x) {
-    vars <- colnames(x[2:ncol(x)])
-    d <-
-        plyr::unrowname(reshape(
-            x,
-            direction = "long",
-            idvar = ".id",
-            varying = vars
-        ))
-    d$time <- vars[d$time]
-    colnames(d) <- c("variable", "Feature", "value")
 }

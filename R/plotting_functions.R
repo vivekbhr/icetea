@@ -12,7 +12,7 @@
 #'
 #' @return A ggplot object, or a file. Plot showing the number/proportion of reads in each category, per sample
 #'
-#' @importFrom reshape2 melt
+#' @importFrom ggplot2 ggplot aes_string geom_bar theme_light scale_fill_brewer coord_flip labs ggsave
 #' @export
 #'
 #' @examples
@@ -70,7 +70,11 @@ setMethod(
         y_label <- "Number of reads"
     }
 
-    si_stats <- reshape2::melt(si_stats, id.vars = "sample")
+    varcols <- colnames(si_stats)[2:ncol(si_stats)]
+    si_stats <- reshape(si_stats, direction = "long", idvar = "sample",
+                        varying = varcols, timevar = "variable",
+                        times = varcols, v.names = "value")
+    rownames(si_stats) <- NULL
     # plot stacked barchart
     p <-
         ggplot(si_stats, aes_string("sample", "value", fill = "variable")) +
@@ -238,7 +242,7 @@ plotPrecision <- function(ref, tssData, distCut) {
     })
 
     # melt to df
-    tssdistances <- plyr::ldply(tssdistances, data.frame)
+    tssdistances <- as.data.frame(do.call(rbind, tssdistances))
     colnames(tssdistances) <- c("sample", "distances")
 
     # plot ECDF with distance cutoff
