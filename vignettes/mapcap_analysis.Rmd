@@ -270,8 +270,8 @@ csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), normalization = "
 save(csfit, file = "diffTSS_fit.Rdata")
 
 ## This object is then used by the detectDiffTSS function to return differentially expressed TSSs
-de_tss <- detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt",
-               tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
+de_tss <- detectDiffTSS(csfit, testGroup = "mut", contGroup = "wt",
+               TSSfile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
 ## export the output
 library(rtracklayer)
 export.bed(de_tss[de_tss$score < 0.05], con = "diffTSS_output.bed")
