@@ -17,6 +17,8 @@ strandBinCounts(bam.files, restrictChrs, bam_param, bp_param, window_size,
 \item{bp_param}{BPPARAM}
 
 \item{window_size}{integer. size of window to use}
+
+\item{sliding}{logical. perform sliding window counts?}
 }
 \value{
 RangedSE object with forward and reverse strand counts

@@ -7,10 +7,11 @@
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
 detectTSS(CSobject, groups, outfile_prefix = NULL, windowSize = 10L,
-  foldChange = 2, restrictChr = NULL, ncores = 1)
+  sliding = FALSE, foldChange = 2, restrictChr = NULL, ncores = 1)
 
 \S4method{detectTSS}{CapSet}(CSobject, groups, outfile_prefix = NULL,
-  windowSize = 10L, foldChange = 2, restrictChr = NULL, ncores = 1)
+  windowSize = 10L, sliding = FALSE, foldChange = 2, restrictChr = NULL,
+  ncores = 1)
 }
 \arguments{
 \item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
@@ -26,6 +27,9 @@ and filtering statistics calculated during TSS detection.}
 for higher resolution TSS detection. Note that the background size is set to 200x the
 window size (2kb for 10bp windows) to calculate local enrichment. Adjacent enriched windows
 are merged with a distance cutoff, which is the same as window size to get final TSS widths.}
+
+\item{sliding}{TRUE/FALSE. Indicating whether to use sliding windows. The windows are then shifted by length which
+is half the window length.}
 
 \item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
 usual' amount of starting material and squencing depth (>=5ug starting material,
