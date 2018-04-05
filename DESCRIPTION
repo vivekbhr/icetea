@@ -30,7 +30,6 @@ Imports:
     GenomicRanges,
     rtracklayer,
     SummarizedExperiment,
-    GenomeInfoDb,
     VariantAnnotation,
     limma,
     edgeR,
