@@ -195,7 +195,7 @@ splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 1, nthreads =
 
 Experiments like MAPCap and RAMPAGE provide us a way to remove sequencing reads which are PCR duplicates from the mapped data. Random barcodes present in the read sequence are used for this purpose. In MAPCap, pre-designed random barcodes present in the oligos serve as UMIs, while in RAMPAGE, the sequences used as RT-PCR primers are treated as pseudo-random barcodes. PCR duplicates are recognized as reads that map to the same 5' position and contain the same random barcode.
 
-The function `filterDuplicates` removes these PCR duplicate sequences (keeping only one copy in these cases), and creates de-duplicated BAM files. It returns the modified `CapSet` object with de-duplication statistics. `filterDuplicates` works in a strand-specific way. By default, it filters the R2 read from the paired-end BAM files, along with secondary alignments. Both reads can be allowed to kept using the option `keepPairs = TRUE`. Note that in this case, each read in a pair is evaluated seperately, and the run-time is significantly longer.
+The function `filterDuplicates` removes these PCR duplicate sequences (keeping only one copy in these cases), and creates de-duplicated BAM files. It returns the modified `CapSet` object with de-duplication statistics. `filterDuplicates` works in a strand-specific way. By default, it filters the R2 read from the paired-end BAM files, along with secondary alignments. Both reads can be allowed to kept using the option `keepPairs = TRUE`. Note that in this case, each read in a pair is evaluated seperately and in case of fragments where only one mate is flagged as duplicated, the other mate would be kept. In order to keep only fragments with both kept mates, the output BAM files should be filtered for proper pairs using samtools. Note that the run-time for paired-end evaluation is significantly longer, and only the first mate is considered for TSS detection (later).
 
 ```{r filterdups, eval=TRUE, results = "hold"}
 # load a previously saved CapSet object (or create new one)
@@ -210,7 +210,7 @@ command line tools, like [UMItools](https://github.com/CGATOxford/UMI-tools).
 
 ### Detection of TSS
 
-*icetea* implements a new method of detection of transcription start sites, which is adopted from the recently described methods for differential transcription factor binding analysis in ChIP-Seq data [@lun2015csaw]. Genome is divided into 10 base-pair windows and the TSSs are detected as the windows that show a user-defined fold-enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.
+*icetea* implements a new method of detection of transcription start sites, which is adopted from the recently described methods for differential transcription factor binding analysis in ChIP-Seq data [@lun2015csaw]. Genome is divided into small, sliding windows and the TSSs are detected as the windows that show a user-defined fold-enrichment over a local background region. Multiple consicutively enriched windows are then merged to detect broader TSSs. The method works well with replicates, resulting in one TSS file per group.
 
 This method is implemented in the function `detectTSS`, which returns a modified `CapSet` object with TSS detection statistics.
 
