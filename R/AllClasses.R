@@ -47,15 +47,16 @@
 #'        sampleNames = fnames)
 #'
 
-newCapSet <- function(expMethod,
-                      fastq_R1 = NULL,
-                      fastq_R2 = NULL,
-                      idxList = NULL,
-                      sampleNames,
-                      demult_R1 = NA,
-                      demult_R2 = NA,
-                      mapped_file = NA,
-                      filtered_file = NA) {
+newCapSet <- function(
+                    expMethod,
+                    fastq_R1 = NULL,
+                    fastq_R2 = NULL,
+                    idxList = NULL,
+                    sampleNames,
+                    demult_R1 = NA,
+                    demult_R2 = NA,
+                    mapped_file = NA,
+                    filtered_file = NA) {
     ## Get numbers from already provided files
     suppressWarnings({
 
@@ -93,9 +94,9 @@ newCapSet <- function(expMethod,
                 stop("One or more mapped files don't exist!")
             }
             mapped_readcounts <- countBam(BamFileList(mapped_file),
-                                          param = ScanBamParam(
+                                            param = ScanBamParam(
                                               flag = getBamFlags(paired = FALSE)
-                                          ))[, 6] # "file" and "records"
+                                            ))[, 6] # "file" and "records"
         } else {
             mapped_readcounts <- NA
         }
@@ -175,8 +176,8 @@ check_capSet <- function(object) {
         errors <- c(errors, msg)
     }
     si_names <- c("samples", "demult_R1", "demult_R2",
-                  "mapped_file", "filtered_file", "demult_reads",
-                  "num_mapped", "num_filtered", "num_intss" )
+                    "mapped_file", "filtered_file", "demult_reads",
+                    "num_mapped", "num_filtered", "num_intss" )
     if (!(all(colnames(info) %in% si_names))) {
         stop("Column names in sampleInfo DataFrame are not correct!")
     }

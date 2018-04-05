@@ -18,7 +18,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
         ignoreMultiMap <- TRUE
     } else {
         windows <- getChromWindows(bam.files, restrictChr = restrictChrs,
-                                   binSize = window_size, stepSize = floor(window_size/2) )
+                                    binSize = window_size, stepSize = floor(window_size/2) )
         ignoreMultiMap <- FALSE
     }
 
@@ -48,14 +48,14 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
             param = bam_param,
             BPPARAM = bp_param)
     coldat <- S4Vectors::DataFrame(bam.files = bam.files,
-                                   forward.totals = S4Vectors::colSums(assay(fdata)),
-                                   reverse.totals = S4Vectors::colSums(assay(rdata)),
-                                   ext = NA,
-                                   rlen = 1L)
+                                    forward.totals = S4Vectors::colSums(assay(fdata)),
+                                    reverse.totals = S4Vectors::colSums(assay(rdata)),
+                                    ext = NA,
+                                    rlen = 1L)
     combined <- SummarizedExperiment::SummarizedExperiment(
-                           rbind(assay(fdata, "counts"), assay(rdata, "counts")),
-                           rowRanges = c(rowRanges(fdata), rowRanges(rdata)),
-                           colData = coldat)
+                            rbind(assay(fdata, "counts"), assay(rdata, "counts")),
+                            rowRanges = c(rowRanges(fdata), rowRanges(rdata)),
+                            colData = coldat)
     # drop empty bins
     combined <- combined[BiocGenerics::rowSums(assay(combined)) > 0]
     # Suggestion : Drop bins with counts < threshold ?
@@ -112,14 +112,14 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 setMethod("detectTSS",
           signature = "CapSet",
           function(CSobject,
-                   groups,
-                   outfile_prefix,
-                   windowSize,
-                   sliding,
-                   foldChange,
-                   restrictChr,
-                   ncores
-                   ) {
+                    groups,
+                    outfile_prefix,
+                    windowSize,
+                    sliding,
+                    foldChange,
+                    restrictChr,
+                    ncores
+                    ) {
             # check whether group and outfile_prefix is provided
             if (missing(outfile_prefix))
                 stop("Please provide outfile_prefix!")

@@ -104,8 +104,8 @@ filterDups <- function(bamFile, outFile, keepPairs) {
 #'
 
 setMethod("filterDuplicates",
-          signature = "CapSet",
-          function(CSobject, outdir, ncores, keepPairs) {
+            signature = "CapSet",
+            function(CSobject, outdir, ncores, keepPairs) {
 
             si <- sampleInfo(CSobject)
             bamfiles <- si$mapped_file
@@ -136,15 +136,15 @@ setMethod("filterDuplicates",
     }
 
     BiocParallel::bplapply(seq_along(bamfiles),
-                           function(x) {
-                               filterDups(bamfiles[x], outfiles[x], keepPairs)
+                            function(x) {
+                                filterDups(bamfiles[x], outfiles[x], keepPairs)
     }, BPPARAM = bpParams)
 
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
                          param = ScanBamParam(
-                             flag = getBamFlags(paired = FALSE)
-                         ))[, 5:6] # "file" and "records"
+                            flag = getBamFlags(paired = FALSE)
+                        ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)
 
@@ -157,5 +157,5 @@ setMethod("filterDuplicates",
     validObject(CSobject)
     return(CSobject)
 
-          }
+        }
 )

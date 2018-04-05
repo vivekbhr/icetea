@@ -38,14 +38,14 @@
 #'
 
 annotateTSS <- function(tssBED,
-                         txdb,
-                         featureRank = c("fiveUTR",
-                                         "promoter",
-                                         "intron",
-                                         "coding",
-                                         "spliceSite",
-                                         "threeUTR",
-                                         "intergenic"),
+                        txdb,
+                        featureRank = c("fiveUTR",
+                                        "promoter",
+                                        "intron",
+                                        "coding",
+                                        "spliceSite",
+                                        "threeUTR",
+                                        "intergenic"),
                          plotValue = "number",
                          outFile = NULL) {
     ## resolve 1:many mapping issue by prioritising some features over others

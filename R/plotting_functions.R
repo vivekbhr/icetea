@@ -24,10 +24,11 @@
 setMethod(
     plotReadStats,
     signature = "CapSet",
-    definition = function(CSobject,
-                           plotType,
-                           plotValue,
-                           outFile) {
+    definition = function(
+                        CSobject,
+                        plotType,
+                        plotValue,
+                        outFile) {
     ## evaluate expressions
     stopifnot(plotType %in% c("stack", "dodge"))
     stopifnot(plotValue %in% c("numbers", "proportions"))
@@ -79,8 +80,8 @@ setMethod(
     p <-
         ggplot(si_stats, aes_string("sample", "value", fill = "variable")) +
         geom_bar(stat = "identity",
-                 position = plotType,
-                 color = "black") +
+                position = plotType,
+                color = "black") +
         theme_light(base_size = 16)  +
         scale_fill_brewer(type = "seq", palette = "YlGnBu") +
         coord_flip() +
@@ -139,20 +140,20 @@ get_stackedNum <- function(df) {
 setMethod(
     plotTSSprecision,
     signature = signature("GRanges", "character"),
-    definition = function(reference,
-                          detectedTSS,
-                          distanceCutoff = 500,
-                          outFile = NULL,
-                          sampleNames) {
+    definition = function(
+                        reference,
+                        detectedTSS,
+                        distanceCutoff = 500,
+                        outFile = NULL,
+                        sampleNames) {
         # read bed files as GRangesList
         tssData <- GenomicRanges::GRangesList(
             lapply(detectedTSS, rtracklayer::import.bed) )
         names(tssData) <- sampleNames
         # get plot
-        plt <-
-            plotPrecision(ref = reference,
-                          tssData = tssData,
-                          distCut = distanceCutoff)
+        plt <- plotPrecision(ref = reference,
+                            tssData = tssData,
+                            distCut = distanceCutoff)
         # output
         if (!(is.null(outFile))) {
             ggsave(outFile, plot = plt, dpi = 300)
@@ -203,18 +204,16 @@ setMethod(
             stop("CapSet object does not contain the detected TSS information")
         }
         # get plot
-        plt <-
-            plotPrecision(ref = reference,
-                          tssData = tssData,
-                          distCut = distanceCutoff)
+        plt <- plotPrecision(
+                            ref = reference,
+                            tssData = tssData,
+                            distCut = distanceCutoff)
         # output
         if (!(is.null(outFile))) {
             ggsave(outFile, plot = plt, dpi = 300)
         } else {
             return(plt)
         }
-
-
     }
 )
 
@@ -253,9 +252,9 @@ plotPrecision <- function(ref, tssData, distCut) {
     vapply(split(highdist, factor(highdist$sample)), nrow, numeric(1L)) -> removedNums
 
     message(paste0("There are ", sum(removed),
-                   " regions with distance > ", distCut,
-                   " bp to the closest TSS. They are all being reduced to ", distCut,
-                   " bp for the calculation. Samplewise numbers are : ", removedNums))
+                    " regions with distance > ", distCut,
+                    " bp to the closest TSS. They are all being reduced to ", distCut,
+                    " bp for the calculation. Samplewise numbers are : ", removedNums))
     tssdistances$distances[removed] <- distCut
     # plot ECDF with distance cutoff
     p <-

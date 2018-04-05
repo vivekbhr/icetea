@@ -35,13 +35,14 @@
 #'
 
 setMethod("mapCaps",
-          signature = "CapSet",
-          function(CSobject,
-             genomeIndex,
-             outdir,
-             externalGTF,
-             ncores,
-             logfile) {
+        signature = "CapSet",
+            function(
+                CSobject,
+                genomeIndex,
+                outdir,
+                externalGTF,
+                ncores,
+                logfile) {
         ## extract info
         sampleInfo <- sampleInfo(CSobject)
         expMethod <- CSobject@expMethod
@@ -129,13 +130,13 @@ setMethod("mapCaps",
 
             # Get mapping stats
             stat <- countBam(paste0(dest, ".bam"),
-                             param = ScanBamParam(
-                                 flag = scanBamFlag(
-                                     isUnmappedQuery = FALSE,
-                                     isFirstMateRead = TRUE,
-                                     isSecondaryAlignment = FALSE
+                            param = ScanBamParam(
+                                flag = scanBamFlag(
+                                    isUnmappedQuery = FALSE,
+                                    isFirstMateRead = TRUE,
+                                    isSecondaryAlignment = FALSE
                                  )
-                             ))[, 5:6] # "file" and "records"
+                            ))[, 5:6] # "file" and "records"
             stat$file <- as.character(stat$file)
             stat$records <- as.integer(stat$records)
             return(stat)
@@ -150,5 +151,5 @@ setMethod("mapCaps",
 
         validObject(CSobject)
         return(CSobject)
-          }
+        }
 )

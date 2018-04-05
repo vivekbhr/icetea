@@ -34,7 +34,7 @@ NULL
 #' @rdname plotTSSprecision
 #' @export
 setGeneric("plotTSSprecision",
-           function(reference,
+            function(reference,
                     detectedTSS,
                     distanceCutoff = 500,
                     outFile = NULL,
@@ -58,9 +58,9 @@ setGeneric("plotReadStats",
 #' @export
 setGeneric("demultiplexFASTQ",
            function(CSobject,
-             outdir,
-             max_mismatch = 0,
-             ncores = 1)
+                    outdir,
+                    max_mismatch = 0,
+                    ncores = 1)
             standardGeneric("demultiplexFASTQ"))
 
 #' @name mapCaps
@@ -68,11 +68,11 @@ setGeneric("demultiplexFASTQ",
 #' @export
 setGeneric("mapCaps",
            function(CSobject,
-             genomeIndex,
-             outdir,
-             externalGTF = NULL,
-             ncores = 1,
-             logfile = NULL)
+                    genomeIndex,
+                    outdir,
+                    externalGTF = NULL,
+                    ncores = 1,
+                    logfile = NULL)
             standardGeneric("mapCaps"))
 
 #' @name filterDuplicates
@@ -103,9 +103,9 @@ setGeneric("detectTSS",
 #' @rdname exportTSS
 setGeneric("exportTSS",
            function(CSobject,
-             outfile_prefix,
-             pergroup = FALSE,
-             merged = TRUE)
+                    outfile_prefix,
+                    pergroup = FALSE,
+                    merged = TRUE)
             standardGeneric("exportTSS"))
 
 #' @name getGeneCounts
@@ -149,8 +149,8 @@ setGeneric("fitDiffTSS",
 #' @export
 setGeneric("detectDiffTSS",
            function(fit,
-            testGroup,
-            contGroup,
-            TSSfile,
-            MAplot_fdr = NA)
+                    testGroup,
+                    contGroup,
+                    TSSfile,
+                    MAplot_fdr = NA)
             standardGeneric("detectDiffTSS"))

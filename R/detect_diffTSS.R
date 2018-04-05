@@ -37,8 +37,8 @@ setMethod("calcNormFactors",
         ## get 5' read counts on the TSS from the bam.files
         counts <-
             GenomicAlignments::summarizeOverlaps(features = features,
-                                                 reads = bam.files,
-                                                 preprocess.reads = ResizeReads)
+                                                reads = bam.files,
+                                                preprocess.reads = ResizeReads)
         # make DGElist
         y <- edgeR::DGEList(counts = assay(counts))
         normfacs <- edgeR::calcNormFactors(y, method = method, ...)
@@ -140,9 +140,9 @@ setMethod("fitDiffTSS",
         bp_param <- getMCparams(ncores)
         tsscounts <-
             GenomicAlignments::summarizeOverlaps(features = mergedall,
-                                                 reads = bam.files,
-                                                 preprocess.reads = ResizeReads,
-                                                 BPPARAM = bp_param)
+                                                reads = bam.files,
+                                                preprocess.reads = ResizeReads,
+                                                BPPARAM = bp_param)
         # make DGElist
         y <- edgeR::DGEList(counts = assay(tsscounts))
         ## Get norm factors
@@ -167,9 +167,9 @@ setMethod("fitDiffTSS",
             regionparam <- csaw::readParam(restrict = NULL)
             binned <-
                 csaw::windowCounts(bam.files,
-                                   bin = TRUE,
-                                   width = 10000,
-                                   param = regionparam)
+                                    bin = TRUE,
+                                    width = 10000,
+                                    param = regionparam)
             normfacs <- csaw::normOffsets(binned) # close to unity
             names(normfacs) <- samples
             y.bin <- csaw::asDGEList(binned)

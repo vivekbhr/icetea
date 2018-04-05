@@ -9,10 +9,10 @@ getMCparams <- function(cores) {
         param <- BiocParallel::SerialParam()
     } else {
         param <- switch(Sys.info()[['sysname']],
-                   Windows = {return(BiocParallel::SnowParam(workers = cores))},
-                   Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
-                   Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
-                   )
+                        Windows = {return(BiocParallel::SnowParam(workers = cores))},
+                        Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
+                        Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
+                    )
     }
     return(param)
 }
@@ -28,16 +28,16 @@ getBamFlags <- function(paired) {
     if (isTRUE(paired)) {
         # if paired given, count both reads
         bamFlags <- scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isSecondaryAlignment = FALSE
-                             )
+                                isUnmappedQuery = FALSE,
+                                isSecondaryAlignment = FALSE
+                            )
     } else {
         # else count only R1
         bamFlags <- scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isFirstMateRead = TRUE,
-                                 isSecondaryAlignment = FALSE
-                             )
+                                isUnmappedQuery = FALSE,
+                                isFirstMateRead = TRUE,
+                                isSecondaryAlignment = FALSE
+                            )
     }
     return(bamFlags)
 }
@@ -118,9 +118,10 @@ getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
 #'
 getChromWindows <- function(bamFiles, restrictChr = NULL, binSize, stepSize) {
     keptChrs <- activeChrs(bamFiles, restrict = restrictChr)
-    gr.total <- GenomicRanges::GRanges(seqnames = names(keptChrs),
-                                       ranges = IRanges::IRanges(start = 1, end = keptChrs),
-                                       strand = "+")
+    gr.total <- GenomicRanges::GRanges(
+                                        seqnames = names(keptChrs),
+                                        ranges = IRanges::IRanges(start = 1, end = keptChrs),
+                                        strand = "+")
     gr.bins.plus <- GenomicRanges::slidingWindows(gr.total, width = binSize, step = stepSize)
     gr.bins.plus <- unlist(gr.bins.plus)
     gr.bins.minus <- gr.bins.plus
@@ -195,5 +196,5 @@ localFilter <- function(data,
     return(list(abundances = data.ab,
                 back.abundances = bg.ab,
                 filter = filter.stat)
-           )
+            )
 }
