@@ -4,7 +4,8 @@
 \alias{strandBinCounts}
 \title{Perform stranded Bin counts}
 \usage{
-strandBinCounts(bam.files, restrictChrs, bam_param, bp_param, window_size)
+strandBinCounts(bam.files, restrictChrs, bam_param, bp_param, window_size,
+  sliding = FALSE)
 }
 \arguments{
 \item{bam.files}{character vector. BAM files to use}
@@ -16,6 +17,8 @@ strandBinCounts(bam.files, restrictChrs, bam_param, bp_param, window_size)
 \item{bp_param}{BPPARAM}
 
 \item{window_size}{integer. size of window to use}
+
+\item{sliding}{logical. perform sliding window counts?}
 }
 \value{
 RangedSE object with forward and reverse strand counts

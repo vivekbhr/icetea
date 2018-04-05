@@ -7,10 +7,10 @@
 \title{Get gene-level counts from TSS data}
 \usage{
 getGeneCounts(CSobject, transcriptGRL, regionAroundTSS = 500,
-  single_end = TRUE, outfile = NA)
+  single_end = TRUE, outfile = NA, ncores = 1)
 
 \S4method{getGeneCounts}{CapSet}(CSobject, transcriptGRL,
-  regionAroundTSS = 500, single_end = TRUE, outfile = NA)
+  regionAroundTSS = 500, single_end = TRUE, outfile = NA, ncores = 1)
 }
 \arguments{
 \item{CSobject}{The \code{\link{CapSet}} object to use.}
@@ -22,6 +22,8 @@ getGeneCounts(CSobject, transcriptGRL, regionAroundTSS = 500,
 \item{single_end}{Logical, indicating whether reads are single end}
 
 \item{outfile}{Tab-separated output file name (if required)}
+
+\item{ncores}{No. of cores/threads to use}
 }
 \value{
 data.frame with gene-level counts for all genes in the txdb object

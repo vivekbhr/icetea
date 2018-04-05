@@ -20,11 +20,12 @@
 
 
 splitBAM_byIndex <-
-    function(bamFile,
-             index_list,
-             outfile_list,
-             max_mismatch = 0,
-             ncores = 1) {
+    function(
+            bamFile,
+            index_list,
+            outfile_list,
+            max_mismatch = 0,
+            ncores = 1) {
         ## Write a CLOSURE that return the function to search idx in readname
         message("Creating Filtering Rules")
         make_FilterFunc <- function(idx_name, maxM = max_mismatch) {
@@ -48,7 +49,7 @@ splitBAM_byIndex <-
 
                 grep_idx_res <-
                     as.logical(Biostrings::vcountPattern(idx_name, df_sep2,
-                                                         max.mismatch = maxM))
+                                                        max.mismatch = maxM))
 
                 return(grep_idx_res)
             }
@@ -71,12 +72,17 @@ splitBAM_byIndex <-
         destinations <- outfile_list
 
         param <- getMCparams(ncores)
+        # register parallel backend
+        if (!BiocParallel::bpisup()) {
+            BiocParallel::bpstart()
+            on.exit(BiocParallel::bpstop())
+        }
         BiocParallel::bplapply(seq_along(destinations),
-                               function(i, file, destinations, filtrules) {
-                                   Rsamtools::filterBam(file, destinations[i],
+                                function(i, file, destinations, filtrules) {
+                                    Rsamtools::filterBam(file, destinations[i],
                                                         filter = filtrules[[i]])
-                               }, bamFile, destinations, filtrules,
-                               BPPARAM = param)
+                                }, bamFile, destinations, filtrules,
+                                BPPARAM = param)
 
         ## Files written
         message("Done!")

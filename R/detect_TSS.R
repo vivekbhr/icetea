@@ -5,21 +5,30 @@
 #' @param bam_param ScanBAMParams
 #' @param bp_param BPPARAM
 #' @param window_size integer. size of window to use
+#' @param sliding logical. perform sliding window counts?
 #'
 #' @importFrom SummarizedExperiment assay rowRanges
 #'
 #' @return RangedSE object with forward and reverse strand counts
 #'
-strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window_size) {
+strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window_size, sliding = FALSE) {
 
-    windows <- getChromBins(bam.files, restrictChr = restrictChrs, binSize = window_size)
+    if (sliding == FALSE) {
+        windows <- getChromBins(bam.files, restrictChr = restrictChrs, binSize = window_size)
+        ignoreMultiMap <- TRUE
+    } else {
+        windows <- getChromWindows(bam.files, restrictChr = restrictChrs,
+                                    binSize = window_size, stepSize = floor(window_size/2) )
+        ignoreMultiMap <- FALSE
+    }
+
     fdata <-
         GenomicAlignments::summarizeOverlaps(
             features = windows$gr.plus,
             reads = bam.files,
             mode = "IntersectionStrict",
             ignore.strand = FALSE,
-            inter.feature = TRUE,
+            inter.feature = ignoreMultiMap,
             singleEnd = TRUE,
             fragments = FALSE,
             preprocess.reads = ResizeReads,
@@ -32,21 +41,21 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
             reads = bam.files,
             mode = "IntersectionStrict",
             ignore.strand = FALSE,
-            inter.feature = TRUE,
+            inter.feature = ignoreMultiMap,
             singleEnd = TRUE,
             fragments = FALSE,
             preprocess.reads = ResizeReads,
             param = bam_param,
             BPPARAM = bp_param)
     coldat <- S4Vectors::DataFrame(bam.files = bam.files,
-                                   forward.totals = S4Vectors::colSums(assay(fdata)),
-                                   reverse.totals = S4Vectors::colSums(assay(rdata)),
-                                   ext = NA,
-                                   rlen = 1L)
+                                    forward.totals = S4Vectors::colSums(assay(fdata)),
+                                    reverse.totals = S4Vectors::colSums(assay(rdata)),
+                                    ext = NA,
+                                    rlen = 1L)
     combined <- SummarizedExperiment::SummarizedExperiment(
-                           rbind(assay(fdata, "counts"), assay(rdata, "counts")),
-                           rowRanges = c(rowRanges(fdata), rowRanges(rdata)),
-                           colData = coldat)
+                            rbind(assay(fdata, "counts"), assay(rdata, "counts")),
+                            rowRanges = c(rowRanges(fdata), rowRanges(rdata)),
+                            colData = coldat)
     # drop empty bins
     combined <- combined[BiocGenerics::rowSums(assay(combined)) > 0]
     # Suggestion : Drop bins with counts < threshold ?
@@ -62,6 +71,13 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'               calling (see example)
 #' @param outfile_prefix Output name prefix for the .Rdata file containing window counts, background counts
 #'                       and filtering statistics calculated during TSS detection.
+#' @param windowSize Size of the window to bin the genome for TSS detection. By default, a window size of
+#'                   10 is used for binning the genome, however smaller window sizes can optionally be provided
+#'                   for higher resolution TSS detection. Note that the background size is set to 200x the
+#'                   window size (2kb for 10bp windows) to calculate local enrichment. Adjacent enriched windows
+#'                   are merged with a distance cutoff, which is the same as window size to get final TSS widths.
+#' @param sliding TRUE/FALSE. Indicating whether or not to use sliding windows. The windows are shifted by length which
+#'                is half of the specified window length.
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #'        usual' amount of starting material and squencing depth (>=5ug starting material,
 #'        = 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
@@ -96,12 +112,14 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 setMethod("detectTSS",
           signature = "CapSet",
           function(CSobject,
-                   groups,
-                   outfile_prefix,
-                   foldChange,
-                   restrictChr,
-                   ncores
-                   ) {
+                    groups,
+                    outfile_prefix,
+                    windowSize,
+                    sliding,
+                    foldChange,
+                    restrictChr,
+                    ncores
+                    ) {
             # check whether group and outfile_prefix is provided
             if (missing(outfile_prefix))
                 stop("Please provide outfile_prefix!")
@@ -113,12 +131,13 @@ setMethod("detectTSS",
             design <-
                 data.frame(row.names = si$samples, group = as.character(groups))
 
-            if (is.null(si$filtered_file)) {
-                message("Filtered files not found under sampleInfo(CSobject). Using mapped files")
+            if (all(is.na(si$filtered_file))) {
+                warning("Filtered files not found under sampleInfo(CSobject). Using mapped files")
                 bam.files <- si$mapped_file
             } else {
                 bam.files <- si$filtered_file
             }
+            if (any(is.na(bam.files))) stop("Some or all of the bam files are not defined!")
             if (sum(file.exists(bam.files)) != length(bam.files)) {
                 stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
             }
@@ -128,15 +147,16 @@ setMethod("detectTSS",
                                 flag = getBamFlags(paired = FALSE))
             bpParams <- getMCparams(ncores)
             # window size
-            bin_size <- 10L
-            # background size
-            surrounds <- 2000L
+            bin_size <- windowSize
+            # background size (200x)
+            surrounds <- 200*bin_size
 
             # Count reads into sliding windows
             data <- strandBinCounts(bam.files, restrictChr,
                                     bam_param = bamParams,
                                     bp_param = bpParams,
-                                    window_size = bin_size)
+                                    window_size = bin_size,
+                                    sliding = sliding)
               # add metadata
             mdat <- list(spacing = bin_size, width = bin_size,
                         shift = 0, bin = TRUE, final.ext = 1)

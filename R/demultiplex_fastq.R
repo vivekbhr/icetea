@@ -115,10 +115,10 @@ split_fastq <- function(expType,
         fq_R2new <- ShortRead::ShortReadQ(outlist$fq_R2read,
                                           outlist$fq_R2qual,
                                           Biostrings::BStringSet(paste(
-                                              fqid_R2,
-                                              outlist$barcode_string,
-                                              sep = "#"
-                                          )))
+                                                fqid_R2,
+                                                outlist$barcode_string,
+                                                sep = "#"
+                                            )))
 
         # new fastq R1 (seq/qual not modified, just barcodes copied from R2)
         fqid_R1 <- ShortRead::id(fq_R1)
@@ -128,18 +128,19 @@ split_fastq <- function(expType,
         fq_R1new <- ShortRead::ShortReadQ(outlist$fq_R1read,
                                           outlist$fq_R1qual,
                                           Biostrings::BStringSet(paste(
-                                              fqid_R1,
-                                              outlist$barcode_string,
-                                              sep = "#"
-                                          )))
+                                                fqid_R1,
+                                                outlist$barcode_string,
+                                                sep = "#"
+                                            )))
 
         # demultiplex using given sample barcodes
         idx_name <- Biostrings::DNAString(idx_name)
         sample_idx <- Biostrings::DNAStringSet(outlist$sample_idx)
         id2keep <-
             as.logical(
-                Biostrings::vcountPattern(idx_name, outlist$sample_idx,
-                                          max.mismatch = max_mismatch)
+                Biostrings::vcountPattern(idx_name,
+                                            outlist$sample_idx,
+                                            max.mismatch = max_mismatch)
             )
 
         #id2keep <- filter_byIDx(idx_name,
@@ -178,10 +179,11 @@ split_fastq <- function(expType,
 
 setMethod("demultiplexFASTQ",
           signature = "CapSet",
-          function(CSobject,
-             outdir,
-             max_mismatch,
-             ncores) {
+          function(
+                CSobject,
+                outdir,
+                max_mismatch,
+                ncores) {
         protocol <- CSobject@expMethod
         sampleinfo <- sampleInfo(CSobject)
         destinations <- as.character(sampleinfo[, 1])
@@ -192,6 +194,11 @@ setMethod("demultiplexFASTQ",
         fastq_R2 <- CSobject@fastq_R2
         param <- getMCparams(ncores)
         message("de-multiplexing the FASTQ file")
+        # register parallel backend
+        if (!BiocParallel::bpisup()) {
+        BiocParallel::bpstart()
+        on.exit(BiocParallel::bpstop())
+        }
 
         ## filter and write
         info <-

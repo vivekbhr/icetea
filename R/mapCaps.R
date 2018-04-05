@@ -4,7 +4,7 @@
 #' @param CSobject An object of class \code{\link{CapSet}}
 #' @param genomeIndex path to the Subread index file. Should end with the basename of the index.
 #' @param outdir output directory path
-#' @param nthreads number of threads to use for mapping.
+#' @param ncores number of cores/threads to use for mapping.
 #' @param logfile a log file to write the processing message.
 #' @param externalGTF (optional) provide external annotation file in `GTF`` format to
 #'                    increase alignment accuracy
@@ -35,13 +35,14 @@
 #'
 
 setMethod("mapCaps",
-          signature = "CapSet",
-          function(CSobject,
-             genomeIndex,
-             outdir,
-             externalGTF,
-             nthreads,
-             logfile) {
+        signature = "CapSet",
+            function(
+                CSobject,
+                genomeIndex,
+                outdir,
+                externalGTF,
+                ncores,
+                logfile) {
         ## extract info
         sampleInfo <- sampleInfo(CSobject)
         expMethod <- CSobject@expMethod
@@ -99,7 +100,7 @@ setMethod("mapCaps",
                     TH1 = 1,
                     TH2 = 1,
                     maxMismatches = 3,
-                    nthreads = 10,
+                    nthreads = ncores,
                     indels = 5,
                     complexIndels = FALSE,
                     phredOffset = 33,
@@ -129,13 +130,13 @@ setMethod("mapCaps",
 
             # Get mapping stats
             stat <- countBam(paste0(dest, ".bam"),
-                             param = ScanBamParam(
-                                 flag = scanBamFlag(
-                                     isUnmappedQuery = FALSE,
-                                     isFirstMateRead = TRUE,
-                                     isSecondaryAlignment = FALSE
+                            param = ScanBamParam(
+                                flag = scanBamFlag(
+                                    isUnmappedQuery = FALSE,
+                                    isFirstMateRead = TRUE,
+                                    isSecondaryAlignment = FALSE
                                  )
-                             ))[, 5:6] # "file" and "records"
+                            ))[, 5:6] # "file" and "records"
             stat$file <- as.character(stat$file)
             stat$records <- as.integer(stat$records)
             return(stat)
@@ -150,5 +151,5 @@ setMethod("mapCaps",
 
         validObject(CSobject)
         return(CSobject)
-          }
+        }
 )

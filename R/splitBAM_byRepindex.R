@@ -24,13 +24,13 @@ splitBAM_byRepindex <-
                 df$qname <- as.character(df$qname)
                 df_sep <- data.frame(
                     idx = vapply(strsplit(df$qname, "#"), "[[",
-                                 character(1), 2),
+                                    character(1), 2),
                     stringsAsFactors = FALSE
                 )
                 df_sep3 <-
                     data.frame(
                         idx = vapply(strsplit(df_sep$idx, ":"), "[[",
-                                     character(1), 3),
+                                        character(1), 3),
                         stringsAsFactors = FALSE
                     )
 
@@ -61,6 +61,11 @@ splitBAM_byRepindex <-
             paste0(outfile_prefix, "_", names(repindex_list), ".bam")
 
         param <- getMCparams(ncores)
+        # register parallel backend
+        if (!BiocParallel::bpisup()) {
+            BiocParallel::bpstart()
+            on.exit(BiocParallel::bpstop())
+        }
         BiocParallel::bplapply(seq_along(destinations),
                                function(i, file, destinations, filtrules) {
                                    Rsamtools::filterBam(file, destinations[i],

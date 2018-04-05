@@ -3,7 +3,7 @@ context("icetea")
 test_that("TSS calling produces expected No. of reads and peaks", {
     cs <- exampleCSobject()
     cs2 <- detectTSS(cs, groups = rep(c("wt","mut"), each = 2), outfile_prefix = "testTSS",
-            foldChange = 2, restrictChr = "X", ncores = 1)
+            foldChange = 2, restrictChr = "X", ncores = 1, sliding = FALSE)
     # producs .Rdata file?
     expect_true(file.exists("testTSS.Rdata"))
 

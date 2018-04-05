@@ -104,12 +104,12 @@ filterDups <- function(bamFile, outFile, keepPairs) {
 #'
 
 setMethod("filterDuplicates",
-          signature = "CapSet",
-          function(CSobject, outdir, ncores, keepPairs) {
+            signature = "CapSet",
+            function(CSobject, outdir, ncores, keepPairs) {
 
-              si <- sampleInfo(CSobject)
-              bamfiles <- si$mapped_file
-
+            si <- sampleInfo(CSobject)
+            bamfiles <- si$mapped_file
+            if (any(is.na(bamfiles))) stop("Some or all of the bam files are not defined!")
     # first check if the bam files exist
     lapply(bamfiles, function(f) {
         if (!(file.exists(f)))
@@ -129,16 +129,22 @@ setMethod("filterDuplicates",
 
     # run the filter duplicates function on all files
     bpParams <- getMCparams(ncores)
+    # register parallel backend
+    if (!BiocParallel::bpisup()) {
+        BiocParallel::bpstart()
+        on.exit(BiocParallel::bpstop())
+    }
+
     BiocParallel::bplapply(seq_along(bamfiles),
-                           function(x) {
-                               filterDups(bamfiles[x], outfiles[x], keepPairs)
+                            function(x) {
+                                filterDups(bamfiles[x], outfiles[x], keepPairs)
     }, BPPARAM = bpParams)
 
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
                          param = ScanBamParam(
-                             flag = getBamFlags(paired = FALSE)
-                         ))[, 5:6] # "file" and "records"
+                            flag = getBamFlags(paired = FALSE)
+                        ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)
 
@@ -151,5 +157,5 @@ setMethod("filterDuplicates",
     validObject(CSobject)
     return(CSobject)
 
-          }
+        }
 )

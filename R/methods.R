@@ -22,19 +22,20 @@ setMethod("show", "CapSet", function(object) {
 #' @export
 #'
 setMethod("sampleInfo",
-          signature = "CapSet",
-          function(object) {
-              return(object@sampleInfo)
-          })
+            signature = "CapSet",
+            function(object) {
+                return(object@sampleInfo)
+        })
 
 #' @rdname sampleInfo
 #' @exportMethod "sampleInfo<-"
 #'
 setReplaceMethod("sampleInfo",
-                 signature = "CapSet", #value = c("data.frame", "DataFrame") ),
-                 function(object, value) {
-                     df <- S4Vectors::DataFrame(value)
-                     object@sampleInfo <- df
-                     validObject(object)
-                     return(object)
-                 })
+                signature = "CapSet",
+                function(object, value) {
+
+                    df <- S4Vectors::DataFrame(value)
+                    object@sampleInfo <- df
+                    validObject(object)
+                    return(object)
+                })

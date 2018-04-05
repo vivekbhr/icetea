@@ -17,6 +17,7 @@ cache:
 
 build_script:
   - R -e source('https://install-github.me/r-lib/remotes')
+  - travis-tool.sh install_bioc_deps
   - travis-tool.sh install_deps
 
 test_script:
@@ -51,3 +52,7 @@ environment:
       WARNINGS_ARE_ERRORS: true
       _R_CHECK_FORCE_SUGGESTS_: false
       R_COMPILE_AND_INSTALL_PACKAGES: always
+      R_ARCH: x64
+      USE_RTOOLS: true
+    matrix:
+      - R_VERSION: devel

@@ -12,7 +12,7 @@
 #'
 #' @return A ggplot object, or a file. Plot showing the number/proportion of reads in each category, per sample
 #'
-#' @importFrom reshape2 melt
+#' @importFrom ggplot2 ggplot aes_string geom_bar theme_light scale_fill_brewer coord_flip labs ggsave
 #' @export
 #'
 #' @examples
@@ -24,10 +24,11 @@
 setMethod(
     plotReadStats,
     signature = "CapSet",
-    definition = function(CSobject,
-                           plotType,
-                           plotValue,
-                           outFile) {
+    definition = function(
+                        CSobject,
+                        plotType,
+                        plotValue,
+                        outFile) {
     ## evaluate expressions
     stopifnot(plotType %in% c("stack", "dodge"))
     stopifnot(plotValue %in% c("numbers", "proportions"))
@@ -42,24 +43,27 @@ setMethod(
     message(cat(msg, colnames(si) ))
 
     ## prepare df
-    si_stats <- data.frame(
-        sample = si$samples,
-        demutiplexed_reads = si$demult_reads,
-        mapped_reads = si$num_mapped
-    )
+    si_stats <- data.frame(sample = si$samples)
+
     ## fill additional cols if present
-    if (!(is.null(si$num_filtered)))
-        si_stats$duplicate_free_reads <- si$num_filtered
-    if (!(is.null(si$num_intss)))
-        si_stats$reads_within_TSS <- si$num_intss
+    if (!is.null(si$demult_reads)) si_stats$demultiplexed_reads <- si$demult_reads
+    if (!is.null(si$num_mapped)) si_stats$mapped_reads <- si$num_mapped
+    if (!is.null(si$num_filtered)) si_stats$duplicate_free_reads <- si$num_filtered
+    if (!is.null(si$num_intss)) si_stats$reads_within_TSS <- si$num_intss
 
     if (plotValue == "proportions") {
-        si_stats[-1] <- si_stats[-1] / si_stats$demutiplexed_reads
+        # plot proportion w.r.t lowst category
+        basecat <- "demultiplexed_reads"
+        if (is.null(si_stats[, basecat])) basecat <- "mapped_reads"
+        if (is.null(si_stats[, basecat])) basecat <- "duplicate_free_reads"
+        if (is.null(si_stats[, basecat])) stop("Can't plot proportions with only one category")
+
+        si_stats[-1] <- si_stats[-1] / si_stats[, basecat]
         # for stacked chart it's important to plot the cumulative difference of the numbers
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
         }
-        y_label <- "Proportion of demultiplexed reads"
+        y_label <- paste0("Proportion of ", basecat, " reads")
     } else {
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
@@ -67,13 +71,17 @@ setMethod(
         y_label <- "Number of reads"
     }
 
-    si_stats <- reshape2::melt(si_stats, id.vars = "sample")
+    varcols <- colnames(si_stats)[2:ncol(si_stats)]
+    si_stats <- reshape(si_stats, direction = "long", idvar = "sample",
+                        varying = varcols, timevar = "variable",
+                        times = varcols, v.names = "value")
+    rownames(si_stats) <- NULL
     # plot stacked barchart
     p <-
         ggplot(si_stats, aes_string("sample", "value", fill = "variable")) +
         geom_bar(stat = "identity",
-                 position = plotType,
-                 color = "black") +
+                position = plotType,
+                color = "black") +
         theme_light(base_size = 16)  +
         scale_fill_brewer(type = "seq", palette = "YlGnBu") +
         coord_flip() +
@@ -115,8 +123,7 @@ get_stackedNum <- function(df) {
 #'
 #' @export
 #' @examples
-#' # load a previously saved CapSet object
-#' cs <- exampleCSobject()
+#'
 #' # load a txdb object
 #' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
@@ -126,26 +133,27 @@ get_stackedNum <- function(df) {
 #'
 #' tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
 #' plotTSSprecision(reference = transcripts, detectedTSS = tssfile,
-#' 		sampleNames = "testTSS", distanceCutoff = 500,
-#' 		outFile = "TSS_detection_precision.png")
+#'                 sampleNames = "testTSS", distanceCutoff = 500,
+#'                 outFile = "TSS_detection_precision.png")
 #'
 
 setMethod(
     plotTSSprecision,
     signature = signature("GRanges", "character"),
-    definition = function(reference,
-                          detectedTSS,
-                          distanceCutoff = 500,
-                          outFile = NULL,
-                          sampleNames) {
-        # read bed files
-        tssData <- lapply(detectedTSS, rtracklayer::import.bed)
+    definition = function(
+                        reference,
+                        detectedTSS,
+                        distanceCutoff = 500,
+                        outFile = NULL,
+                        sampleNames) {
+        # read bed files as GRangesList
+        tssData <- GenomicRanges::GRangesList(
+            lapply(detectedTSS, rtracklayer::import.bed) )
         names(tssData) <- sampleNames
         # get plot
-        plt <-
-            plotPrecision(ref = reference,
-                          tssData = tssData,
-                          distCut = distanceCutoff)
+        plt <- plotPrecision(ref = reference,
+                            tssData = tssData,
+                            distCut = distanceCutoff)
         # output
         if (!(is.null(outFile))) {
             ggsave(outFile, plot = plt, dpi = 300)
@@ -190,24 +198,22 @@ setMethod(
                           outFile = NULL,
                           ...) {
         # get the data out
-        tssData <- detectedTSS@tss_detected
+        tssData <- GenomicRanges::GRangesList(detectedTSS@tss_detected)
 
         if (is.null(tssData)) {
             stop("CapSet object does not contain the detected TSS information")
         }
         # get plot
-        plt <-
-            plotPrecision(ref = reference,
-                          tssData = tssData,
-                          distCut = distanceCutoff)
+        plt <- plotPrecision(
+                            ref = reference,
+                            tssData = tssData,
+                            distCut = distanceCutoff)
         # output
         if (!(is.null(outFile))) {
             ggsave(outFile, plot = plt, dpi = 300)
         } else {
             return(plt)
         }
-
-
     }
 )
 
@@ -235,9 +241,21 @@ plotPrecision <- function(ref, tssData, distCut) {
     })
 
     # melt to df
-    tssdistances <- plyr::ldply(tssdistances, data.frame)
-    colnames(tssdistances) <- c("sample", "distances")
+    samplenames <- vapply(tssdistances, length, integer(1L))
+    samplenames <- rep(names(samplenames), samplenames)
+    sampledists <- do.call(c, tssdistances)
+    tssdistances <- data.frame(sample = samplenames, distances = sampledists)
+    #colnames(tssdistances) <- c("sample", "distances")
+    # print message for removed values
+    removed <- tssdistances$distances > distCut
+    tssdistances[removed,] -> highdist
+    vapply(split(highdist, factor(highdist$sample)), nrow, numeric(1L)) -> removedNums
 
+    message(paste0("There are ", sum(removed),
+                    " regions with distance > ", distCut,
+                    " bp to the closest TSS. They are all being reduced to ", distCut,
+                    " bp for the calculation. Samplewise numbers are : ", removedNums))
+    tssdistances$distances[removed] <- distCut
     # plot ECDF with distance cutoff
     p <-
         ggplot(tssdistances, aes_string("distances", col = "sample")) +
@@ -250,7 +268,7 @@ plotPrecision <- function(ref, tssData, distCut) {
             x = "Distances from nearby TSS (in bp)",
             y = "Cumulative Fraction",
             title = "TSS precisions",
-            col = "Category"
+            col = "Sample"
         )
     return(p)
 

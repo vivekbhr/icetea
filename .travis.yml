@@ -17,7 +17,7 @@ warnings_are_errors: true
 script:
     - R CMD build . --no-resave-data --no-manual
     - R CMD check *tar.gz --as-cran --timings --no-manual
-    - R CMD BiocCheck icetea_0.98.0.tar.gz
+    - R CMD BiocCheck *tar.gz
 os:
     - linux
     - osx

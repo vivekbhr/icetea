@@ -38,14 +38,14 @@
 #'
 
 annotateTSS <- function(tssBED,
-                         txdb,
-                         featureRank = c("fiveUTR",
-                                         "promoter",
-                                         "intron",
-                                         "coding",
-                                         "spliceSite",
-                                         "threeUTR",
-                                         "intergenic"),
+                        txdb,
+                        featureRank = c("fiveUTR",
+                                        "promoter",
+                                        "intron",
+                                        "coding",
+                                        "spliceSite",
+                                        "threeUTR",
+                                        "intergenic"),
                          plotValue = "number",
                          outFile = NULL) {
     ## resolve 1:many mapping issue by prioritising some features over others
@@ -56,13 +56,15 @@ annotateTSS <- function(tssBED,
     # get data
     tss <- rtracklayer::import.bed(tssBED)
     # Annotate
-    db <- VariantAnnotation::locateVariants(
+    suppressWarnings({
+        db <- VariantAnnotation::locateVariants(
         query = tss,
         subject = txdb,
         VariantAnnotation::AllVariants(promoter = VariantAnnotation::PromoterVariants(
             upstream = 500, downstream = 0
-        ))
-    )
+            ))
+        )
+    })
     ## resolve 1:many mapping isues using ranks from rankdf
     df <- data.frame(QUERYID = db$QUERYID,
                     LOCATION = db$LOCATION)
@@ -127,21 +129,6 @@ splitranks <- function(x) {
     l2 <- lapply(l, function(y) {
         return(y[which(y$rank == min(y$rank)), ])
     })
-    l3 <- plyr::ldply(l2, data.frame)
+    l3 <- do.call(rbind, l2)
     return(l3)
-}
-
-
-# Melt the output df from splitranks
-melt <- function(x) {
-    vars <- colnames(x[2:ncol(x)])
-    d <-
-        plyr::unrowname(reshape(
-            x,
-            direction = "long",
-            idvar = ".id",
-            varying = vars
-        ))
-    d$time <- vars[d$time]
-    colnames(d) <- c("variable", "Feature", "value")
 }

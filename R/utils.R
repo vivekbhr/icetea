@@ -9,10 +9,10 @@ getMCparams <- function(cores) {
         param <- BiocParallel::SerialParam()
     } else {
         param <- switch(Sys.info()[['sysname']],
-                   Windows = {return(BiocParallel::SnowParam(workers = cores))},
-                   Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
-                   Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
-                   )
+                        Windows = {return(BiocParallel::SnowParam(workers = cores))},
+                        Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
+                        Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
+                    )
     }
     return(param)
 }
@@ -28,16 +28,16 @@ getBamFlags <- function(paired) {
     if (isTRUE(paired)) {
         # if paired given, count both reads
         bamFlags <- scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isSecondaryAlignment = FALSE
-                             )
+                                isUnmappedQuery = FALSE,
+                                isSecondaryAlignment = FALSE
+                            )
     } else {
         # else count only R1
         bamFlags <- scanBamFlag(
-                                 isUnmappedQuery = FALSE,
-                                 isFirstMateRead = TRUE,
-                                 isSecondaryAlignment = FALSE
-                             )
+                                isUnmappedQuery = FALSE,
+                                isFirstMateRead = TRUE,
+                                isSecondaryAlignment = FALSE
+                            )
     }
     return(bamFlags)
 }
@@ -97,24 +97,39 @@ activeChrs <- function(bam.files, restrict)
 #' @return GRanges (bins) for both strands
 #'
 getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
-
     keptChrs <- activeChrs(bamFiles, restrict = restrictChr)
-    gr.bins.plus <- lapply(names(keptChrs), function(x){
-        instances <- as.integer(keptChrs[x]/binSize)
-        gr <- GenomicRanges::GRanges(seqnames = x,
-                        ranges = IRanges::successiveIRanges(rep(binSize, instances)),
-                        strand = "+"
-                        )
-        return(gr)
-        })
-    gr.bins.plus <- suppressWarnings({do.call("c", gr.bins.plus)})
-    GenomeInfoDb::seqlengths(gr.bins.plus) <- keptChrs
-    gr.bins.plus <- GenomicRanges::trim(gr.bins.plus)
+    gr.bins.plus <- GenomicRanges::tileGenome(keptChrs, tilewidth = 10, cut.last.tile.in.chrom = TRUE)
+    #gr.bins.plus <- GenomicRanges::trim(gr.bins.plus)
+    gr.bins.minus <- gr.bins.plus
+    GenomicRanges::strand(gr.bins.plus) <- "+"
+    GenomicRanges::strand(gr.bins.minus) <- "-"
+    return(list(gr.plus = gr.bins.plus,
+                gr.minus = gr.bins.minus))
+}
+
+#' Get chromosome sliding windows from BAM files
+#'
+#' @param bamFiles Character vector (bam files)
+#' @param restrictChr Chromosomes to select
+#' @param binSize Size of bins
+#' @param stepSize Size of window slide
+#'
+#' @return GRanges (sliding windows) for both strands
+#'
+getChromWindows <- function(bamFiles, restrictChr = NULL, binSize, stepSize) {
+    keptChrs <- activeChrs(bamFiles, restrict = restrictChr)
+    gr.total <- GenomicRanges::GRanges(
+                                        seqnames = names(keptChrs),
+                                        ranges = IRanges::IRanges(start = 1, end = keptChrs),
+                                        strand = "+")
+    gr.bins.plus <- GenomicRanges::slidingWindows(gr.total, width = binSize, step = stepSize)
+    gr.bins.plus <- unlist(gr.bins.plus)
     gr.bins.minus <- gr.bins.plus
     GenomicRanges::strand(gr.bins.minus) <- "-"
     return(list(gr.plus = gr.bins.plus,
                 gr.minus = gr.bins.minus))
 }
+
 
 #' preprocess reads to count only 5' overlaps
 #'
@@ -181,5 +196,5 @@ localFilter <- function(data,
     return(list(abundances = data.ab,
                 back.abundances = bg.ab,
                 filter = filter.stat)
-           )
+            )
 }

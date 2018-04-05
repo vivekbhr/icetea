@@ -43,8 +43,7 @@ Plot precision of TSS detection from multiple samples present within a
 \code{\link{CapSet}} object, with respect to a given reference annotation.
 }
 \examples{
-# load a previously saved CapSet object
-cs <- exampleCSobject()
+
 # load a txdb object
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
@@ -54,8 +53,8 @@ transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 
 tssfile <- system.file("extdata", "testTSS_merged.bed", package = "icetea")
 plotTSSprecision(reference = transcripts, detectedTSS = tssfile,
-		sampleNames = "testTSS", distanceCutoff = 500,
-		outFile = "TSS_detection_precision.png")
+                sampleNames = "testTSS", distanceCutoff = 500,
+                outFile = "TSS_detection_precision.png")
 
 ## Plotting the precision using a CapSet object :
 

@@ -1,7 +1,7 @@
 Package: icetea
 Type: Package
 Title: Integrating mRNA Cap Enrichment with Transcript Expression Analysis
-Version: 0.98.0
+Version: 0.4.0
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
 Description: icetea is a tool that integrates the cap enrichment information
     obtained from transcript 5' profiling methods like MAPCap and RAMPAGE,
@@ -17,8 +17,6 @@ Imports:
     methods,
     graphics,
     grDevices,
-    plyr,
-    reshape2,
     ggplot2,
     GenomicFeatures,
     ShortRead,
@@ -32,7 +30,6 @@ Imports:
     GenomicRanges,
     rtracklayer,
     SummarizedExperiment,
-    GenomeInfoDb,
     VariantAnnotation,
     limma,
     edgeR,
@@ -47,6 +44,7 @@ VignetteBuilder: knitr
 biocViews: Transcription, GeneExpression, Sequencing,
     RNASeq, Transcriptomics, DifferentialExpression
 URL: https://github.com/vivekbhr/icetea
+BugReports: https://github.com/vivekbhr/icetea/issues
 License: GPL-3 + file LICENSE
 LazyData: true
 RoxygenNote: 6.0.1

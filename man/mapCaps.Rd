@@ -6,11 +6,11 @@
 \alias{mapCaps,CapSet-method}
 \title{Map the data from 5' profiling techniques}
 \usage{
-mapCaps(CSobject, genomeIndex, outdir, externalGTF = NULL, nthreads = 1,
+mapCaps(CSobject, genomeIndex, outdir, externalGTF = NULL, ncores = 1,
   logfile = NULL)
 
 \S4method{mapCaps}{CapSet}(CSobject, genomeIndex, outdir, externalGTF = NULL,
-  nthreads = 1, logfile = NULL)
+  ncores = 1, logfile = NULL)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
@@ -22,7 +22,7 @@ mapCaps(CSobject, genomeIndex, outdir, externalGTF = NULL, nthreads = 1,
 \item{externalGTF}{(optional) provide external annotation file in `GTF`` format to
 increase alignment accuracy}
 
-\item{nthreads}{number of threads to use for mapping.}
+\item{ncores}{number of cores/threads to use for mapping.}
 
 \item{logfile}{a log file to write the processing message.}
 }

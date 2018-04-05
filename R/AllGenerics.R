@@ -34,7 +34,7 @@ NULL
 #' @rdname plotTSSprecision
 #' @export
 setGeneric("plotTSSprecision",
-           function(reference,
+            function(reference,
                     detectedTSS,
                     distanceCutoff = 500,
                     outFile = NULL,
@@ -58,9 +58,9 @@ setGeneric("plotReadStats",
 #' @export
 setGeneric("demultiplexFASTQ",
            function(CSobject,
-             outdir,
-             max_mismatch = 0,
-             ncores = 1)
+                    outdir,
+                    max_mismatch = 0,
+                    ncores = 1)
             standardGeneric("demultiplexFASTQ"))
 
 #' @name mapCaps
@@ -68,11 +68,11 @@ setGeneric("demultiplexFASTQ",
 #' @export
 setGeneric("mapCaps",
            function(CSobject,
-             genomeIndex,
-             outdir,
-             externalGTF = NULL,
-             nthreads = 1,
-             logfile = NULL)
+                    genomeIndex,
+                    outdir,
+                    externalGTF = NULL,
+                    ncores = 1,
+                    logfile = NULL)
             standardGeneric("mapCaps"))
 
 #' @name filterDuplicates
@@ -92,6 +92,8 @@ setGeneric("detectTSS",
            function(CSobject,
                     groups,
                     outfile_prefix = NULL,
+                    windowSize = 10L,
+                    sliding = TRUE,
                     foldChange = 2,
                     restrictChr = NULL,
                     ncores = 1)
@@ -101,9 +103,9 @@ setGeneric("detectTSS",
 #' @rdname exportTSS
 setGeneric("exportTSS",
            function(CSobject,
-             outfile_prefix,
-             pergroup = FALSE,
-             merged = TRUE)
+                    outfile_prefix,
+                    pergroup = FALSE,
+                    merged = TRUE)
             standardGeneric("exportTSS"))
 
 #' @name getGeneCounts
@@ -114,7 +116,8 @@ setGeneric("getGeneCounts",
                 transcriptGRL,
                 regionAroundTSS = 500,
                 single_end = TRUE,
-                outfile = NA)
+                outfile = NA,
+                ncores = 1)
             standardGeneric("getGeneCounts"))
 
 #' @name calcNormFactors
@@ -134,10 +137,11 @@ setGeneric("fitDiffTSS",
             function(CSobject,
                     TSSfile = NULL,
                     groups,
-                    normalization = "internal",
+                    normalization = NULL,
                     normFactors = NULL,
                     outplots = NULL,
-                    plotref)
+                    plotRefSample,
+                    ncores = 1)
             standardGeneric("fitDiffTSS"))
 
 #' @name detectDiffTSS
@@ -145,8 +149,8 @@ setGeneric("fitDiffTSS",
 #' @export
 setGeneric("detectDiffTSS",
            function(fit,
-            testGroup,
-            contGroup,
-            TSSfile,
-            MAplot_fdr = NA)
+                    testGroup,
+                    contGroup,
+                    TSSfile,
+                    MAplot_fdr = NA)
             standardGeneric("detectDiffTSS"))
