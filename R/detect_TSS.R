@@ -76,8 +76,8 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'                   for higher resolution TSS detection. Note that the background size is set to 200x the
 #'                   window size (2kb for 10bp windows) to calculate local enrichment. Adjacent enriched windows
 #'                   are merged with a distance cutoff, which is the same as window size to get final TSS widths.
-#' @param sliding TRUE/FALSE. Indicating whether to use sliding windows. The windows are then shifted by length which
-#'                is half the window length.
+#' @param sliding TRUE/FALSE. Indicating whether or not to use sliding windows. The windows are shifted by length which
+#'                is half of the specified window length.
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #'        usual' amount of starting material and squencing depth (>=5ug starting material,
 #'        = 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low

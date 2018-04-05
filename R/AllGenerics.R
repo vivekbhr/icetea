@@ -93,7 +93,7 @@ setGeneric("detectTSS",
                     groups,
                     outfile_prefix = NULL,
                     windowSize = 10L,
-                    sliding = FALSE,
+                    sliding = TRUE,
                     foldChange = 2,
                     restrictChr = NULL,
                     ncores = 1)
