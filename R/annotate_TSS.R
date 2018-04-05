@@ -56,13 +56,15 @@ annotateTSS <- function(tssBED,
     # get data
     tss <- rtracklayer::import.bed(tssBED)
     # Annotate
-    db <- VariantAnnotation::locateVariants(
+    suppressWarnings({
+        db <- VariantAnnotation::locateVariants(
         query = tss,
         subject = txdb,
         VariantAnnotation::AllVariants(promoter = VariantAnnotation::PromoterVariants(
             upstream = 500, downstream = 0
-        ))
-    )
+            ))
+        )
+    })
     ## resolve 1:many mapping isues using ranks from rankdf
     df <- data.frame(QUERYID = db$QUERYID,
                     LOCATION = db$LOCATION)
