@@ -57,7 +57,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.98.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -115,11 +115,11 @@
     
 
     <pre class="usage"><span class='fu'>detectTSS</span>(<span class='no'>CSobject</span>, <span class='no'>groups</span>, <span class='kw'>outfile_prefix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>windowSize</span> <span class='kw'>=</span> <span class='fl'>10L</span>,
-  <span class='kw'>sliding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>foldChange</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>restrictChr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ncores</span> <span class='kw'>=</span> <span class='fl'>1</span>)
+  <span class='kw'>sliding</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>foldChange</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>restrictChr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>ncores</span> <span class='kw'>=</span> <span class='fl'>1</span>)
 
 <span class='co'># S4 method for CapSet</span>
 <span class='fu'>detectTSS</span>(<span class='no'>CSobject</span>, <span class='no'>groups</span>, <span class='kw'>outfile_prefix</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>windowSize</span> <span class='kw'>=</span> <span class='fl'>10L</span>, <span class='kw'>sliding</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>foldChange</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>restrictChr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>windowSize</span> <span class='kw'>=</span> <span class='fl'>10L</span>, <span class='kw'>sliding</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>foldChange</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>restrictChr</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>ncores</span> <span class='kw'>=</span> <span class='fl'>1</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -149,8 +149,8 @@ are merged with a distance cutoff, which is the same as window size to get final
     </tr>
     <tr>
       <th>sliding</th>
-      <td><p>TRUE/FALSE. Indicating whether to use sliding windows. The windows are then shifted by length which
-is half the window length.</p></td>
+      <td><p>TRUE/FALSE. Indicating whether or not to use sliding windows. The windows are shifted by length which
+is half of the specified window length.</p></td>
     </tr>
     <tr>
       <th>foldChange</th>

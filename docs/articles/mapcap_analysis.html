@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.98.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -229,7 +229,7 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mapCaps.
 <h3 class="hasAnchor">
 <a href="#filtering-pcr-duplicates" class="anchor"></a>Filtering PCR duplicates</h3>
 <p>Experiments like MAPCap and RAMPAGE provide us a way to remove sequencing reads which are PCR duplicates from the mapped data. Random barcodes present in the read sequence are used for this purpose. In MAPCap, pre-designed random barcodes present in the oligos serve as UMIs, while in RAMPAGE, the sequences used as RT-PCR primers are treated as pseudo-random barcodes. PCR duplicates are recognized as reads that map to the same 5’ position and contain the same random barcode.</p>
-<p>The function <code>filterDuplicates</code> removes these PCR duplicate sequences (keeping only one copy in these cases), and creates de-duplicated BAM files. It returns the modified <code>CapSet</code> object with de-duplication statistics. <code>filterDuplicates</code> works in a strand-specific way. By default, it filters the R2 read from the paired-end BAM files, along with secondary alignments. Both reads can be allowed to kept using the option <code>keepPairs = TRUE</code>. Note that in this case, each read in a pair is evaluated seperately, and the run-time is significantly longer.</p>
+<p>The function <code>filterDuplicates</code> removes these PCR duplicate sequences (keeping only one copy in these cases), and creates de-duplicated BAM files. It returns the modified <code>CapSet</code> object with de-duplication statistics. <code>filterDuplicates</code> works in a strand-specific way. By default, it filters the R2 read from the paired-end BAM files, along with secondary alignments. Both reads can be allowed to kept using the option <code>keepPairs = TRUE</code>. Note that in this case, each read in a pair is evaluated seperately and in case of fragments where only one mate is flagged as duplicated, the other mate would be kept. In order to keep only fragments with both kept mates, the output BAM files should be filtered for proper pairs using samtools. Note that the run-time for paired-end evaluation is significantly longer, and only the first mate is considered for TSS detection (later).</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load a previously saved CapSet object (or create new one)</span>
 cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/exampleCSobject.html">exampleCSobject</a></span>()
 <span class="co">#&gt; Checking de-multiplexed R1 reads</span>
@@ -249,7 +249,7 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/filterDu
 <div id="detection-of-tss" class="section level3">
 <h3 class="hasAnchor">
 <a href="#detection-of-tss" class="anchor"></a>Detection of TSS</h3>
-<p><em>icetea</em> implements a new method of detection of transcription start sites, which is adopted from the recently described methods for differential transcription factor binding analysis in ChIP-Seq data <span class="citation">(Lun and Smyth 2015)</span>. Genome is divided into 10 base-pair windows and the TSSs are detected as the windows that show a user-defined fold-enrichment over a local background of 2 kb. Multiple consicutively enriched windows are then merged to detect broad TSSs. The method works well with replicates.</p>
+<p><em>icetea</em> implements a new method of detection of transcription start sites, which is adopted from the recently described methods for differential transcription factor binding analysis in ChIP-Seq data <span class="citation">(Lun and Smyth 2015)</span>. Genome is divided into small, sliding windows and the TSSs are detected as the windows that show a user-defined fold-enrichment over a local background region. Multiple consicutively enriched windows are then merged to detect broader TSSs. The method works well with replicates, resulting in one TSS file per group.</p>
 <p>This method is implemented in the function <code>detectTSS</code>, which returns a modified <code>CapSet</code> object with TSS detection statistics.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># detect TSS</span>
 <span class="kw">dir.create</span>(<span class="st">"tssCalling"</span>)

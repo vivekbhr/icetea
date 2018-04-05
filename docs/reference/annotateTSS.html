@@ -62,7 +62,7 @@ provided." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.98.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
       </span>
     </div>
 
@@ -171,14 +171,7 @@ If outfile not specified, the plot would be retured on the screen</p></td>
 <span class='no'>dir</span> <span class='kw'>&lt;-</span> <span class='fu'>system.file</span>(<span class='st'>"extdata"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"icetea"</span>)
 <span class='no'>tss</span> <span class='kw'>&lt;-</span> <span class='fu'>file.path</span>(<span class='no'>dir</span>, <span class='st'>"testTSS_merged.bed"</span>)
 <span class='no'>annotations</span> <span class='kw'>&lt;-</span> <span class='fu'>annotateTSS</span>(<span class='kw'>tssBED</span> <span class='kw'>=</span> <span class='no'>tss</span>, <span class='no'>TxDb.Dmelanogaster.UCSC.dm6.ensGene</span>,
-               <span class='kw'>plotValue</span> <span class='kw'>=</span> <span class='st'>"number"</span>, <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_annot.pdf"</span>)</div><div class='output co'>#&gt; <span class='warning'>Warning: GRanges object contains 78 out-of-bound ranges located on sequences</span>
-#&gt; <span class='warning'>  29325, 29326, 29327, 31704, 31705, 31706, 31707, 32332, 32333, 32334,</span>
-#&gt; <span class='warning'>  32335, 32336, and 32794. Note that ranges located on a sequence whose</span>
-#&gt; <span class='warning'>  length is unknown (NA) or on a circular sequence are not considered</span>
-#&gt; <span class='warning'>  out-of-bound (use seqlengths() and isCircular() to get the lengths and</span>
-#&gt; <span class='warning'>  circularity flags of the underlying sequences). You can use trim() to</span>
-#&gt; <span class='warning'>  trim these ranges. See ?`trim,GenomicRanges-method` for more</span>
-#&gt; <span class='warning'>  information.</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>Saving 6.99 x 6.99 in image</span></div><div class='input'>
+               <span class='kw'>plotValue</span> <span class='kw'>=</span> <span class='st'>"number"</span>, <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_annot.pdf"</span>)</div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>Saving 6.99 x 6.99 in image</span></div><div class='input'>
 </div><div class='img'><img src='annotateTSS-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
