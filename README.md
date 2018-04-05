@@ -1,12 +1,12 @@
-# ICETEA
+# icetea
 
 [![Build Status](https://travis-ci.org/vivekbhr/icetea.svg?branch=master)](https://travis-ci.org/vivekbhr/icetea)
 [![Build status](https://ci.appveyor.com/api/projects/status/58od90th3qg5o7f0/branch/master?svg=true)](https://ci.appveyor.com/project/vivekbhr/icetea/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/vivekbhr/icetea/badge.svg?branch=master)](https://coveralls.io/github/vivekbhr/icetea?branch=master)
 
-An R package for analysis of data produced by transcript 5' profiling methods like RAMPAGE and MAPCap.
+*An R package for analysis of data produced by transcript 5' profiling methods like RAMPAGE and MAPCap.*
 
-![icetea_logo](./icetea_front.png)
+![icetea_logo](https://github.com/vivekbhr/icetea/blob/master/icetea_front.png)
 
 **The ICETEA R package for analysis of 5’ profiling data** allows users to processes data from multiplexed,
 5’-profiling techniques such as RAMPAGE and the recently developed MAPCap protocol. TSS detection and

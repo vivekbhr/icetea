@@ -231,19 +231,19 @@ The `sampleInfo` field of the CapSet object stores information about the read nu
 
 We can either plot the number of reads at each step of processing, or the proportion of reads w.r.t total demultiplexed reads per sample. Stacked or separate barplots can be made for each category.
 
-```{r plotstats, eval=TRUE, results = "hold", fig.width=8, fig.height=6}
+```{r plotstats, eval=TRUE, results = "hold", fig.width=7, fig.height=5}
 # separated barchart for numbers
 plotReadStats(cs, plotValue = "numbers", plotType = "dodge")
 ```
 
-```{r plotstats2, eval=TRUE, results = "hide", fig.width=8, fig.height=6}
+```{r plotstats2, eval=TRUE, results = "hide", fig.width=7, fig.height=5}
 # stacked barchart for proportions
 plotReadStats(cs, plotValue = "proportions", plotType = "stack" )
 ```
 
 In case of well annotated genomes, one way to check the quality of TSS detection is to look at the fraction of detected TSSs that fall close to an annotated TSS in the genome. The cumulative fraction can be plotted for each sample, which can be used to compare samples. This can be done using the function `plotTSSprecision`, which takes the *known* TSS annotations as a `TxDB` object, along with either a `CapSet` object or a BED file, for TSS positions.
 
-```{r plotPrecision, eval=TRUE, results = "hold", fig.width=8, fig.height=6}
+```{r plotPrecision, eval=TRUE, results = "hold", fig.width=7, fig.height=5}
 library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 # only analyse genes on chrX to make the analysis faster
@@ -314,7 +314,7 @@ gcounts <- getGeneCounts(cs, dm6trans)
 
 Detected or differentially expressed TSS, which are exported as bed files, can be quickly annotated using the function `annotateTSS`. `annotateTSS` reports the numbers/proportions of detected TSS falling into different genomic features (provided by a TxDb object) as a data.frame and optionally as a plot. In order to break ties between overlapping features, we can provide a vector of feature names in the decreasing order of preference.
 
-```{r annotateTSS, eval = TRUE, results = "hold", fig.width=10, fig.height=8}
+```{r annotateTSS, eval = TRUE, results = "hold", fig.width=7, fig.height=5}
 # save the output as data.frame (outdf) + plot on screen
 outdf <- annotateTSS(tssBED = tssfile,
             txdb = TxDb.Dmelanogaster.UCSC.dm6.ensGene,
