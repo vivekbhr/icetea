@@ -249,10 +249,13 @@ plotPrecision <- function(ref, tssData, distCut) {
     #colnames(tssdistances) <- c("sample", "distances")
     # print message for removed values
     removed <- tssdistances$distances > distCut
+    tssdistances[removed,] -> highdist
+    vapply(split(highdist, factor(highdist$sample)), nrow, numeric(1L)) -> removedNums
+
     message(paste0("There are ", sum(removed),
                    " regions with distance > ", distCut,
-                   " to the closest TSS. They are all being reduced to ", distCut,
-                   " for the calculation."))
+                   " bp to the closest TSS. They are all being reduced to ", distCut,
+                   " bp for the calculation. Samplewise numbers are : ", removedNums))
     tssdistances$distances[removed] <- distCut
     # plot ECDF with distance cutoff
     p <-
