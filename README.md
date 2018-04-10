@@ -6,7 +6,7 @@
 
 *An R package for analysis of data produced by transcript 5' profiling methods like RAMPAGE and MAPCap.*
 
-![icetea_logo](https://github.com/vivekbhr/icetea/blob/master/icetea_front.png)
+![icetea_logo](https://raw.githubusercontent.com/vivekbhr/icetea/master/icetea_front.png)
 
 **The ICETEA R package for analysis of 5’ profiling data** allows users to processes data from multiplexed,
 5’-profiling techniques such as RAMPAGE and the recently developed MAPCap protocol. TSS detection and
