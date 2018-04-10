@@ -8,7 +8,7 @@
 
 ![icetea_logo](https://raw.githubusercontent.com/vivekbhr/icetea/master/icetea_front.png)
 
-**The ICETEA R package for analysis of 5’ profiling data** allows users to processes data from multiplexed,
+**The icetea R package for analysis of 5’ profiling data** allows users to processes data from multiplexed,
 5’-profiling techniques such as RAMPAGE and the recently developed MAPCap protocol. TSS detection and
 differential TSS analysis can be performed using replicates on any 5’-profiling dataset.
 **Left panel :**  Typical analysis steps for MAPCap data that can be performed using icetea.
@@ -17,9 +17,9 @@ Proportion of sequencing reads used for each step (Top), comparison of TSS accur
 between samples (middle), and MA-plots from differential TSS analysis (Bottom).
 
 
-## Installing ICETEA
+## Installing icetea
 
-ICETEA can be installed using biocLite :
+icetea can be installed using biocLite :
 
 ```r
 source("https://bioconductor.org/biocLite.R")
