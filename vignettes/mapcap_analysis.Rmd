@@ -55,11 +55,11 @@ cs <- newCapSet(expMethod = 'MAPCap',
 
 # demultiplex fastq and trim the barcodes
 dir.create("splitting")
-cs <- demultiplexFASTQ(cs, max_mismatch = 1, outdir = "splitting", nthreads = 10)
+cs <- demultiplexFASTQ(cs, max_mismatch = 1, outdir = "splitting", ncores = 10)
 
 # map fastq
 dir.create("mapping")
-cs <- mapCaps(cs, subread_idx, outdir = "mapping", nthreads = 20, logfile = "mapping/subread_mapping.log")
+cs <- mapCaps(cs, subread_idx, outdir = "mapping", ncores = 20, logfile = "mapping/subread_mapping.log")
 
 # filter PCR duplicates
 dir.create("removedup")
@@ -174,7 +174,7 @@ We can now perform the mapping.
 # provide location of a subread index file
 subread_idx <- "genome_index/dm6"
 # map fastq
-cs <- mapCaps(cs, subread_idx, outdir = "mapping", nthreads = 20, logfile = "mapping/subread_mapping.log")
+cs <- mapCaps(cs, subread_idx, outdir = "mapping", ncores = 20, logfile = "mapping/subread_mapping.log")
 # you can save the CapSet object for later use
 save(cs, file = "myCapSet.Rdata")
 ```
@@ -188,7 +188,7 @@ save(cs, file = "myCapSet.Rdata")
 Demultiplxeing can be performed on the BAM files after mapping, using the `splitBAM_byIndex` and (for MAPCap) `splitBAM_byRepindex` functions. These functions assume that the reads have been trimmed and the sample barcodes have been attached to the header in the way as [described above](#demult).
 
 ```{r splitbam, eval=FALSE}
-splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 1, nthreads = 10)
+splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 1, ncores = 10)
 ```
 
 ### Filtering PCR duplicates

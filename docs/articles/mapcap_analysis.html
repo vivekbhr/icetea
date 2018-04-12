@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.99.0</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
       <h1>Analysing transcript 5’-profiling data using icetea</h1>
                         <h4 class="author">Vivek Bhardwaj and Thomas Manke</h4>
             <address class="author_afil">
-      Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="date">05/04/2018</h4>
+      Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="date">12/04/2018</h4>
       
       <small>Source: <a href="https://github.com/vivekbhr/icetea/blob/master/vignettes/mapcap_analysis.Rmd"><code>vignettes/mapcap_analysis.Rmd</code></a></small>
       <div class="hidden name"><code>mapcap_analysis.Rmd</code></div>
@@ -121,11 +121,11 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/newCapSe
 
 <span class="co"># demultiplex fastq and trim the barcodes</span>
 <span class="kw">dir.create</span>(<span class="st">"splitting"</span>)
-cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/demultiplexFASTQ.html">demultiplexFASTQ</a></span>(cs, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">outdir =</span> <span class="st">"splitting"</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)
+cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/demultiplexFASTQ.html">demultiplexFASTQ</a></span>(cs, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">outdir =</span> <span class="st">"splitting"</span>, <span class="dt">ncores =</span> <span class="dv">10</span>)
 
 <span class="co"># map fastq</span>
 <span class="kw">dir.create</span>(<span class="st">"mapping"</span>)
-cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mapCaps.html">mapCaps</a></span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">"mapping"</span>, <span class="dt">nthreads =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">"mapping/subread_mapping.log"</span>)
+cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mapCaps.html">mapCaps</a></span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">"mapping"</span>, <span class="dt">ncores =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">"mapping/subread_mapping.log"</span>)
 
 <span class="co"># filter PCR duplicates</span>
 <span class="kw">dir.create</span>(<span class="st">"removedup"</span>)
@@ -213,7 +213,7 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/demultip
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># provide location of a subread index file</span>
 subread_idx &lt;-<span class="st"> "genome_index/dm6"</span>
 <span class="co"># map fastq</span>
-cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mapCaps.html">mapCaps</a></span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">"mapping"</span>, <span class="dt">nthreads =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">"mapping/subread_mapping.log"</span>)
+cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mapCaps.html">mapCaps</a></span>(cs, subread_idx, <span class="dt">outdir =</span> <span class="st">"mapping"</span>, <span class="dt">ncores =</span> <span class="dv">20</span>, <span class="dt">logfile =</span> <span class="st">"mapping/subread_mapping.log"</span>)
 <span class="co"># you can save the CapSet object for later use</span>
 <span class="kw">save</span>(cs, <span class="dt">file =</span> <span class="st">"myCapSet.Rdata"</span>)</code></pre></div>
 <p><strong>Note:</strong> The package <code>Rsubread</code> is not available for windows. Windows users would need to map their demultiplexed files using another tool.</p>
@@ -223,7 +223,7 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mapCaps.
 <h3 class="hasAnchor">
 <a href="#optional-post-mapping-de-multiplexing" class="anchor"></a>(optional) Post mapping de-multiplexing</h3>
 <p>Demultiplxeing can be performed on the BAM files after mapping, using the <code>splitBAM_byIndex</code> and (for MAPCap) <code>splitBAM_byRepindex</code> functions. These functions assume that the reads have been trimmed and the sample barcodes have been attached to the header in the way as <a href="#demult">described above</a>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/splitBAM_byIndex.html">splitBAM_byIndex</a></span>(bamFile, index_list, outfile_list, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">nthreads =</span> <span class="dv">10</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="../reference/splitBAM_byIndex.html">splitBAM_byIndex</a></span>(bamFile, index_list, outfile_list, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">ncores =</span> <span class="dv">10</span>)</code></pre></div>
 </div>
 <div id="filtering-pcr-duplicates" class="section level3">
 <h3 class="hasAnchor">
