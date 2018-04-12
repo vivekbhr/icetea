@@ -93,11 +93,14 @@ The workflow begins by creating an object of class `CapSet` using the function `
 With this information, create the CapSet object as follows.
 
 ```{r makeCS, eval=TRUE, results = "hold"}
-# provide demultiplexing barcodes and sample names
+# provide demultiplexing barcodes as strings
 idxlist <- c("CAAGTG", "TTAGCC", "GTGGAA", "TGTGAG")
-dir <- system.file("extdata", package = "icetea")
-# corresponding sample names
+
+# provide corresponding sample names
 fnames <- c("embryo1", "embryo2", "embryo3", "embryo4")
+
+# `dir` contains example data provided with this package
+dir <- system.file("extdata", package = "icetea")
 
 ## CapSet object from raw (multiplexed) fastq files
 library(icetea)

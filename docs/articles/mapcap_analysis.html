@@ -156,11 +156,14 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/detectTS
 <a href="#the-capset-object" class="anchor"></a>The CapSet object</h2>
 <p>The workflow begins by creating an object of class <code>CapSet</code> using the function <code>newCapSet</code>. This object contains information about the experiment method (CAGE <span class="citation">(Kodzius et al. 2006)</span>, RAMPAGE <span class="citation">(Batut et al. 2013)</span> or MAPCap), along with the path of the multiplexed fastq files. To allow de-multiplexing as , the demultiplexing barcodes should be provided to <code>idxList</code> and the corresponding samplenames should be provided to <code>sampleNames</code>.</p>
 <p>With this information, create the CapSet object as follows.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># provide demultiplexing barcodes and sample names</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># provide demultiplexing barcodes as strings</span>
 idxlist &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"CAAGTG"</span>, <span class="st">"TTAGCC"</span>, <span class="st">"GTGGAA"</span>, <span class="st">"TGTGAG"</span>)
-dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">"extdata"</span>, <span class="dt">package =</span> <span class="st">"icetea"</span>)
-<span class="co"># corresponding sample names</span>
+
+<span class="co"># provide corresponding sample names</span>
 fnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"embryo1"</span>, <span class="st">"embryo2"</span>, <span class="st">"embryo3"</span>, <span class="st">"embryo4"</span>)
+
+<span class="co"># `dir` contains example data provided with this package</span>
+dir &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">"extdata"</span>, <span class="dt">package =</span> <span class="st">"icetea"</span>)
 
 ## CapSet object from raw (multiplexed) fastq files
 <span class="kw">library</span>(icetea)

@@ -19,9 +19,16 @@ between samples (middle), and MA-plots from differential TSS analysis (Bottom).
 
 ## Installing icetea
 
-icetea can be installed using biocLite :
+icetea can be installed using Devtools. Devtools can be installed from CRAN.
 
-```r
-source("https://bioconductor.org/biocLite.R")
-biocLite("vivekbhr/icetea")
+```{r}
+## first install devtools
+install.packages("devtools")
+
+## then install icetea
+devtools::install_github("vivekbhr/icetea")
 ```
+
+## Documentation
+
+Please visit the icetea [website](https://vivekbhr.github.io/icetea/) for the package documentation and vignette.
