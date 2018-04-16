@@ -14,7 +14,6 @@ cache:
   - C:\RLibrary -> appveyor.yml
 
 # Adapt as necessary starting from here
-
 build_script:
   - R -e source('https://install-github.me/r-lib/remotes')
   - travis-tool.sh install_bioc_deps
