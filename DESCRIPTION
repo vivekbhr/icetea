@@ -10,7 +10,7 @@ Description: icetea is a tool that integrates the cap enrichment information
     start sites and performing differential TSS detection between group
     of samples.
 Depends:
-    R (>= 3.6)
+    R (>= 3.4)
 Imports:
     stats,
     utils,
