@@ -9,7 +9,7 @@
 \usage{
 newCapSet(expMethod, fastq_R1 = NULL, fastq_R2 = NULL, idxList = NULL,
   sampleNames, demult_R1 = NA, demult_R2 = NA, mapped_file = NA,
-  filtered_file = NA)
+  filtered_file = NA, paired_end = TRUE)
 }
 \arguments{
 \item{expMethod}{experiment method ('CAGE', 'RAMPAGE' or 'MAPCap')}
@@ -29,6 +29,8 @@ newCapSet(expMethod, fastq_R1 = NULL, fastq_R2 = NULL, idxList = NULL,
 \item{mapped_file}{a vector of file paths for mapped BAM files.}
 
 \item{filtered_file}{a vector of file paths for de-duplicated BAM files.}
+
+\item{paired_end}{logical, indiciting whether the data is paired end}
 }
 \value{
 An object of class CapSet

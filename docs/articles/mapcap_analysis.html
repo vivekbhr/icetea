@@ -79,7 +79,7 @@
       <h1>Analysing transcript 5’-profiling data using icetea</h1>
                         <h4 class="author">Vivek Bhardwaj and Thomas Manke</h4>
             <address class="author_afil">
-      Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="date">12/04/2018</h4>
+      Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="date">03/05/2018</h4>
       
       <small>Source: <a href="https://github.com/vivekbhr/icetea/blob/master/vignettes/mapcap_analysis.Rmd"><code>vignettes/mapcap_analysis.Rmd</code></a></small>
       <div class="hidden name"><code>mapcap_analysis.Rmd</code></div>
@@ -331,7 +331,7 @@ transcripts &lt;-<span class="st"> </span><span class="kw">transcripts</span>(Tx
 <span class="co"># Plotting the precision using a pre computed set of TSS (.bed files) :</span>
 tssfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"testTSS_merged.bed"</span>, <span class="dt">package =</span> <span class="st">"icetea"</span>)
 <span class="kw"><a href="../reference/plotTSSprecision.html">plotTSSprecision</a></span>(<span class="dt">reference =</span> transcripts, <span class="dt">detectedTSS =</span> tssfile, <span class="dt">sampleNames =</span> <span class="st">"testsample"</span>)
-<span class="co">#&gt; There are 50 regions with distance &gt; 500 to the closest TSS. They are all being reduced to 500 for the calculation.</span></code></pre></div>
+<span class="co">#&gt; There are 13 regions with distance &gt; 500 bp to the closest TSS. They are all being reduced to 500 bp for the calculation. Samplewise numbers are : 13</span></code></pre></div>
 <p><img src="mapcap_analysis_files/figure-html/plotPrecision-1.png" width="672"></p>
 </div>
 <div id="differential-tss-expression-analysis" class="section level2">
@@ -386,19 +386,12 @@ outdf &lt;-<span class="st"> </span><span class="kw"><a href="../reference/annot
             <span class="dt">txdb =</span> TxDb.Dmelanogaster.UCSC.dm6.ensGene,
             <span class="dt">plotValue =</span> <span class="st">"number"</span>,
             <span class="dt">outFile =</span> <span class="ot">NULL</span>)
-<span class="co">#&gt; Warning in valid.GenomicRanges.seqinfo(x, suggest.trim = TRUE): GRanges object contains 78 out-of-bound ranges located on</span>
-<span class="co">#&gt;   sequences 29325, 29326, 29327, 31704, 31705, 31706, 31707, 32332,</span>
-<span class="co">#&gt;   32333, 32334, 32335, 32336, and 32794. Note that ranges located on</span>
-<span class="co">#&gt;   a sequence whose length is unknown (NA) or on a circular sequence</span>
-<span class="co">#&gt;   are not considered out-of-bound (use seqlengths() and isCircular()</span>
-<span class="co">#&gt;   to get the lengths and circularity flags of the underlying</span>
-<span class="co">#&gt;   sequences). You can use trim() to trim these ranges. See</span>
-<span class="co">#&gt;   ?`trim,GenomicRanges-method` for more information.</span>
-<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
-<span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span>
 <span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span>
 <span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
-<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span></code></pre></div>
+<span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span>
+<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
+<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
+<span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span></code></pre></div>
 <p><img src="mapcap_analysis_files/figure-html/annotateTSS-1.png" width="672"></p>
 </div>
 </div>

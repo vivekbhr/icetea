@@ -23,16 +23,16 @@ getMCparams <- function(cores) {
 #'
 #' @return bamFlags
 #'
-getBamFlags <- function(paired) {
+getBamFlags <- function(countAll) {
         # get baminfo
-    if (isTRUE(paired)) {
-        # if paired given, count both reads
+    if (isTRUE(countAll)) {
+        # if countAll given, count both reads (in PE mode) or all reads (in SE mode)
         bamFlags <- scanBamFlag(
                                 isUnmappedQuery = FALSE,
                                 isSecondaryAlignment = FALSE
                             )
     } else {
-        # else count only R1
+        # else count only R1 (in PE mode)
         bamFlags <- scanBamFlag(
                                 isUnmappedQuery = FALSE,
                                 isFirstMateRead = TRUE,
@@ -50,14 +50,14 @@ getBamFlags <- function(paired) {
 #'
 #' @return Total counts within given ranges per BAM file.
 #'
-numReadsInBed <- function(regions, bams = NA, pairedEnd = FALSE) {
+numReadsInBed <- function(regions, bams = NA, countall = FALSE) {
     counts <-
         GenomicAlignments::summarizeOverlaps(
             GenomicRanges::GRangesList(regions),
             reads = Rsamtools::BamFileList(as.character(bams)),
             mode = "Union",
             inter.feature = FALSE,
-            param = Rsamtools::ScanBamParam(flag = getBamFlags(paired = pairedEnd))
+            param = Rsamtools::ScanBamParam(flag = getBamFlags(countAll = countall))
         )
     numreads <- SummarizedExperiment::assay(counts)
     return(t(numreads))

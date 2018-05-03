@@ -4,7 +4,7 @@
 \alias{numReadsInBed}
 \title{Count the number of reads in a given GRanges}
 \usage{
-numReadsInBed(regions, bams = NA, pairedEnd = FALSE)
+numReadsInBed(regions, bams = NA, countall = FALSE)
 }
 \arguments{
 \item{regions}{The GRanges object}

@@ -64,7 +64,8 @@ setMethod(
             si_stats[-1] <- get_stackedNum(si_stats[-1])
         }
         y_label <- paste0("Proportion of ", basecat, " reads")
-    } else {
+
+    } else if (plotValue == "numbers") {
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
         }
@@ -76,6 +77,11 @@ setMethod(
                         varying = varcols, timevar = "variable",
                         times = varcols, v.names = "value")
     rownames(si_stats) <- NULL
+    si_stats$variable <- factor(si_stats$variable,
+                                levels = c("demultiplexed_reads",
+                                           "mapped_reads",
+                                           "duplicate_free_reads",
+                                           "reads_within_TSS"))
     # plot stacked barchart
     p <-
         ggplot(si_stats, aes_string("sample", "value", fill = "variable")) +

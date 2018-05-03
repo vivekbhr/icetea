@@ -143,8 +143,10 @@ setMethod("detectTSS",
             }
 
             # Counting params
+            countall = !(cs@paired_end)
             bamParams <- Rsamtools::ScanBamParam(
-                                flag = getBamFlags(paired = FALSE))
+                                flag = getBamFlags(countAll = countall))
+
             bpParams <- getMCparams(ncores)
             # window size
             bin_size <- windowSize
@@ -158,9 +160,9 @@ setMethod("detectTSS",
                                     window_size = bin_size,
                                     sliding = sliding)
               # add metadata
-            mdat <- list(spacing = bin_size, width = bin_size,
-                        shift = 0, bin = TRUE, final.ext = 1)
-            S4Vectors::metadata(data) <- mdat
+            #mdat <- list(spacing = bin_size, width = bin_size,
+            #            shift = 0, bin = TRUE, final.ext = 1)
+            #S4Vectors::metadata(data) <- mdat
             colnames(data) <- rownames(design)
             colData(data) <- c(colData(data), design)
 
@@ -185,7 +187,7 @@ setMethod("detectTSS",
                     BPPARAM = bpParams)
                   })
 
-            S4Vectors::metadata(wider) <- mdat
+            #S4Vectors::metadata(wider) <- mdat
             # set totals to same value as data (to avoid error from filterWindows)
             colData(wider) <- colData(data)
             colnames(wider) <- rownames(design)
@@ -221,7 +223,7 @@ setMethod("detectTSS",
             ## Calculate prop reads in TSS per group
             message("Counting reads within detected TSS")
             mergedall <- base::Reduce(S4Vectors::union, merged)
-            si$num_intss <- as.numeric(numReadsInBed(mergedall, bam.files))
+            si$num_intss <- as.numeric(numReadsInBed(mergedall, bam.files, countall = countall))
             sampleInfo(CSobject) <- si
 
             # Add the results as a list and save as .Rdata

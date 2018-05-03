@@ -50,7 +50,7 @@ filterdups_func <- function(bamdf) {
 filterDups <- function(bamFile, outFile, keepPairs) {
     message(paste0("Removing PCR duplicates : ", bamFile))
 
-    bamFlags <- getBamFlags(paired = keepPairs)
+    bamFlags <- getBamFlags(countAll = keepPairs)
     sparam <-
         Rsamtools::ScanBamParam(
             what = c("qname", "rname", "pos","strand"),
@@ -143,7 +143,7 @@ setMethod("filterDuplicates",
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
                          param = ScanBamParam(
-                            flag = getBamFlags(paired = FALSE)
+                            flag = getBamFlags(countAll = !cs@paired_end)
                         ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)
