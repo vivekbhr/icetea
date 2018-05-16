@@ -15,14 +15,14 @@ plotReadStats(CSobject, plotType = "dodge", plotValue = "numbers",
 \arguments{
 \item{CSobject}{The \code{\link{CapSet}} object}
 
-\item{plotType}{The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
+\item{plotType}{character. The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
 or a bar chart with "dodged" positions (analogous to ggplot)}
 
-\item{plotValue}{What values to plot. Choose from "numbers" or "proportions". If "proportions"
+\item{plotValue}{character. What values to plot. Choose from "numbers" or "proportions". If "proportions"
 is selected, the proportion of reads w.r.t total demultiplexed reads per sample
 would be plotted}
 
-\item{outFile}{Output file name. (filename extention would be used to determine type).
+\item{outFile}{character. Output file name. (filename extention would be used to determine type).
 If outfile not specified, the plot would be retured on the screen}
 }
 \value{

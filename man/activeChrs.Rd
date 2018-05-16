@@ -8,9 +8,9 @@
 activeChrs(bam.files, restrict)
 }
 \arguments{
-\item{bam.files}{Character vector (bam files)}
+\item{bam.files}{Character . bam files to check}
 
-\item{restrict}{Chromosomes to select}
+\item{restrict}{character. Chromosomes to select}
 }
 \value{
 Vector of selected chromosomes

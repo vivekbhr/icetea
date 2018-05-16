@@ -7,7 +7,7 @@
 getBamFlags(countAll)
 }
 \arguments{
-\item{paired}{logical. Keep Paired reads?}
+\item{countAll}{logical. count all reads?}
 }
 \value{
 bamFlags

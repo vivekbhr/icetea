@@ -14,11 +14,11 @@ filterDuplicates(CSobject, outdir, ncores = 1, keepPairs = FALSE)
 \arguments{
 \item{CSobject}{an object of class \code{\link{CapSet}}}
 
-\item{outdir}{output directory for filtered BAM files}
+\item{outdir}{character. output directory for filtered BAM files}
 
-\item{ncores}{No. of cores to use}
+\item{ncores}{integer. No. of cores to use}
 
-\item{keepPairs}{logical, indicating whether to keep pairs in the paired-end data.
+\item{keepPairs}{logical. indicating whether to keep pairs in the paired-end data.
 (note: the pairs are treated as independent reads during duplicate removal)}
 }
 \value{

@@ -7,14 +7,14 @@
 filterDups(bamFile, outFile, keepPairs)
 }
 \arguments{
-\item{bamFile}{Input BAM file}
+\item{bamFile}{character. Input BAM file}
 
-\item{outFile}{Output (filtered) BAM file}
+\item{outFile}{character. Output (filtered) BAM file}
 
-\item{keepPairs}{Keep R2?}
+\item{keepPairs}{logical. Keep R2 read?}
 }
 \value{
-Filtered BAM file (with only R1), after PCR duplicate removal
+Filtered BAM file, after PCR duplicate removal
 }
 \description{
 Filter PCR-duplicates from BAM file using internal UMIs

@@ -7,11 +7,11 @@
 splitBAM_byRepindex(bamFile, outfile_prefix, ncores = 1)
 }
 \arguments{
-\item{bamFile}{Path to a mapped BAM file}
+\item{bamFile}{character. Path to a mapped BAM file}
 
-\item{outfile_prefix}{A prefix for output file (replicates IDs will be added as RR/YY)}
+\item{outfile_prefix}{character. prefix for output file (replicates IDs will be added as RR/YY)}
 
-\item{ncores}{Number of cores to use for parallel processing}
+\item{ncores}{integer. Number of cores to use for parallel processing}
 }
 \value{
 Filtered files by replicate Index

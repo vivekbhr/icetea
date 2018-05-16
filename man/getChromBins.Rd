@@ -7,11 +7,11 @@
 getChromBins(bamFiles, restrictChr = NULL, binSize)
 }
 \arguments{
-\item{bamFiles}{Character vector (bam files)}
+\item{bamFiles}{Character. bam files}
 
-\item{restrictChr}{Chromosomes to select}
+\item{restrictChr}{character. Chromosomes to select}
 
-\item{binSize}{Size of bins}
+\item{binSize}{numeric. Size of bins}
 }
 \value{
 GRanges (bins) for both strands

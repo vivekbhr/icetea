@@ -7,11 +7,11 @@
 plotPrecision(ref, tssData, distCut)
 }
 \arguments{
-\item{ref}{reference GRanges}
+\item{ref}{GRanges. reference ranges to compare the precision with.}
 
 \item{tssData}{GRangesList object with TSS detected per sample}
 
-\item{distCut}{max distance cutoff}
+\item{distCut}{integer. max distance cutoff}
 }
 \value{
 ggplot object

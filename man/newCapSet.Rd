@@ -3,7 +3,7 @@
 \docType{class}
 \name{newCapSet}
 \alias{newCapSet}
-\alias{CapSet-class}
+\alias{CapSet2-class}
 \alias{CapSet}
 \title{Create a new CapSet object}
 \usage{

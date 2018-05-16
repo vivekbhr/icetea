@@ -7,11 +7,11 @@
 ResizeReads(reads, width = 1, fix = "start")
 }
 \arguments{
-\item{reads}{GAlignment object}
+\item{reads}{GAlignment object to resize}
 
-\item{width}{New read length}
+\item{width}{integer. New read length}
 
-\item{fix}{'Start' for 5'}
+\item{fix}{character. 'Start' for 5'}
 }
 \value{
 Resized reads as GRanges
