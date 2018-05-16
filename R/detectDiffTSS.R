@@ -1,12 +1,13 @@
 #' Calculate normalization factors from CapSet object
 #'
-#' @rdname calcNormFactors
+#' @rdname getNormFactors
 #' @param CSobject An object of class \code{\link{CapSet}}
 #' @param features A \link[GenomicRanges]{GRanges-class}.object to count the reads on.
 #' @param method Method to use for normalization. Options : "TMM","RLE","upperquartile","none"
 #' @param ... Additional arguments passed to \link[edgeR]{calcNormFactors}
 #'
 #' @return Numeric vector of calculated normalization factors.
+#' @importFrom GenomicAlignments summarizeOverlaps
 #' @export
 #'
 #' @examples
@@ -21,10 +22,10 @@
 #'
 #' # get norm factors by counting reads on genes
 #' cs <- exampleCSobject()
-#' normfacs <- calcNormFactors(cs, dm6genes, method = "RLE")
+#' normfacs <- getNormFactors(cs, dm6genes, method = "RLE")
 #'
 
-setMethod("calcNormFactors",
+setMethod("getNormFactors",
         signature = "CapSet",
         function(CSobject,
                 features,
@@ -35,10 +36,9 @@ setMethod("calcNormFactors",
         bam.files <- si$filtered_file
 
         ## get 5' read counts on the TSS from the bam.files
-        counts <-
-            GenomicAlignments::summarizeOverlaps(features = features,
-                                                reads = bam.files,
-                                                preprocess.reads = ResizeReads)
+        counts <- summarizeOverlaps(features = features,
+                                    reads = bam.files,
+                                    preprocess.reads = ResizeReads)
         # make DGElist
         y <- edgeR::DGEList(counts = assay(counts))
         normfacs <- edgeR::calcNormFactors(y, method = method, ...)

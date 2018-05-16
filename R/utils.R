@@ -1,6 +1,7 @@
 #' Get platform-specific multicore params
 #'
 #' @param cores integer. No. of cores to use.
+#' @importFrom BiocParallel SnowParam MulticoreParam
 #'
 #' @return BPPARAM object
 #'
@@ -9,9 +10,9 @@ getMCparams <- function(cores) {
         param <- BiocParallel::SerialParam()
     } else {
         param <- switch(Sys.info()[['sysname']],
-                        Windows = {return(BiocParallel::SnowParam(workers = cores))},
-                        Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
-                        Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
+                        Windows = {return(SnowParam(workers = cores))},
+                        Linux = {return(MulticoreParam(workers = cores))},
+                        Darwin = {return(MulticoreParam(workers = cores))}
                     )
     }
     return(param)
@@ -20,6 +21,7 @@ getMCparams <- function(cores) {
 #' Get flags to read from bam
 #'
 #' @param countAll logical. count all reads?
+#' @importFrom Rsamtools scanBamFlag
 #'
 #' @return bamFlags
 #'
@@ -94,15 +96,15 @@ activeChrs <- function(bam.files, restrict)
 #' @param restrictChr character. Chromosomes to select
 #' @param binSize numeric. Size of bins
 #'
+#' @importFrom GenomicRanges tileGenome strand
 #' @return GRanges (bins) for both strands
 #'
 getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
     keptChrs <- activeChrs(bamFiles, restrict = restrictChr)
-    gr.bins.plus <- GenomicRanges::tileGenome(keptChrs, tilewidth = 10, cut.last.tile.in.chrom = TRUE)
-    #gr.bins.plus <- GenomicRanges::trim(gr.bins.plus)
+    gr.bins.plus <- tileGenome(keptChrs, tilewidth = 10, cut.last.tile.in.chrom = TRUE)
     gr.bins.minus <- gr.bins.plus
-    GenomicRanges::strand(gr.bins.plus) <- "+"
-    GenomicRanges::strand(gr.bins.minus) <- "-"
+    strand(gr.bins.plus) <- "+"
+    strand(gr.bins.minus) <- "-"
     return(list(gr.plus = gr.bins.plus,
                 gr.minus = gr.bins.minus))
 }

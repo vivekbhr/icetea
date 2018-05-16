@@ -4,52 +4,51 @@
 #' @param fq_R1 character. fastq Read 1
 #' @param fq_R2 character. fastq Read 2
 #'
+#' @importFrom ShortRead sread
+#' @importFrom Biostrings quality DNAStringSet
+#' @importFrom BiocGenerics width
+#' @importFrom IRanges narrow
+#'
 #' @return A list with new R1 and R2 sequence, quality, barcode string and sample id
 #'
 get_newfastq <- function(type, fq_R1, fq_R2) {
     # get R1 and R2 reads and quality
-    fq_R1read <- ShortRead::sread(fq_R1)
-    fq_R1qual <- Biostrings::quality(fq_R1)
-    fq_R2read <- ShortRead::sread(fq_R2)
-    fq_R2qual <- Biostrings::quality(fq_R2)
+    fq_R1read <- sread(fq_R1)
+    fq_R1qual <- quality(fq_R1)
+    fq_R2read <- sread(fq_R2)
+    fq_R2qual <- quality(fq_R2)
     if (type == "MAPCap") {
         # trim barcodes (pos 1 to 13) from R2 and prepare header
         # copy the index sequence (position 6 to 11)
-        sample_idx <- IRanges::narrow(fq_R2read, 6, 11)
+        sample_idx <- narrow(fq_R2read, 6, 11)
         # copy pcr barcode (pos 1 to 5 + pos 12 to 13)
         umi_barcodes <-
-            Biostrings::DNAStringSet(paste0(
-                IRanges::narrow(fq_R2read, 1, 5),
-                IRanges::narrow(fq_R2read, 12, 13)
+            DNAStringSet(paste0(
+                narrow(fq_R2read, 1, 5),
+                narrow(fq_R2read, 12, 13)
             ))
         #copy replicate demultiplexing barcode  (pos 3 to 4)
-        rep_idx <- IRanges::narrow(fq_R2read, 3, 4)
+        rep_idx <- narrow(fq_R2read, 3, 4)
         barcode_string <-
             paste(sample_idx, umi_barcodes, rep_idx, sep = ":")
         # now trim the first 13 bp off the read and quality
-        fq_R2read <-
-            IRanges::narrow(fq_R2read, 14, BiocGenerics::width(fq_R2))
-        fq_R2qual <-
-            IRanges::narrow(fq_R2qual, 14, BiocGenerics::width(fq_R2))
+        fq_R2read <- narrow(fq_R2read, 14, width(fq_R2))
+        fq_R2qual <- narrow(fq_R2qual, 14, width(fq_R2))
 
     } else if (type == "RAMPAGE") {
         # trim barcodes first 15 bases from R2 and first 6 bases from R1 and prepare header
         # copy the index sequence (position 1 to 6 of R1)
-        sample_idx <- IRanges::narrow(fq_R1read, 1, 6)
+        sample_idx <- narrow(fq_R1read, 1, 6)
 
         # copy pcr barcode (pos 1 to 15 of R2)
-        umi_barcodes <- IRanges::narrow(fq_R2read, 1, 15)
+        umi_barcodes <- narrow(fq_R2read, 1, 15)
         barcode_string <- paste(sample_idx, umi_barcodes, sep = ":")
 
         # now trim the first 15 bp off the read and quality of R2
-        fq_R2read <-
-            IRanges::narrow(fq_R2read, 16, BiocGenerics::width(fq_R2))
-        fq_R2qual <-
-            IRanges::narrow(fq_R2qual, 16, BiocGenerics::width(fq_R2))
-        fq_R1read <-
-            IRanges::narrow(fq_R1read, 7, BiocGenerics::width(fq_R1read))
-        fq_R1qual <-
-            IRanges::narrow(fq_R1qual, 7, BiocGenerics::width(fq_R1qual))
+        fq_R2read <- narrow(fq_R2read, 16, width(fq_R2))
+        fq_R2qual <- narrow(fq_R2qual, 16, width(fq_R2))
+        fq_R1read <- narrow(fq_R1read, 7, width(fq_R1read))
+        fq_R1qual <- narrow(fq_R1qual, 7, width(fq_R1qual))
     } else {
         message("type of protocol not MAPCap or RAMPAGE. Reads are not being trimmed.")
         barcode_string <- NA

@@ -111,7 +111,7 @@ provided." />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Annotate the provided Transcription Start Sites</h1>
-    <small>Source: <a href='https://github.com/vivekbhr/icetea/blob/master/R/annotate_TSS.R'><code>R/annotate_TSS.R</code></a></small>
+    <small>Source: <a href='https://github.com/vivekbhr/icetea/blob/master/R/annotateTSS.R'><code>R/annotateTSS.R</code></a></small>
     <div class="hidden name"><code>annotateTSS.Rd</code></div>
     </div>
 
@@ -162,8 +162,7 @@ If outfile not specified, the plot would be retured on the screen</p></td>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='co'># load a txdb object</span>
-<span class='fu'>library</span>(<span class='st'>"TxDb.Dmelanogaster.UCSC.dm6.ensGene"</span>)
-<span class='fu'>seqlevelsStyle</span>(<span class='no'>TxDb.Dmelanogaster.UCSC.dm6.ensGene</span>) <span class='kw'>&lt;-</span> <span class='st'>"ENSEMBL"</span>
+<span class='fu'>library</span>(<span class='st'>"TxDb.Dmelanogaster.UCSC.dm6.ensGene"</span>)</div><div class='output co'>#&gt; <span class='message'>Loading required package: GenomicFeatures</span></div><div class='output co'>#&gt; <span class='message'>Loading required package: AnnotationDbi</span></div><div class='input'><span class='fu'>seqlevelsStyle</span>(<span class='no'>TxDb.Dmelanogaster.UCSC.dm6.ensGene</span>) <span class='kw'>&lt;-</span> <span class='st'>"ENSEMBL"</span>
 <span class='co'># limiting the annotation to X chromosome</span>
 <span class='fu'>seqlevels</span>(<span class='no'>TxDb.Dmelanogaster.UCSC.dm6.ensGene</span>) <span class='kw'>&lt;-</span> <span class='st'>"X"</span>
 
@@ -171,7 +170,7 @@ If outfile not specified, the plot would be retured on the screen</p></td>
 <span class='no'>dir</span> <span class='kw'>&lt;-</span> <span class='fu'>system.file</span>(<span class='st'>"extdata"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"icetea"</span>)
 <span class='no'>tss</span> <span class='kw'>&lt;-</span> <span class='fu'>file.path</span>(<span class='no'>dir</span>, <span class='st'>"testTSS_merged.bed"</span>)
 <span class='no'>annotations</span> <span class='kw'>&lt;-</span> <span class='fu'>annotateTSS</span>(<span class='kw'>tssBED</span> <span class='kw'>=</span> <span class='no'>tss</span>, <span class='no'>TxDb.Dmelanogaster.UCSC.dm6.ensGene</span>,
-               <span class='kw'>plotValue</span> <span class='kw'>=</span> <span class='st'>"number"</span>, <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_annot.pdf"</span>)</div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>Saving 10.1 x 5.39 in image</span></div><div class='input'>
+               <span class='kw'>plotValue</span> <span class='kw'>=</span> <span class='st'>"number"</span>, <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_annot.pdf"</span>)</div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned many:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>'select()' returned 1:1 mapping between keys and columns</span></div><div class='output co'>#&gt; <span class='message'>Saving 10.1 x 5.6 in image</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

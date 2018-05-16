@@ -120,15 +120,15 @@ setGeneric("getGeneCounts",
                 ncores = 1)
             standardGeneric("getGeneCounts"))
 
-#' @name calcNormFactors
-#' @rdname calcNormFactors
+#' @name getNormFactors
+#' @rdname getNormFactors
 #' @export
-setGeneric("calcNormFactors",
+setGeneric("getNormFactors",
             function(CSobject,
                     features,
                     method = "TMM",
                     ...)
-            standardGeneric("calcNormFactors"))
+            standardGeneric("getNormFactors"))
 
 #' @name fitDiffTSS
 #' @rdname fitDiffTSS

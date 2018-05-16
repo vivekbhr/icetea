@@ -250,6 +250,7 @@ setMethod("detectTSS",
 #'
 #' @return .bed file(s) containing detected TSS.
 #'
+#' @importFrom rtracklayer export.bed
 #' @export
 #' @examples
 #' # load a previously saved CapSet object
@@ -270,7 +271,7 @@ setMethod("exportTSS",
                   message("Writing output .bed files per group")
                   mapply(
                       function(bedfile, group) {
-                          rtracklayer::export.bed(object = bedfile, con = group)
+                          export.bed(object = bedfile, con = group)
                       },
                       bedfile = mergedBED,
                       group = paste0(outfile_prefix, "_" , names(mergedBED), ".bed")
@@ -281,8 +282,8 @@ setMethod("exportTSS",
                   ## write out the union of GRanges
                   message("Writing merged .bed files")
                   mergedall <- base::Reduce(S4Vectors::union, mergedBED)
-                  rtracklayer::export.bed(mergedall,
-                                          con = paste(outfile_prefix, "merged.bed", sep = "_"))
+                  export.bed(mergedall,
+                            con = paste(outfile_prefix, "merged.bed", sep = "_"))
               }
 
           })

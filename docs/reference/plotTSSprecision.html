@@ -145,11 +145,11 @@ or a character vector with paths to the BED files containing detcted TSSs</p></t
     </tr>
     <tr>
       <th>distanceCutoff</th>
-      <td><p>Maximum distance (in base pairs) from reference TSS to plot</p></td>
+      <td><p>integer. Maximum distance (in base pairs) from reference TSS to plot</p></td>
     </tr>
     <tr>
       <th>outFile</th>
-      <td><p>Output file name (filename extention would be used to determine type)
+      <td><p>character. Output file name (filename extention would be used to determine type)
 If outfile not specified, the plot would be returned on the screen</p></td>
     </tr>
     <tr>
@@ -158,7 +158,7 @@ If outfile not specified, the plot would be returned on the screen</p></td>
     </tr>
     <tr>
       <th>sampleNames</th>
-      <td><p>Labels for input samples (in the same order as the input bed files)</p></td>
+      <td><p>character. Labels for input samples (in the same order as the input bed files)</p></td>
     </tr>
     </table>
     
@@ -180,7 +180,7 @@ If outfile not specified, the plot would be returned on the screen</p></td>
 <span class='no'>tssfile</span> <span class='kw'>&lt;-</span> <span class='fu'>system.file</span>(<span class='st'>"extdata"</span>, <span class='st'>"testTSS_merged.bed"</span>, <span class='kw'>package</span> <span class='kw'>=</span> <span class='st'>"icetea"</span>)
 <span class='fu'>plotTSSprecision</span>(<span class='kw'>reference</span> <span class='kw'>=</span> <span class='no'>transcripts</span>, <span class='kw'>detectedTSS</span> <span class='kw'>=</span> <span class='no'>tssfile</span>,
                 <span class='kw'>sampleNames</span> <span class='kw'>=</span> <span class='st'>"testTSS"</span>, <span class='kw'>distanceCutoff</span> <span class='kw'>=</span> <span class='fl'>500</span>,
-                <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_detection_precision.png"</span>)</div><div class='output co'>#&gt; <span class='message'>There are 13 regions with distance &gt; 500 bp to the closest TSS. They are all being reduced to 500 bp for the calculation. Samplewise numbers are : 13</span></div><div class='output co'>#&gt; <span class='message'>Saving 10.1 x 5.39 in image</span></div><div class='input'>
+                <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_detection_precision.png"</span>)</div><div class='output co'>#&gt; <span class='message'>There are 13 regions with distance &gt; 500 bp to the closest TSS. They are all being reduced to 500 bp for the calculation. Samplewise numbers are : 13</span></div><div class='output co'>#&gt; <span class='message'>Saving 10.1 x 5.6 in image</span></div><div class='input'>
 <span class='co'>## Plotting the precision using a CapSet object :</span>
 
 <span class='fu'>library</span>(<span class='st'>"TxDb.Dmelanogaster.UCSC.dm6.ensGene"</span>)
@@ -192,7 +192,7 @@ If outfile not specified, the plot would be returned on the screen</p></td>
 <span class='co'># load a previously saved CapSet object</span>
 <span class='no'>cs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='exampleCSobject.html'>exampleCSobject</a></span>()</div><div class='output co'>#&gt; <span class='message'>Checking de-multiplexed R1 reads</span></div><div class='output co'>#&gt; <span class='message'>Checking de-multiplexed R2 reads</span></div><div class='output co'>#&gt; <span class='message'>Checking mapped file</span></div><div class='output co'>#&gt; <span class='message'>Checking de-duplicated file</span></div><div class='input'><span class='co'># plot</span>
 <span class='fu'>plotTSSprecision</span>(<span class='kw'>reference</span> <span class='kw'>=</span> <span class='no'>transcripts</span>, <span class='kw'>detectedTSS</span> <span class='kw'>=</span> <span class='no'>cs</span>,
-                  <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_detection_precision.png"</span>)</div><div class='output co'>#&gt; <span class='message'>There are 0 regions with distance &gt; 500 bp to the closest TSS. They are all being reduced to 500 bp for the calculation. Samplewise numbers are : </span></div><div class='output co'>#&gt; <span class='message'>Saving 10.1 x 5.39 in image</span></div><div class='input'>
+                  <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"TSS_detection_precision.png"</span>)</div><div class='output co'>#&gt; <span class='message'>There are 0 regions with distance &gt; 500 bp to the closest TSS. They are all being reduced to 500 bp for the calculation. Samplewise numbers are : </span></div><div class='output co'>#&gt; <span class='message'>Saving 10.1 x 5.6 in image</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
