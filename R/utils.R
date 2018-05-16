@@ -1,8 +1,8 @@
 #' Get platform-specific multicore params
 #'
-#' @param cores No. of cores
+#' @param cores integer. No. of cores to use.
 #'
-#' @return BPPARAM
+#' @return BPPARAM object
 #'
 getMCparams <- function(cores) {
     if (cores == 1) {
@@ -19,7 +19,7 @@ getMCparams <- function(cores) {
 
 #' Get flags to read from bam
 #'
-#' @param paired logical. Keep Paired reads?
+#' @param countAll logical. count all reads?
 #'
 #' @return bamFlags
 #'
@@ -44,9 +44,9 @@ getBamFlags <- function(countAll) {
 
 #' Count the number of reads in a given GRanges
 #'
-#' @param regions The GRanges object
-#' @param bams path to bam files from where the reads have to be counted
-#' @param pairedEnd logical. whether to keep both reads of paired-end data
+#' @param regions The GRanges object to count reads in.
+#' @param bams character. path to bam files from where the reads have to be counted
+#' @param countall logical. whether to keep both reads of paired-end data
 #'
 #' @return Total counts within given ranges per BAM file.
 #'
@@ -66,8 +66,8 @@ numReadsInBed <- function(regions, bams = NA, countall = FALSE) {
 #' Match BAM headers bw files and get active chromosome list (from restrict)
 #' (written by Aaron Lun, 12 Dec 2014, copied and modified here)
 #'
-#' @param bam.files Character vector (bam files)
-#' @param restrict Chromosomes to select
+#' @param bam.files Character . bam files to check
+#' @param restrict character. Chromosomes to select
 #'
 #' @return Vector of selected chromosomes
 #'
@@ -90,9 +90,9 @@ activeChrs <- function(bam.files, restrict)
 
 #' Get chromosome bins from BAM files
 #'
-#' @param bamFiles Character vector (bam files)
-#' @param restrictChr Chromosomes to select
-#' @param binSize Size of bins
+#' @param bamFiles Character. bam files
+#' @param restrictChr character. Chromosomes to select
+#' @param binSize numeric. Size of bins
 #'
 #' @return GRanges (bins) for both strands
 #'
@@ -133,9 +133,9 @@ getChromWindows <- function(bamFiles, restrictChr = NULL, binSize, stepSize) {
 
 #' preprocess reads to count only 5' overlaps
 #'
-#' @param reads GAlignment object
-#' @param width New read length
-#' @param fix 'Start' for 5'
+#' @param reads GAlignment object to resize
+#' @param width integer. New read length
+#' @param fix character. 'Start' for 5'
 #'
 #' @return Resized reads as GRanges
 #'
@@ -145,17 +145,17 @@ ResizeReads <- function(reads, width = 1, fix = "start") {
     GenomicRanges::resize(reads, width = width, fix = fix)
 }
 
-#' Calculate local enrichment of windows over background
-#' 'local' filter copied and modified from csaw::filterWindows
-#' written by Aaron Lun (5 November 2014, last modified 3 March 2017)
-#'
-#' @param data RangedSE object (windows)
-#' @param background RangedSE object (background)
-#' @param assay.data Arg to pass forward
-#' @param assay.back Arg to pass forward
-#'
-#' @return list with data and background abundances
-#'
+# Calculate local enrichment of windows over background
+# 'local' filter copied and modified from csaw::filterWindows
+# written by Aaron Lun (5 November 2014, last modified 3 March 2017)
+#
+# @param data RangedSE object (windows)
+# @param background RangedSE object (background)
+# @param assay.data Arg to pass forward
+# @param assay.back Arg to pass forward
+#
+# @return list with data and background abundances
+#
 localFilter <- function(data,
                         background,
                         assay.data = 1,

@@ -2,9 +2,9 @@
 
 #' Split the composite BAM file using replicate indexes (MAPCap data)
 #'
-#' @param bamFile Path to a mapped BAM file
-#' @param outfile_prefix A prefix for output file (replicates IDs will be added as RR/YY)
-#' @param ncores Number of cores to use for parallel processing
+#' @param bamFile character. Path to a mapped BAM file
+#' @param outfile_prefix character. prefix for output file (replicates IDs will be added as RR/YY)
+#' @param ncores integer. Number of cores to use for parallel processing
 #'
 #' @return Filtered files by replicate Index
 #' @export

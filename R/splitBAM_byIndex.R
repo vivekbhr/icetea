@@ -1,10 +1,10 @@
 #' Split the composite BAM file using internal indexes (MAPCap)
 #'
-#' @param bamFile Path to a mapped BAM file
-#' @param index_list A list of indexes for splitting (character vector)
-#' @param outfile_list A list of output file names (with order corresponding to that of index_list)
-#' @param max_mismatch No. of mismatches allowed in index (maxium 1 recommended)
-#' @param ncores Number of cores to use for parallel processing
+#' @param bamFile character. Path to a mapped BAM file
+#' @param index_list character. A list of indexes for splitting
+#' @param outfile_list character. A list of output file names (with order corresponding to that of index_list)
+#' @param max_mismatch integer. No. of mismatches allowed in index (maxium 1 recommended)
+#' @param ncores integer. Number of cores to use for parallel processing
 #'
 #' @return Filtered files
 #' @export

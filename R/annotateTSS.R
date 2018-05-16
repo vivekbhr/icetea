@@ -17,11 +17,11 @@
 #'                If outfile not specified, the plot would be retured on the screen
 #'
 #' @return A data.frame with number of TSS falling into each feature
-#' @export
 #' @import TxDb.Dmelanogaster.UCSC.dm6.ensGene
 #' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_brewer labs theme
 #'                     theme_gray coord_flip ggsave
 #' @importFrom stats reshape
+#' @export
 #'
 #' @examples
 #' # load a txdb object

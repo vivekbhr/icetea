@@ -1,8 +1,8 @@
 #' Get data to create new ShortReadQ object after barcode trimming
 #'
-#' @param type expType of the CapSet object
-#' @param fq_R1 fastq Read 1
-#' @param fq_R2 fastq Read 2
+#' @param type character. expType of the CapSet object
+#' @param fq_R1 character. fastq Read 1
+#' @param fq_R2 character. fastq Read 2
 #'
 #' @return A list with new R1 and R2 sequence, quality, barcode string and sample id
 #'
@@ -71,15 +71,15 @@ get_newfastq <- function(type, fq_R1, fq_R2) {
 
 #' Split paired-end fastq by barcodes
 #'
-#' @param expType experiment type (RAMPAGE, MAPCap or CAGE)
-#' @param idx_name barcode ID
-#' @param outfile_R1 output fastq file : Read 1
-#' @param outfile_R2 output fastq file : Read 2
-#' @param fastq_R1 input fastq file : Read 1
-#' @param fastq_R2 input fastq file : Read 2
-#' @param max_mismatch max allowd mismatches
+#' @param expType character. experiment type (RAMPAGE, MAPCap or CAGE)
+#' @param idx_name character. barcode ID
+#' @param outfile_R1 character. output fastq file : Read 1
+#' @param outfile_R2 character. output fastq file : Read 2
+#' @param fastq_R1 character. input fastq file : Read 1
+#' @param fastq_R2 character. input fastq file : Read 2
+#' @param max_mismatch integer. max allowed mismatches
 #'
-#' @return split fastq files
+#' @return kept reads corresponding to each barcode.
 #'
 
 split_fastq <- function(expType,
@@ -160,9 +160,9 @@ split_fastq <- function(expType,
 #' Demultiplex and tag fastq files using sample barcodes
 #' @rdname demultiplexFASTQ
 #' @param CSobject CapSet object created using \code{\link{newCapSet}} function
-#' @param outdir path to output directory
-#' @param max_mismatch maximum allowed mismatches in the sample barcode
-#' @param ncores No. of cores/threads to use
+#' @param outdir character. path to output directory
+#' @param max_mismatch integer. maximum allowed mismatches in the sample barcode
+#' @param ncores integrer. No. of cores/threads to use
 #'
 #' @return de-multiplxed fastq files corresponding to each barcode. The files are written
 #'         on disk with the corresponding sample names as specified in the CapSet object

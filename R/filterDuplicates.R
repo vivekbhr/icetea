@@ -40,11 +40,11 @@ filterdups_func <- function(bamdf) {
 #' Filter PCR-duplicates from BAM file using internal UMIs
 #'
 #'
-#' @param bamFile Input BAM file
-#' @param outFile Output (filtered) BAM file
-#' @param keepPairs Keep R2?
+#' @param bamFile character. Input BAM file
+#' @param outFile character. Output (filtered) BAM file
+#' @param keepPairs logical. Keep R2 read?
 #' @importFrom Rsamtools scanBamFlag
-#' @return Filtered BAM file (with only R1), after PCR duplicate removal
+#' @return Filtered BAM file, after PCR duplicate removal
 #'
 
 filterDups <- function(bamFile, outFile, keepPairs) {
@@ -79,9 +79,9 @@ filterDups <- function(bamFile, outFile, keepPairs) {
 #'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
 #'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
 #' @param CSobject an object of class \code{\link{CapSet}}
-#' @param outdir output directory for filtered BAM files
-#' @param ncores No. of cores to use
-#' @param keepPairs logical, indicating whether to keep pairs in the paired-end data.
+#' @param outdir character. output directory for filtered BAM files
+#' @param ncores integer. No. of cores to use
+#' @param keepPairs logical. indicating whether to keep pairs in the paired-end data.
 #'                           (note: the pairs are treated as independent reads during duplicate removal)
 #'
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.

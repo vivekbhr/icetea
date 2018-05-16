@@ -3,10 +3,10 @@
 #' @rdname getGeneCounts
 #' @param CSobject The \code{\link{CapSet}} object to use.
 #' @param transcriptGRL A GRangesList object containing transcripts, created using transcriptsBy(txdb)
-#' @param regionAroundTSS How many bases downstream of TSS to count
+#' @param regionAroundTSS integer, indicating how many bases downstream of TSS to count
 #' @param single_end Logical, indicating whether reads are single end
-#' @param outfile Tab-separated output file name (if required)
-#' @param ncores No. of cores/threads to use
+#' @param outfile character. Tab-separated output file name (if required)
+#' @param ncores integer. No. of cores/threads to use
 #'
 #' @return data.frame with gene-level counts for all genes in the txdb object
 #'
