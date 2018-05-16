@@ -1,14 +1,14 @@
 Package: icetea
 Type: Package
-Title: Integrating mRNA Cap Enrichment with Transcript Expression Analysis
+Title: Integrating Cap Enrichment with Transcript Expression Analysis
 Version: 0.99.0
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
-Description: icetea is a tool that integrates the cap enrichment information
-    obtained from transcript 5' profiling methods like MAPCap and RAMPAGE,
-    with the analysis of transcript expression. It provides functions for
-    end-to-end analysis : from raw reads to detection of transcription
-    start sites and performing differential TSS detection between group
-    of samples.
+Description: icetea (Integrating Cap Enrichment with Transcript Expression Analysis) 
+    provides functions for end-to-end analysis of multiple 5'-profiling methods such as 
+    CAGE, RAMPAGE and MAPCap, beginning from raw reads to detection of transcription 
+    start sites using replicates. It also allows performing differential TSS detection 
+    between group of samples, therefore, integrating the mRNA cap enrichment information 
+    with transcript expression analysis.
 Depends:
     R (>= 3.5)
 Imports:
@@ -46,5 +46,4 @@ biocViews: Transcription, GeneExpression, Sequencing,
 URL: https://github.com/vivekbhr/icetea
 BugReports: https://github.com/vivekbhr/icetea/issues
 License: GPL-3 + file LICENSE
-LazyData: true
 RoxygenNote: 6.0.1
