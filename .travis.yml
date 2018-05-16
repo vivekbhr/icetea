@@ -3,8 +3,7 @@
 language: R
 sudo: false
 cache: packages
-r:
-    - bioc-devel
+r: 3.5
 r_github_packages:
 #   - r-lib/devtools
     - r-lib/covr
@@ -22,10 +21,10 @@ os:
     - linux
     - osx
 # exclude osx build of devel version, since devtools can't install deps properly
-matrix:
-  exclude:
-  - os: osx
-    r: bioc-devel
+#matrix:
+#  exclude:
+#  - os: osx
+#    r: bioc-devel
 # get codecov
 after_success:
   - Rscript -e 'covr::coveralls()'
