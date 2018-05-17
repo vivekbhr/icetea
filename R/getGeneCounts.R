@@ -4,7 +4,6 @@
 #' @param CSobject The \code{\link{CapSet}} object to use.
 #' @param transcriptGRL A GRangesList object containing transcripts, created using transcriptsBy(txdb)
 #' @param regionAroundTSS integer, indicating how many bases downstream of TSS to count
-#' @param single_end Logical, indicating whether reads are single end
 #' @param outfile character. Tab-separated output file name (if required)
 #' @param ncores integer. No. of cores/threads to use
 #'
@@ -34,7 +33,6 @@ setMethod("getGeneCounts",
         function(CSobject,
                 transcriptGRL,
                 regionAroundTSS,
-                single_end,
                 outfile,
                 ncores) {
 
@@ -49,7 +47,7 @@ setMethod("getGeneCounts",
         bpParams <- getMCparams(ncores)
         tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
                                                           reads = Rsamtools::BamFileList(bamfiles),
-                                                          singleEnd = single_end,
+                                                          singleEnd = !(CSobject@paired_end),
                                                           BPPARAM = bpParams)
         tsscounts.df <- SummarizedExperiment::assay(tsscounts)
 

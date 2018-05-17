@@ -6,11 +6,11 @@
 \alias{getGeneCounts,CapSet-method}
 \title{Get gene-level counts from TSS data}
 \usage{
-getGeneCounts(CSobject, transcriptGRL, regionAroundTSS = 500,
-  single_end = TRUE, outfile = NA, ncores = 1)
+getGeneCounts(CSobject, transcriptGRL, regionAroundTSS = 500, outfile = NA,
+  ncores = 1)
 
 \S4method{getGeneCounts}{CapSet}(CSobject, transcriptGRL,
-  regionAroundTSS = 500, single_end = TRUE, outfile = NA, ncores = 1)
+  regionAroundTSS = 500, outfile = NA, ncores = 1)
 }
 \arguments{
 \item{CSobject}{The \code{\link{CapSet}} object to use.}
@@ -18,8 +18,6 @@ getGeneCounts(CSobject, transcriptGRL, regionAroundTSS = 500,
 \item{transcriptGRL}{A GRangesList object containing transcripts, created using transcriptsBy(txdb)}
 
 \item{regionAroundTSS}{integer, indicating how many bases downstream of TSS to count}
-
-\item{single_end}{Logical, indicating whether reads are single end}
 
 \item{outfile}{character. Tab-separated output file name (if required)}
 

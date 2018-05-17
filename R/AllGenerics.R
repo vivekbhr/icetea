@@ -115,7 +115,6 @@ setGeneric("getGeneCounts",
             function(CSobject,
                 transcriptGRL,
                 regionAroundTSS = 500,
-                single_end = TRUE,
                 outfile = NA,
                 ncores = 1)
             standardGeneric("getGeneCounts"))
