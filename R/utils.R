@@ -96,15 +96,15 @@ activeChrs <- function(bam.files, restrict)
 #' @param restrictChr character. Chromosomes to select
 #' @param binSize numeric. Size of bins
 #'
-#' @importFrom GenomicRanges tileGenome strand
+#' @importFrom GenomicRanges tileGenome
 #' @return GRanges (bins) for both strands
 #'
 getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
     keptChrs <- activeChrs(bamFiles, restrict = restrictChr)
     gr.bins.plus <- tileGenome(keptChrs, tilewidth = 10, cut.last.tile.in.chrom = TRUE)
     gr.bins.minus <- gr.bins.plus
-    strand(gr.bins.plus) <- "+"
-    strand(gr.bins.minus) <- "-"
+    GenomicRanges::strand(gr.bins.plus) <- "+"
+    GenomicRanges::strand(gr.bins.minus) <- "-"
     return(list(gr.plus = gr.bins.plus,
                 gr.minus = gr.bins.minus))
 }

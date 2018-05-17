@@ -143,7 +143,7 @@ setMethod("detectTSS",
             }
 
             # Counting params
-            countall = !(cs@paired_end)
+            countall = !(CSobject@paired_end)
             bamParams <- Rsamtools::ScanBamParam(
                                 flag = getBamFlags(countAll = countall))
 
