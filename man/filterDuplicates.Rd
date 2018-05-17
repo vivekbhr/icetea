@@ -19,7 +19,8 @@ filterDuplicates(CSobject, outdir, ncores = 1, keepPairs = FALSE)
 \item{ncores}{integer. No. of cores to use}
 
 \item{keepPairs}{logical. indicating whether to keep pairs in the paired-end data.
-(note: the pairs are treated as independent reads during duplicate removal)}
+(note: the pairs are treated as independent reads during duplicate removal).
+Also use keepPairs = TRUE for single-end data.}
 }
 \value{
 modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
@@ -27,7 +28,8 @@ modified CapSet object with filtering information. Filtered BAM files are saved 
 \description{
 This script considers the read mapping start position and the UMI to determine whether a
              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
-             In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
+             In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering, unless
+             `keepPairs`` is set to TRUE
 }
 \examples{
 

@@ -77,12 +77,14 @@ filterDups <- function(bamFile, outFile, keepPairs) {
 #' @rdname filterDuplicates
 #' @description This script considers the read mapping start position and the UMI to determine whether a
 #'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
-#'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
+#'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering, unless
+#'              `keepPairs`` is set to TRUE
 #' @param CSobject an object of class \code{\link{CapSet}}
 #' @param outdir character. output directory for filtered BAM files
 #' @param ncores integer. No. of cores to use
 #' @param keepPairs logical. indicating whether to keep pairs in the paired-end data.
-#'                           (note: the pairs are treated as independent reads during duplicate removal)
+#'                  (note: the pairs are treated as independent reads during duplicate removal).
+#'                  Also use keepPairs = TRUE for single-end data.
 #'
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
 #' @importFrom methods validObject
@@ -107,9 +109,12 @@ setMethod("filterDuplicates",
             signature = "CapSet",
             function(CSobject, outdir, ncores, keepPairs) {
 
-            si <- sampleInfo(CSobject)
-            bamfiles <- si$mapped_file
-            if (any(is.na(bamfiles))) stop("Some or all of the bam files are not defined!")
+    # fail early if the data is from CAGE (no UMIs)
+    if (CSobject@expType == "CAGE") stop("UMI based de-duplication is not available for CAGE!")
+    # check bamfiles
+    si <- sampleInfo(CSobject)
+    bamfiles <- si$mapped_file
+    if (any(is.na(bamfiles))) stop("Some or all of the bam files are not defined!")
     # first check if the bam files exist
     lapply(bamfiles, function(f) {
         if (!(file.exists(f)))
