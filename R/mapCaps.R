@@ -76,6 +76,8 @@ setMethod("mapCaps",
         }
         mapstat <- mapply(function(sample, R1, R2) {
             message(paste0("Mapping sample : ", sample))
+            # If R2 = NA, convert it to NULL such that subread uses single-end
+            if (is.na(R2)) R2 <- NULL
             # Align using RSubread
             tmpout <- file.path(outdir, paste0(sample, ".tmp.bam"))
             capture.output(
