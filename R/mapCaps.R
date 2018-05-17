@@ -72,7 +72,7 @@ setMethod("mapCaps",
         if (!is.null(externalGTF)) {
             useAnnot <- TRUE
         } else {
-            useaAnnot <- FALSE
+            useAnnot <- FALSE
         }
         mapstat <- mapply(function(sample, R1, R2) {
             message(paste0("Mapping sample : ", sample))
