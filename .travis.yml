@@ -3,7 +3,7 @@
 language: R
 sudo: false
 cache: packages
-r: 3.5
+r: 3.5.0
 r_github_packages:
 #   - r-lib/devtools
     - r-lib/covr
