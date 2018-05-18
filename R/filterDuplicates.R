@@ -110,7 +110,7 @@ setMethod("filterDuplicates",
             function(CSobject, outdir, ncores, keepPairs) {
 
     # fail early if the data is from CAGE (no UMIs)
-    if (CSobject@expType == "CAGE") stop("UMI based de-duplication is not available for CAGE!")
+    if (CSobject@expMethod == "CAGE") stop("UMI based de-duplication is not available for CAGE!")
     # check bamfiles
     si <- sampleInfo(CSobject)
     bamfiles <- si$mapped_file

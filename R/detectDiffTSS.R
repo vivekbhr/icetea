@@ -141,6 +141,7 @@ setMethod("fitDiffTSS",
         tsscounts <-
             GenomicAlignments::summarizeOverlaps(features = mergedall,
                                                 reads = bam.files,
+                                                singleEnd = !(CSobject@paired_end),
                                                 preprocess.reads = ResizeReads,
                                                 BPPARAM = bp_param)
         # make DGElist
@@ -164,7 +165,8 @@ setMethod("fitDiffTSS",
             ## Internal normalization for composition bias : TMM
             # useful to try different bin sizes and see if the values are close to unity
             # (low composition effect)
-            regionparam <- csaw::readParam(restrict = NULL)
+            regionparam <- csaw::readParam(restrict = NULL,
+                                           pe = ifelse(isTRUE(CSobject@paired_end), "first", "none"))
             binned <-
                 csaw::windowCounts(bam.files,
                                     bin = TRUE,
