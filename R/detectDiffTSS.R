@@ -145,7 +145,7 @@ setMethod("fitDiffTSS",
                                                 preprocess.reads = ResizeReads,
                                                 BPPARAM = bp_param)
         # make DGElist
-        y <- edgeR::DGEList(counts = assay(tsscounts))
+        y <- edgeR::DGEList(counts = SummarizedExperiment::assay(tsscounts))
         ## Get norm factors
         if (is.null(normalization)) {
             ## if normalization method not provided, look for external Norm factors
