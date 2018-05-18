@@ -2,12 +2,12 @@
 #'
 #' @rdname mapCaps
 #' @param CSobject An object of class \code{\link{CapSet}}
-#' @param genomeIndex path to the Subread index file. Should end with the basename of the index.
-#' @param outdir output directory path
-#' @param ncores number of cores/threads to use for mapping.
-#' @param logfile a log file to write the processing message.
-#' @param externalGTF (optional) provide external annotation file in `GTF`` format to
-#'                    increase alignment accuracy
+#' @param genomeIndex character. Path to the Subread index file. Should end with the basename of the index.
+#' @param outdir character. Output directory path
+#' @param ncores integer. Number of cores/threads to use for mapping.
+#' @param logfile character. A log file to write the processing message.
+#' @param externalGTF character. provide external annotation file in `GTF` format , if present
+#'                    to increase alignment accuracy
 #'
 #' @return modified CapSet object with mapping information. Mapped and sorted BAM
 #'         files are saved in `outdir`.
@@ -72,10 +72,12 @@ setMethod("mapCaps",
         if (!is.null(externalGTF)) {
             useAnnot <- TRUE
         } else {
-            useaAnnot <- FALSE
+            useAnnot <- FALSE
         }
         mapstat <- mapply(function(sample, R1, R2) {
             message(paste0("Mapping sample : ", sample))
+            # If R2 = NA, convert it to NULL such that subread uses single-end
+            if (is.na(R2)) R2 <- NULL
             # Align using RSubread
             tmpout <- file.path(outdir, paste0(sample, ".tmp.bam"))
             capture.output(

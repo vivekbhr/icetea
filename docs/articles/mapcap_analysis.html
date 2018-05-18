@@ -79,7 +79,7 @@
       <h1>Analysing transcript 5’-profiling data using icetea</h1>
                         <h4 class="author">Vivek Bhardwaj and Thomas Manke</h4>
             <address class="author_afil">
-      Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="date">12/04/2018</h4>
+      Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany<br><h4 class="date">16/05/2018</h4>
       
       <small>Source: <a href="https://github.com/vivekbhr/icetea/blob/master/vignettes/mapcap_analysis.Rmd"><code>vignettes/mapcap_analysis.Rmd</code></a></small>
       <div class="hidden name"><code>mapcap_analysis.Rmd</code></div>
@@ -104,7 +104,7 @@
 <a href="#quick-start" class="anchor"></a>Quick Start</h2>
 <p>Below is the set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the raw fastq files, we can either perform quality trimming using a standard program (eg. <a href="https://cutadapt.readthedocs.io/en/stable/">cutadapt</a>/<a href="https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/">trimgalore</a>) or simply begin the analysis by creating a <code>CapSet</code> object. The minimal information required to create a <code>CapSet</code> object is the path to raw/trimmed FASTQ files and a vector of sample names. For multiplexed FASTQ files, additionally a vector of sample indexes should be provided to proceed with de-multiplexing.</p>
 <p>The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the transcription start sites.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the package </span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the package</span>
 <span class="kw">library</span>(icetea)
 
 <span class="co"># provide demultiplexing barcodes and sample names</span>
@@ -198,7 +198,6 @@ cs2 &lt;-<span class="st"> </span><span class="kw"><a href="../reference/newCapS
 <p>Function returns a modified CapSet object that contains location of demultiplexed files along with processing statistics.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># demultiplex fastq and trim the barcodes</span>
 <span class="kw">dir.create</span>(<span class="st">"splitting"</span>)
-<span class="co">#&gt; Warning in dir.create("splitting"): 'splitting' already exists</span>
 cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/demultiplexFASTQ.html">demultiplexFASTQ</a></span>(cs, <span class="dt">max_mismatch =</span> <span class="dv">1</span>, <span class="dt">outdir =</span> <span class="st">"splitting"</span>, <span class="dt">ncores =</span> <span class="dv">10</span>)
 <span class="co">#&gt; de-multiplexing the FASTQ file</span></code></pre></div>
 <p>It takes about 6 min (340 sec) to trim and de-multiplex 1M PE reads into 12 sampels (12 pair of fastqs), using 1 thread. This can be done under 45 seconds if 10 threads are used.</p>
@@ -241,7 +240,6 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/exampleC
 <span class="co">#&gt; Checking de-duplicated file</span>
 <span class="co"># filter PCR duplicates and save output in a new directory</span>
 <span class="kw">dir.create</span>(<span class="st">"removedup"</span>)
-<span class="co">#&gt; Warning in dir.create("removedup"): 'removedup' already exists</span>
 cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/filterDuplicates.html">filterDuplicates</a></span>(cs, <span class="dt">outdir =</span> <span class="st">"removedup"</span>)
 <span class="co">#&gt; Removing PCR duplicates : /home/bhardwaj/programs/svn/R-devel-build/library/icetea/extdata/bam/embryo1.bam</span>
 <span class="co">#&gt; Removing PCR duplicates : /home/bhardwaj/programs/svn/R-devel-build/library/icetea/extdata/bam/embryo2.bam</span>
@@ -256,8 +254,7 @@ cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/filterDu
 <p>This method is implemented in the function <code>detectTSS</code>, which returns a modified <code>CapSet</code> object with TSS detection statistics.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># detect TSS</span>
 <span class="kw">dir.create</span>(<span class="st">"tssCalling"</span>)
-<span class="co">#&gt; Warning in dir.create("tssCalling"): 'tssCalling' already exists</span>
-cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/detectTSS.html">detectTSS</a></span>(cs, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">"wt"</span>, <span class="st">"wt"</span>, <span class="st">"mut"</span>, <span class="st">"mut"</span>), 
+cs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/detectTSS.html">detectTSS</a></span>(cs, <span class="dt">groups =</span> <span class="kw">c</span>(<span class="st">"wt"</span>, <span class="st">"wt"</span>, <span class="st">"mut"</span>, <span class="st">"mut"</span>),
                  <span class="dt">outfile_prefix =</span> <span class="st">"tssCalling/testTSS"</span>, <span class="dt">restrictChr =</span> <span class="st">"X"</span>, <span class="dt">ncores =</span> <span class="dv">1</span>)
 <span class="co">#&gt; Counting reads within detected TSS</span>
 <span class="co">#&gt; Writing filtering information as .Rdata</span>
@@ -331,7 +328,7 @@ transcripts &lt;-<span class="st"> </span><span class="kw">transcripts</span>(Tx
 <span class="co"># Plotting the precision using a pre computed set of TSS (.bed files) :</span>
 tssfile &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">"extdata"</span>, <span class="st">"testTSS_merged.bed"</span>, <span class="dt">package =</span> <span class="st">"icetea"</span>)
 <span class="kw"><a href="../reference/plotTSSprecision.html">plotTSSprecision</a></span>(<span class="dt">reference =</span> transcripts, <span class="dt">detectedTSS =</span> tssfile, <span class="dt">sampleNames =</span> <span class="st">"testsample"</span>)
-<span class="co">#&gt; There are 50 regions with distance &gt; 500 to the closest TSS. They are all being reduced to 500 for the calculation.</span></code></pre></div>
+<span class="co">#&gt; There are 13 regions with distance &gt; 500 bp to the closest TSS. They are all being reduced to 500 bp for the calculation. Samplewise numbers are : 13</span></code></pre></div>
 <p><img src="mapcap_analysis_files/figure-html/plotPrecision-1.png" width="672"></p>
 </div>
 <div id="differential-tss-expression-analysis" class="section level2">
@@ -355,12 +352,12 @@ de_tss &lt;-<span class="st"> </span><span class="kw"><a href="../reference/dete
 <h3 class="hasAnchor">
 <a href="#using-spike-in-controls" class="anchor"></a>Using spike-In controls</h3>
 <p>For the differential TSS expression analysis, the function <code>fitDiffTSS</code> shown above can utilize one of the available internal normalization methods. In some cases however, external (spike-in) normalizations are preferred. <em>icetea</em> provides a way to perform spike-in normalization during differential expression analysis.</p>
-<p>Spike-In samples could be processed in the same way as the normal samples, using the <code>CapSet</code> object as described above. Normalization factors can be obtained from the spike-in reads using <code>calcNormFactors</code> and provided to the <code>fitDiffTSS</code> function during detection of differential TSS between samples.</p>
+<p>Spike-In samples could be processed in the same way as the normal samples, using the <code>CapSet</code> object as described above. Normalization factors can be obtained from the spike-in reads using <code>getNormFactors</code> and provided to the <code>fitDiffTSS</code> function during detection of differential TSS between samples.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## get gene counts for spike-in RNA mapped to human genome
 <span class="kw">library</span>(<span class="st">"TxDb.Hsapiens.UCSC.hg38.knownGene"</span>)
-normfacs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/calcNormFactors.html">calcNormFactors</a></span>(cs_spike, <span class="dt">features =</span> <span class="kw">genes</span>(TxDb.Hsapiens.UCSC.hg38.knownGene))
+normfacs &lt;-<span class="st"> </span><span class="kw"><a href="../reference/getNormFactors.html">getNormFactors</a></span>(cs_spike, <span class="dt">features =</span> <span class="kw">genes</span>(TxDb.Hsapiens.UCSC.hg38.knownGene))
 
-csfit &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fitDiffTSS.html">fitDiffTSS</a></span>(cs, <span class="dt">groups =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">"wt"</span>,<span class="st">"mut"</span>), <span class="dt">each =</span> <span class="dv">2</span>), 
+csfit &lt;-<span class="st"> </span><span class="kw"><a href="../reference/fitDiffTSS.html">fitDiffTSS</a></span>(cs, <span class="dt">groups =</span> <span class="kw">rep</span>(<span class="kw">c</span>(<span class="st">"wt"</span>,<span class="st">"mut"</span>), <span class="dt">each =</span> <span class="dv">2</span>),
                     <span class="dt">normalization =</span> <span class="ot">NULL</span>, <span class="dt">normFactors =</span> normfacs,
                     <span class="dt">outplots =</span> <span class="ot">NULL</span>, <span class="dt">plotRefSample =</span> <span class="st">"embryo1"</span>, <span class="dt">ncores =</span> <span class="dv">1</span>)</code></pre></div>
 </div>
@@ -386,19 +383,12 @@ outdf &lt;-<span class="st"> </span><span class="kw"><a href="../reference/annot
             <span class="dt">txdb =</span> TxDb.Dmelanogaster.UCSC.dm6.ensGene,
             <span class="dt">plotValue =</span> <span class="st">"number"</span>,
             <span class="dt">outFile =</span> <span class="ot">NULL</span>)
-<span class="co">#&gt; Warning in valid.GenomicRanges.seqinfo(x, suggest.trim = TRUE): GRanges object contains 78 out-of-bound ranges located on</span>
-<span class="co">#&gt;   sequences 29325, 29326, 29327, 31704, 31705, 31706, 31707, 32332,</span>
-<span class="co">#&gt;   32333, 32334, 32335, 32336, and 32794. Note that ranges located on</span>
-<span class="co">#&gt;   a sequence whose length is unknown (NA) or on a circular sequence</span>
-<span class="co">#&gt;   are not considered out-of-bound (use seqlengths() and isCircular()</span>
-<span class="co">#&gt;   to get the lengths and circularity flags of the underlying</span>
-<span class="co">#&gt;   sequences). You can use trim() to trim these ranges. See</span>
-<span class="co">#&gt;   ?`trim,GenomicRanges-method` for more information.</span>
-<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
-<span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span>
 <span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span>
 <span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
-<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span></code></pre></div>
+<span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span>
+<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
+<span class="co">#&gt; 'select()' returned many:1 mapping between keys and columns</span>
+<span class="co">#&gt; 'select()' returned 1:1 mapping between keys and columns</span></code></pre></div>
 <p><img src="mapcap_analysis_files/figure-html/annotateTSS-1.png" width="672"></p>
 </div>
 </div>

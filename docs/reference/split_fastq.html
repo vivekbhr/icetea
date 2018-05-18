@@ -57,7 +57,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.99.0</span>
       </span>
     </div>
 
@@ -106,7 +106,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Split paired-end fastq by barcodes</h1>
-    <small>Source: <a href='https://github.com/vivekbhr/icetea/blob/master/R/demultiplex_fastq.R'><code>R/demultiplex_fastq.R</code></a></small>
+    <small>Source: <a href='https://github.com/vivekbhr/icetea/blob/master/R/demultiplexFASTQ.R'><code>R/demultiplexFASTQ.R</code></a></small>
     <div class="hidden name"><code>split_fastq.Rd</code></div>
     </div>
 
@@ -122,37 +122,37 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>expType</th>
-      <td><p>experiment type (RAMPAGE, MAPCap or CAGE)</p></td>
+      <td><p>character. experiment type (RAMPAGE, MAPCap or CAGE)</p></td>
     </tr>
     <tr>
       <th>idx_name</th>
-      <td><p>barcode ID</p></td>
+      <td><p>character. barcode ID</p></td>
     </tr>
     <tr>
       <th>outfile_R1</th>
-      <td><p>output fastq file : Read 1</p></td>
+      <td><p>character. output fastq file : Read 1</p></td>
     </tr>
     <tr>
       <th>outfile_R2</th>
-      <td><p>output fastq file : Read 2</p></td>
+      <td><p>character. output fastq file : Read 2</p></td>
     </tr>
     <tr>
       <th>fastq_R1</th>
-      <td><p>input fastq file : Read 1</p></td>
+      <td><p>character. input fastq file : Read 1</p></td>
     </tr>
     <tr>
       <th>fastq_R2</th>
-      <td><p>input fastq file : Read 2</p></td>
+      <td><p>character. input fastq file : Read 2</p></td>
     </tr>
     <tr>
       <th>max_mismatch</th>
-      <td><p>max allowd mismatches</p></td>
+      <td><p>integer. max allowed mismatches</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>split fastq files</p>
+    <p>kept reads corresponding to each barcode.</p>
     
 
   </div>

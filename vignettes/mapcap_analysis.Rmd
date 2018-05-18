@@ -1,13 +1,13 @@
 ---
 title: "Analysing transcript 5'-profiling data using icetea"
-author: 
+author:
 - name: "Vivek Bhardwaj and Thomas Manke"
-  affiliation: 
+  affiliation:
   - "Max Planck Institute of Immunobiology and Epigenetics, Stübeweg 51, 79108, Freiburg, Germany"
 date: "`r format(Sys.Date(), '%d/%m/%Y')`"
 abstract: >
-  Transcript 5'-profiling techniques detect 5' sites of the expressed transcripts in the genome, allowing us to detect transcription start sites in the genome at high resolution. *CAGE* (Cap Analysis of Gene Expression) is one such technique. Programs for analysis of CAGE data use the clustering of CAGE tags (CTSS) to annotate transcription start sites and detect promoter shifts. Recently, faster and more efficient 5'-profiling techniques have been developed which allow early sample multiplexing, removal of PCR duplicates using random barcodes, and use paired-end sequencing. **icetea** can be used to process such data. It also implements a new method for detection of transcription start sites based on local enrichment of genomic windows, that can take advantage of biological replicates. It further allows users to perform differential expression analysis of transcription start sites between groups of samples, therefore integrating transcript annotation and expression analysis. While icetea analysis is mostly useful for multiplexed, paired-end experiments with replicates, conventional CAGE data can also be analysed. *icetea* analysis compliments other programs that perform promoter profiling and expression analysis based on clusteing of CAGE tags. 
-output: 
+  Transcript 5'-profiling techniques detect 5' sites of the expressed transcripts in the genome, allowing us to detect transcription start sites in the genome at high resolution. *CAGE* (Cap Analysis of Gene Expression) is one such technique. Programs for analysis of CAGE data use the clustering of CAGE tags (CTSS) to annotate transcription start sites and detect promoter shifts. Recently, faster and more efficient 5'-profiling techniques have been developed which allow early sample multiplexing, removal of PCR duplicates using random barcodes, and use paired-end sequencing. **icetea** can be used to process such data. It also implements a new method for detection of transcription start sites based on local enrichment of genomic windows, that can take advantage of biological replicates. It further allows users to perform differential expression analysis of transcription start sites between groups of samples, therefore integrating transcript annotation and expression analysis. While icetea analysis is mostly useful for multiplexed, paired-end experiments with replicates, conventional CAGE data can also be analysed. *icetea* analysis compliments other programs that perform promoter profiling and expression analysis based on clusteing of CAGE tags.
+output:
   rmarkdown::html_document:
     highlight: pygments
     toc: true
@@ -33,12 +33,12 @@ Here we show the usability of *icetea* in the analysis of data from a recently d
 
 ## Quick Start
 
-Below is the set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the raw fastq files, we can either perform quality trimming using a standard program (eg. [cutadapt](https://cutadapt.readthedocs.io/en/stable/)/[trimgalore](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)) or simply begin the analysis by creating a `CapSet` object. The minimal information required to create a `CapSet` object is the path to raw/trimmed FASTQ files and a vector of sample names. For multiplexed FASTQ files, additionally a vector of sample indexes should be provided to proceed with de-multiplexing. 
+Below is the set of minimal steps for the processing of MAPCap data for the detection of TSS. Starting from the raw fastq files, we can either perform quality trimming using a standard program (eg. [cutadapt](https://cutadapt.readthedocs.io/en/stable/)/[trimgalore](https://www.bioinformatics.babraham.ac.uk/projects/trim_galore/)) or simply begin the analysis by creating a `CapSet` object. The minimal information required to create a `CapSet` object is the path to raw/trimmed FASTQ files and a vector of sample names. For multiplexed FASTQ files, additionally a vector of sample indexes should be provided to proceed with de-multiplexing.
 
 The following steps creates the object, demultiplexes the fastq, maps them, filters them and detects the transcription start sites.
 
 ```{r quickIntro, eval=FALSE}
-# load the package 
+# load the package
 library(icetea)
 
 # provide demultiplexing barcodes and sample names
@@ -86,7 +86,7 @@ To cite *icetea* package in your analysis type `citation("icetea")` from within 
 
 <a name="capset"/>
 
-## The CapSet object 
+## The CapSet object
 
 The workflow begins by creating an object of class `CapSet` using the function `newCapSet`. This object contains information about the experiment method (CAGE [@kodzius2006cage], RAMPAGE [@batut2013] or MAPCap), along with the path of the multiplexed fastq files. To allow de-multiplexing as , the demultiplexing barcodes should be provided to `idxList` and the corresponding samplenames should be provided to `sampleNames`.
 
@@ -120,9 +120,9 @@ si$mapped_file <- list.files(dir, pattern = ".bam$", full.names = TRUE)
 sampleInfo(cs) <- si
 ```
 
-The `CapSet` object doesn't need to be created at the beginning of the workflow. Users can perform the initial, computationally expensive steps of FASTQ de-multiplexing, mapping and PCR de-duplication outside of the R environment. The `CapSet` object can be created at any point of the workflow, using the output files from current step. 
+The `CapSet` object doesn't need to be created at the beginning of the workflow. Users can perform the initial, computationally expensive steps of FASTQ de-multiplexing, mapping and PCR de-duplication outside of the R environment. The `CapSet` object can be created at any point of the workflow, using the output files from current step.
 
-After mapping and de-duplication : 
+After mapping and de-duplication :
 
 ```{r cs2, eval = TRUE, results = "hold"}
 dir <- system.file("extdata/filtered_bam", package = "icetea")
@@ -138,9 +138,9 @@ Providing output files from previous steps are not necessory, but providing them
 
 <a name="demult"/>
 
-### De-multiplexing the fastq 
+### De-multiplexing the fastq
 
-Experiments like MAPCap and RAMPAGE [@batut2013] produce multiplexed fastq files with sample indicies and PCR barcodes attached to the fastq sequence. The tool `demultiplexFASTQ` de-multiplexes the samples using the sample barcode, producing fastq files corresponding to each sample. It also trims off these barcodes and attaches them in the header of the fastq files for further processing. 
+Experiments like MAPCap and RAMPAGE [@batut2013] produce multiplexed fastq files with sample indicies and PCR barcodes attached to the fastq sequence. The tool `demultiplexFASTQ` de-multiplexes the samples using the sample barcode, producing fastq files corresponding to each sample. It also trims off these barcodes and attaches them in the header of the fastq files for further processing.
 
 For RAMPAGE [@batut2013] protocol, the modified header looks like this : `<read ID>#<sample barcode>:<pseudo-random barcode>`
 For MAPCap protocol, the modified header looks like this : `<read ID>#<sample barcode>:<random barcode>:<replicate barcode>`
@@ -208,7 +208,7 @@ dir.create("removedup")
 cs <- filterDuplicates(cs, outdir = "removedup")
 ```
 
-Tagging of read IDs using the random barcodes and subsequent removal of PCR duplicates can also be performed using the 
+Tagging of read IDs using the random barcodes and subsequent removal of PCR duplicates can also be performed using the
 command line tools, like [UMItools](https://github.com/CGATOxford/UMI-tools).
 
 ### Detection of TSS
@@ -220,7 +220,7 @@ This method is implemented in the function `detectTSS`, which returns a modified
 ```{r getTSS, eval=TRUE, results = "hold"}
 # detect TSS
 dir.create("tssCalling")
-cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"), 
+cs <- detectTSS(cs, groups = c("wt", "wt", "mut", "mut"),
                  outfile_prefix = "tssCalling/testTSS", restrictChr = "X", ncores = 1)
 # export the detected TSS bed files
 exportTSS(cs, merged = TRUE, outfile_prefix = "tssCalling/testTSS")
@@ -228,7 +228,7 @@ exportTSS(cs, merged = TRUE, outfile_prefix = "tssCalling/testTSS")
 
 <a name="QC"/>
 
-## Plotting and QC 
+## Plotting and QC
 
 The `sampleInfo` field of the CapSet object stores information about the read numbers kept at each step of processing, this information can be easily plotted using the function `plotReadStats`
 
@@ -287,14 +287,14 @@ export.bed(de_tss[de_tss$score < 0.05], con = "diffTSS_output.bed")
 
 For the differential TSS expression analysis, the function `fitDiffTSS` shown above can utilize one of the available internal normalization methods. In some cases however, external (spike-in) normalizations are preferred. *icetea* provides a way to perform spike-in normalization during differential expression analysis.
 
-Spike-In samples could be processed in the same way as the normal samples, using the `CapSet` object as described above. Normalization factors can be obtained from the spike-in reads using `calcNormFactors` and provided to the `fitDiffTSS` function during detection of differential TSS between samples.
+Spike-In samples could be processed in the same way as the normal samples, using the `CapSet` object as described above. Normalization factors can be obtained from the spike-in reads using `getNormFactors` and provided to the `fitDiffTSS` function during detection of differential TSS between samples.
 
 ```{r spikeNorm, eval=FALSE}
 ## get gene counts for spike-in RNA mapped to human genome
 library("TxDb.Hsapiens.UCSC.hg38.knownGene")
-normfacs <- calcNormFactors(cs_spike, features = genes(TxDb.Hsapiens.UCSC.hg38.knownGene))
+normfacs <- getNormFactors(cs_spike, features = genes(TxDb.Hsapiens.UCSC.hg38.knownGene))
 
-csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2), 
+csfit <- fitDiffTSS(cs, groups = rep(c("wt","mut"), each = 2),
                     normalization = NULL, normFactors = normfacs,
                     outplots = NULL, plotRefSample = "embryo1", ncores = 1)
 ```

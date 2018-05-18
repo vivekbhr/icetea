@@ -39,8 +39,8 @@ setGeneric("plotTSSprecision",
                     distanceCutoff = 500,
                     outFile = NULL,
                     ...) {
-               standardGeneric("plotTSSprecision")
-           })
+                standardGeneric("plotTSSprecision")
+            })
 
 #' @name plotReadStats
 #' @rdname plotReadStats
@@ -50,8 +50,8 @@ setGeneric("plotReadStats",
                     plotType = "dodge",
                     plotValue = "numbers",
                     outFile = NULL) {
-               standardGeneric("plotReadStats")
-           })
+                standardGeneric("plotReadStats")
+            })
 
 #' @name demultiplexFASTQ
 #' @rdname demultiplexFASTQ
@@ -115,20 +115,19 @@ setGeneric("getGeneCounts",
             function(CSobject,
                 transcriptGRL,
                 regionAroundTSS = 500,
-                single_end = TRUE,
                 outfile = NA,
                 ncores = 1)
             standardGeneric("getGeneCounts"))
 
-#' @name calcNormFactors
-#' @rdname calcNormFactors
+#' @name getNormFactors
+#' @rdname getNormFactors
 #' @export
-setGeneric("calcNormFactors",
+setGeneric("getNormFactors",
             function(CSobject,
                     features,
                     method = "TMM",
                     ...)
-            standardGeneric("calcNormFactors"))
+            standardGeneric("getNormFactors"))
 
 #' @name fitDiffTSS
 #' @rdname fitDiffTSS

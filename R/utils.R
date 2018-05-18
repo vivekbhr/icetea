@@ -1,17 +1,18 @@
 #' Get platform-specific multicore params
 #'
-#' @param cores No. of cores
+#' @param cores integer. No. of cores to use.
+#' @importFrom BiocParallel SnowParam MulticoreParam
 #'
-#' @return BPPARAM
+#' @return BPPARAM object
 #'
 getMCparams <- function(cores) {
     if (cores == 1) {
         param <- BiocParallel::SerialParam()
     } else {
         param <- switch(Sys.info()[['sysname']],
-                        Windows = {return(BiocParallel::SnowParam(workers = cores))},
-                        Linux = {return(BiocParallel::MulticoreParam(workers = cores))},
-                        Darwin = {return(BiocParallel::MulticoreParam(workers = cores))}
+                        Windows = {return(SnowParam(workers = cores))},
+                        Linux = {return(MulticoreParam(workers = cores))},
+                        Darwin = {return(MulticoreParam(workers = cores))}
                     )
     }
     return(param)
@@ -19,20 +20,21 @@ getMCparams <- function(cores) {
 
 #' Get flags to read from bam
 #'
-#' @param paired logical. Keep Paired reads?
+#' @param countAll logical. count all reads?
+#' @importFrom Rsamtools scanBamFlag
 #'
 #' @return bamFlags
 #'
-getBamFlags <- function(paired) {
+getBamFlags <- function(countAll) {
         # get baminfo
-    if (isTRUE(paired)) {
-        # if paired given, count both reads
+    if (isTRUE(countAll)) {
+        # if countAll given, count both reads (in PE mode) or all reads (in SE mode)
         bamFlags <- scanBamFlag(
                                 isUnmappedQuery = FALSE,
                                 isSecondaryAlignment = FALSE
                             )
     } else {
-        # else count only R1
+        # else count only R1 (in PE mode)
         bamFlags <- scanBamFlag(
                                 isUnmappedQuery = FALSE,
                                 isFirstMateRead = TRUE,
@@ -44,20 +46,20 @@ getBamFlags <- function(paired) {
 
 #' Count the number of reads in a given GRanges
 #'
-#' @param regions The GRanges object
-#' @param bams path to bam files from where the reads have to be counted
-#' @param pairedEnd logical. whether to keep both reads of paired-end data
+#' @param regions The GRanges object to count reads in.
+#' @param bams character. path to bam files from where the reads have to be counted
+#' @param countall logical. whether to keep both reads of paired-end data
 #'
 #' @return Total counts within given ranges per BAM file.
 #'
-numReadsInBed <- function(regions, bams = NA, pairedEnd = FALSE) {
+numReadsInBed <- function(regions, bams = NA, countall = FALSE) {
     counts <-
         GenomicAlignments::summarizeOverlaps(
             GenomicRanges::GRangesList(regions),
             reads = Rsamtools::BamFileList(as.character(bams)),
             mode = "Union",
             inter.feature = FALSE,
-            param = Rsamtools::ScanBamParam(flag = getBamFlags(paired = pairedEnd))
+            param = Rsamtools::ScanBamParam(flag = getBamFlags(countAll = countall))
         )
     numreads <- SummarizedExperiment::assay(counts)
     return(t(numreads))
@@ -66,8 +68,8 @@ numReadsInBed <- function(regions, bams = NA, pairedEnd = FALSE) {
 #' Match BAM headers bw files and get active chromosome list (from restrict)
 #' (written by Aaron Lun, 12 Dec 2014, copied and modified here)
 #'
-#' @param bam.files Character vector (bam files)
-#' @param restrict Chromosomes to select
+#' @param bam.files Character . bam files to check
+#' @param restrict character. Chromosomes to select
 #'
 #' @return Vector of selected chromosomes
 #'
@@ -90,16 +92,16 @@ activeChrs <- function(bam.files, restrict)
 
 #' Get chromosome bins from BAM files
 #'
-#' @param bamFiles Character vector (bam files)
-#' @param restrictChr Chromosomes to select
-#' @param binSize Size of bins
+#' @param bamFiles Character. bam files
+#' @param restrictChr character. Chromosomes to select
+#' @param binSize numeric. Size of bins
 #'
+#' @importFrom GenomicRanges tileGenome
 #' @return GRanges (bins) for both strands
 #'
 getChromBins <- function(bamFiles, restrictChr = NULL, binSize) {
     keptChrs <- activeChrs(bamFiles, restrict = restrictChr)
-    gr.bins.plus <- GenomicRanges::tileGenome(keptChrs, tilewidth = 10, cut.last.tile.in.chrom = TRUE)
-    #gr.bins.plus <- GenomicRanges::trim(gr.bins.plus)
+    gr.bins.plus <- tileGenome(keptChrs, tilewidth = 10, cut.last.tile.in.chrom = TRUE)
     gr.bins.minus <- gr.bins.plus
     GenomicRanges::strand(gr.bins.plus) <- "+"
     GenomicRanges::strand(gr.bins.minus) <- "-"
@@ -133,9 +135,9 @@ getChromWindows <- function(bamFiles, restrictChr = NULL, binSize, stepSize) {
 
 #' preprocess reads to count only 5' overlaps
 #'
-#' @param reads GAlignment object
-#' @param width New read length
-#' @param fix 'Start' for 5'
+#' @param reads GAlignment object to resize
+#' @param width integer. New read length
+#' @param fix character. 'Start' for 5'
 #'
 #' @return Resized reads as GRanges
 #'
@@ -145,17 +147,17 @@ ResizeReads <- function(reads, width = 1, fix = "start") {
     GenomicRanges::resize(reads, width = width, fix = fix)
 }
 
-#' Calculate local enrichment of windows over background
-#' 'local' filter copied and modified from csaw::filterWindows
-#' written by Aaron Lun (5 November 2014, last modified 3 March 2017)
-#'
-#' @param data RangedSE object (windows)
-#' @param background RangedSE object (background)
-#' @param assay.data Arg to pass forward
-#' @param assay.back Arg to pass forward
-#'
-#' @return list with data and background abundances
-#'
+# Calculate local enrichment of windows over background
+# 'local' filter copied and modified from csaw::filterWindows
+# written by Aaron Lun (5 November 2014, last modified 3 March 2017)
+#
+# @param data RangedSE object (windows)
+# @param background RangedSE object (background)
+# @param assay.data Arg to pass forward
+# @param assay.back Arg to pass forward
+#
+# @return list with data and background abundances
+#
 localFilter <- function(data,
                         background,
                         assay.data = 1,

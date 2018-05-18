@@ -57,7 +57,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.99.0</span>
       </span>
     </div>
 
@@ -114,21 +114,21 @@
     <p>Count the number of reads in a given GRanges</p>
     
 
-    <pre class="usage"><span class='fu'>numReadsInBed</span>(<span class='no'>regions</span>, <span class='kw'>bams</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>pairedEnd</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>numReadsInBed</span>(<span class='no'>regions</span>, <span class='kw'>bams</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>countall</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>regions</th>
-      <td><p>The GRanges object</p></td>
+      <td><p>The GRanges object to count reads in.</p></td>
     </tr>
     <tr>
       <th>bams</th>
-      <td><p>path to bam files from where the reads have to be counted</p></td>
+      <td><p>character. path to bam files from where the reads have to be counted</p></td>
     </tr>
     <tr>
-      <th>pairedEnd</th>
+      <th>countall</th>
       <td><p>logical. whether to keep both reads of paired-end data</p></td>
     </tr>
     </table>

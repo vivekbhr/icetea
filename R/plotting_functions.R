@@ -2,12 +2,12 @@
 #'
 #' @rdname plotReadStats
 #' @param CSobject The \code{\link{CapSet}} object
-#' @param plotType The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
+#' @param plotType character. The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
 #'                  or a bar chart with "dodged" positions (analogous to ggplot)
-#' @param plotValue What values to plot. Choose from "numbers" or "proportions". If "proportions"
+#' @param plotValue character. What values to plot. Choose from "numbers" or "proportions". If "proportions"
 #'                  is selected, the proportion of reads w.r.t total demultiplexed reads per sample
 #'                  would be plotted
-#' @param outFile Output file name. (filename extention would be used to determine type).
+#' @param outFile character. Output file name. (filename extention would be used to determine type).
 #'                If outfile not specified, the plot would be retured on the screen
 #'
 #' @return A ggplot object, or a file. Plot showing the number/proportion of reads in each category, per sample
@@ -22,7 +22,7 @@
 #' plotReadStats(cs, plotType = "dodge", plotValue = "numbers", outFile = "test_numbers.pdf")
 #'
 setMethod(
-    plotReadStats,
+    "plotReadStats",
     signature = "CapSet",
     definition = function(
                         CSobject,
@@ -64,7 +64,8 @@ setMethod(
             si_stats[-1] <- get_stackedNum(si_stats[-1])
         }
         y_label <- paste0("Proportion of ", basecat, " reads")
-    } else {
+
+    } else if (plotValue == "numbers") {
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
         }
@@ -76,6 +77,11 @@ setMethod(
                         varying = varcols, timevar = "variable",
                         times = varcols, v.names = "value")
     rownames(si_stats) <- NULL
+    si_stats$variable <- factor(si_stats$variable,
+                                levels = c("demultiplexed_reads",
+                                           "mapped_reads",
+                                           "duplicate_free_reads",
+                                           "reads_within_TSS"))
     # plot stacked barchart
     p <-
         ggplot(si_stats, aes_string("sample", "value", fill = "variable")) +
@@ -113,10 +119,10 @@ get_stackedNum <- function(df) {
 #' @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
 #' @param detectedTSS Either a CapSet object with TSS information (after running \code{\link{detectTSS}}
 #'                    or a character vector with paths to the BED files containing detcted TSSs
-#' @param distanceCutoff Maximum distance (in base pairs) from reference TSS to plot
-#' @param outFile Output file name (filename extention would be used to determine type)
+#' @param distanceCutoff integer. Maximum distance (in base pairs) from reference TSS to plot
+#' @param outFile character. Output file name (filename extention would be used to determine type)
 #'                If outfile not specified, the plot would be returned on the screen
-#' @param sampleNames Labels for input samples (in the same order as the input bed files)
+#' @param sampleNames character. Labels for input samples (in the same order as the input bed files)
 #' @rdname plotTSSprecision
 #' @return A ggplot object, or a file. Plot showing perent of TSS detected per sample with respect to
 #'         their cumulative distance to TSS of the provided reference
@@ -219,9 +225,9 @@ setMethod(
 
 #' Plotprecision background script
 #'
-#' @param ref reference GRanges
+#' @param ref GRanges. reference ranges to compare the precision with.
 #' @param tssData GRangesList object with TSS detected per sample
-#' @param distCut max distance cutoff
+#' @param distCut integer. max distance cutoff
 #'
 #' @importFrom ggplot2 aes_string stat_ecdf theme_light scale_x_continuous
 #'             scale_y_continuous scale_color_brewer ggsave coord_flip

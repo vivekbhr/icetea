@@ -64,7 +64,7 @@ CapSet object" />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.99.0</span>
       </span>
     </div>
 
@@ -130,7 +130,7 @@ missing files would not be possible.</p>
 
     <pre class="usage"><span class='fu'>newCapSet</span>(<span class='no'>expMethod</span>, <span class='kw'>fastq_R1</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>fastq_R2</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>idxList</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='no'>sampleNames</span>, <span class='kw'>demult_R1</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>demult_R2</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>mapped_file</span> <span class='kw'>=</span> <span class='fl'>NA</span>,
-  <span class='kw'>filtered_file</span> <span class='kw'>=</span> <span class='fl'>NA</span>)</pre>
+  <span class='kw'>filtered_file</span> <span class='kw'>=</span> <span class='fl'>NA</span>, <span class='kw'>paired_end</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -171,6 +171,10 @@ missing files would not be possible.</p>
       <th>filtered_file</th>
       <td><p>a vector of file paths for de-duplicated BAM files.</p></td>
     </tr>
+    <tr>
+      <th>paired_end</th>
+      <td><p>logical, indiciting whether the data is paired end</p></td>
+    </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
@@ -205,13 +209,12 @@ missing files would not be possible.</p>
        <span class='kw'>fastq_R1</span> <span class='kw'>=</span> <span class='fu'>file.path</span>(<span class='no'>dir</span>, <span class='st'>'mapcap_test_R1.fastq.gz'</span>),
        <span class='kw'>fastq_R2</span> <span class='kw'>=</span> <span class='fu'>file.path</span>(<span class='no'>dir</span>, <span class='st'>'mapcap_test_R2.fastq.gz'</span>),
        <span class='kw'>idxList</span> <span class='kw'>=</span> <span class='no'>idxlist</span>,
-       <span class='kw'>sampleNames</span> <span class='kw'>=</span> <span class='no'>fnames</span>)
-
+       <span class='kw'>sampleNames</span> <span class='kw'>=</span> <span class='no'>fnames</span>)</div><div class='output co'>#&gt; <span class='error'>Error in if (!(exp %in% c("CAGE", "RAMPAGE", "MAPCap"))) {    msg &lt;- paste0("Experiment type should be among : 'CAGE', 'RAMPAGE' or 'MAPCap' ")    errors &lt;- c(errors, msg)}: argument is of length zero</span></div><div class='input'>
 <span class='co'>## CapSet object from mapped BAM files</span>
 <span class='no'>bams</span> <span class='kw'>&lt;-</span> <span class='fu'>list.files</span>(<span class='fu'>file.path</span>(<span class='no'>dir</span>, <span class='st'>'bam'</span>), <span class='kw'>pattern</span> <span class='kw'>=</span> <span class='st'>'.bam$'</span>, <span class='kw'>full.names</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)
 <span class='no'>cs</span> <span class='kw'>&lt;-</span> <span class='fu'>newCapSet</span>(<span class='kw'>expMethod</span> <span class='kw'>=</span> <span class='st'>'MAPCap'</span>,
        <span class='kw'>mapped_file</span> <span class='kw'>=</span> <span class='no'>bams</span>,
-       <span class='kw'>sampleNames</span> <span class='kw'>=</span> <span class='no'>fnames</span>)</div><div class='output co'>#&gt; <span class='message'>Checking mapped file</span></div><div class='input'>
+       <span class='kw'>sampleNames</span> <span class='kw'>=</span> <span class='no'>fnames</span>)</div><div class='output co'>#&gt; <span class='message'>Checking mapped file</span></div><div class='output co'>#&gt; <span class='error'>Error in if (!(exp %in% c("CAGE", "RAMPAGE", "MAPCap"))) {    msg &lt;- paste0("Experiment type should be among : 'CAGE', 'RAMPAGE' or 'MAPCap' ")    errors &lt;- c(errors, msg)}: argument is of length zero</span></div><div class='input'>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">

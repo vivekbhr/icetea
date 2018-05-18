@@ -23,8 +23,8 @@ filterdups_func <- function(bamdf) {
         return(dupStats_umi)
     }
     #getfraglength <- function(x) {
-    #	fraglen <- (2*x$qwidth)  x$isize
-    #	return(fraglen)
+    #    raglen <- (2*x$qwidth)  x$isize
+    #    eturn(fraglen)
     #}
     #dupStats_fraglen <- unlist(lapply(fraglengths, function(x) !(duplicated(x)) ))
     # final dupstats (both UMI and fragment length are same --> remove reads, else keep)
@@ -40,17 +40,17 @@ filterdups_func <- function(bamdf) {
 #' Filter PCR-duplicates from BAM file using internal UMIs
 #'
 #'
-#' @param bamFile Input BAM file
-#' @param outFile Output (filtered) BAM file
-#' @param keepPairs Keep R2?
+#' @param bamFile character. Input BAM file
+#' @param outFile character. Output (filtered) BAM file
+#' @param keepPairs logical. Keep R2 read?
 #' @importFrom Rsamtools scanBamFlag
-#' @return Filtered BAM file (with only R1), after PCR duplicate removal
+#' @return Filtered BAM file, after PCR duplicate removal
 #'
 
 filterDups <- function(bamFile, outFile, keepPairs) {
     message(paste0("Removing PCR duplicates : ", bamFile))
 
-    bamFlags <- getBamFlags(paired = keepPairs)
+    bamFlags <- getBamFlags(countAll = keepPairs)
     sparam <-
         Rsamtools::ScanBamParam(
             what = c("qname", "rname", "pos","strand"),
@@ -77,12 +77,14 @@ filterDups <- function(bamFile, outFile, keepPairs) {
 #' @rdname filterDuplicates
 #' @description This script considers the read mapping start position and the UMI to determine whether a
 #'              read is a PCR duplicate. All PCR duplicates are then removed and one entry per read is kept.
-#'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering.
+#'              In case of paired-end reads (MAPCap/RAMPAGE), only one end (R1) is kept after filtering, unless
+#'              `keepPairs`` is set to TRUE
 #' @param CSobject an object of class \code{\link{CapSet}}
-#' @param outdir output directory for filtered BAM files
-#' @param ncores No. of cores to use
-#' @param keepPairs logical, indicating whether to keep pairs in the paired-end data.
-#'                           (note: the pairs are treated as independent reads during duplicate removal)
+#' @param outdir character. output directory for filtered BAM files
+#' @param ncores integer. No. of cores to use
+#' @param keepPairs logical. indicating whether to keep pairs in the paired-end data.
+#'                  (note: the pairs are treated as independent reads during duplicate removal).
+#'                  Also use keepPairs = TRUE for single-end data.
 #'
 #' @return modified CapSet object with filtering information. Filtered BAM files are saved in `outdir`.
 #' @importFrom methods validObject
@@ -107,9 +109,12 @@ setMethod("filterDuplicates",
             signature = "CapSet",
             function(CSobject, outdir, ncores, keepPairs) {
 
-            si <- sampleInfo(CSobject)
-            bamfiles <- si$mapped_file
-            if (any(is.na(bamfiles))) stop("Some or all of the bam files are not defined!")
+    # fail early if the data is from CAGE (no UMIs)
+    if (CSobject@expMethod == "CAGE") stop("UMI based de-duplication is not available for CAGE!")
+    # check bamfiles
+    si <- sampleInfo(CSobject)
+    bamfiles <- si$mapped_file
+    if (any(is.na(bamfiles))) stop("Some or all of the bam files are not defined!")
     # first check if the bam files exist
     lapply(bamfiles, function(f) {
         if (!(file.exists(f)))
@@ -143,7 +148,7 @@ setMethod("filterDuplicates",
     # collect post-filtering stats
     maptable <- countBam(BamFileList(outfiles),
                          param = ScanBamParam(
-                            flag = getBamFlags(paired = FALSE)
+                            flag = getBamFlags(countAll = !CSobject@paired_end)
                         ))[, 5:6] # "file" and "records"
     maptable$file <- as.character(maptable$file)
     maptable$records <- as.integer(maptable$records)

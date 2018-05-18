@@ -22,14 +22,14 @@ plotTSSprecision(reference, detectedTSS, distanceCutoff = 500,
 \item{detectedTSS}{Either a CapSet object with TSS information (after running \code{\link{detectTSS}}
 or a character vector with paths to the BED files containing detcted TSSs}
 
-\item{distanceCutoff}{Maximum distance (in base pairs) from reference TSS to plot}
+\item{distanceCutoff}{integer. Maximum distance (in base pairs) from reference TSS to plot}
 
-\item{outFile}{Output file name (filename extention would be used to determine type)
+\item{outFile}{character. Output file name (filename extention would be used to determine type)
 If outfile not specified, the plot would be returned on the screen}
 
 \item{...}{Additional arguments}
 
-\item{sampleNames}{Labels for input samples (in the same order as the input bed files)}
+\item{sampleNames}{character. Labels for input samples (in the same order as the input bed files)}
 }
 \value{
 A ggplot object, or a file. Plot showing perent of TSS detected per sample with respect to

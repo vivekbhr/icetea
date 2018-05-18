@@ -15,16 +15,16 @@ mapCaps(CSobject, genomeIndex, outdir, externalGTF = NULL, ncores = 1,
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
 
-\item{genomeIndex}{path to the Subread index file. Should end with the basename of the index.}
+\item{genomeIndex}{character. Path to the Subread index file. Should end with the basename of the index.}
 
-\item{outdir}{output directory path}
+\item{outdir}{character. Output directory path}
 
-\item{externalGTF}{(optional) provide external annotation file in `GTF`` format to
-increase alignment accuracy}
+\item{externalGTF}{character. provide external annotation file in `GTF` format , if present
+to increase alignment accuracy}
 
-\item{ncores}{number of cores/threads to use for mapping.}
+\item{ncores}{integer. Number of cores/threads to use for mapping.}
 
-\item{logfile}{a log file to write the processing message.}
+\item{logfile}{character. A log file to write the processing message.}
 }
 \value{
 modified CapSet object with mapping information. Mapped and sorted BAM

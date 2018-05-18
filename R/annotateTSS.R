@@ -17,11 +17,12 @@
 #'                If outfile not specified, the plot would be retured on the screen
 #'
 #' @return A data.frame with number of TSS falling into each feature
-#' @export
 #' @import TxDb.Dmelanogaster.UCSC.dm6.ensGene
 #' @importFrom ggplot2 ggplot aes_string geom_bar scale_fill_brewer labs theme
 #'                     theme_gray coord_flip ggsave
 #' @importFrom stats reshape
+#' @importFrom VariantAnnotation locateVariants AllVariants PromoterVariants
+#' @export
 #'
 #' @examples
 #' # load a txdb object
@@ -57,10 +58,10 @@ annotateTSS <- function(tssBED,
     tss <- rtracklayer::import.bed(tssBED)
     # Annotate
     suppressWarnings({
-        db <- VariantAnnotation::locateVariants(
+        db <- locateVariants(
         query = tss,
         subject = txdb,
-        VariantAnnotation::AllVariants(promoter = VariantAnnotation::PromoterVariants(
+        AllVariants(promoter = PromoterVariants(
             upstream = 500, downstream = 0
             ))
         )

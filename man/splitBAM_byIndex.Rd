@@ -8,15 +8,15 @@ splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0,
   ncores = 1)
 }
 \arguments{
-\item{bamFile}{Path to a mapped BAM file}
+\item{bamFile}{character. Path to a mapped BAM file}
 
-\item{index_list}{A list of indexes for splitting (character vector)}
+\item{index_list}{character. A list of indexes for splitting}
 
-\item{outfile_list}{A list of output file names (with order corresponding to that of index_list)}
+\item{outfile_list}{character. A list of output file names (with order corresponding to that of index_list)}
 
-\item{max_mismatch}{No. of mismatches allowed in index (maxium 1 recommended)}
+\item{max_mismatch}{integer. No. of mismatches allowed in index (maxium 1 recommended)}
 
-\item{ncores}{Number of cores to use for parallel processing}
+\item{ncores}{integer. Number of cores to use for parallel processing}
 }
 \value{
 Filtered files

@@ -4,10 +4,10 @@
 \alias{getBamFlags}
 \title{Get flags to read from bam}
 \usage{
-getBamFlags(paired)
+getBamFlags(countAll)
 }
 \arguments{
-\item{paired}{logical. Keep Paired reads?}
+\item{countAll}{logical. count all reads?}
 }
 \value{
 bamFlags

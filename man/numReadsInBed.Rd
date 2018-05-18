@@ -4,14 +4,14 @@
 \alias{numReadsInBed}
 \title{Count the number of reads in a given GRanges}
 \usage{
-numReadsInBed(regions, bams = NA, pairedEnd = FALSE)
+numReadsInBed(regions, bams = NA, countall = FALSE)
 }
 \arguments{
-\item{regions}{The GRanges object}
+\item{regions}{The GRanges object to count reads in.}
 
-\item{bams}{path to bam files from where the reads have to be counted}
+\item{bams}{character. path to bam files from where the reads have to be counted}
 
-\item{pairedEnd}{logical. whether to keep both reads of paired-end data}
+\item{countall}{logical. whether to keep both reads of paired-end data}
 }
 \value{
 Total counts within given ranges per BAM file.

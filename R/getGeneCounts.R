@@ -3,10 +3,9 @@
 #' @rdname getGeneCounts
 #' @param CSobject The \code{\link{CapSet}} object to use.
 #' @param transcriptGRL A GRangesList object containing transcripts, created using transcriptsBy(txdb)
-#' @param regionAroundTSS How many bases downstream of TSS to count
-#' @param single_end Logical, indicating whether reads are single end
-#' @param outfile Tab-separated output file name (if required)
-#' @param ncores No. of cores/threads to use
+#' @param regionAroundTSS integer, indicating how many bases downstream of TSS to count
+#' @param outfile character. Tab-separated output file name (if required)
+#' @param ncores integer. No. of cores/threads to use
 #'
 #' @return data.frame with gene-level counts for all genes in the txdb object
 #'
@@ -34,7 +33,6 @@ setMethod("getGeneCounts",
         function(CSobject,
                 transcriptGRL,
                 regionAroundTSS,
-                single_end,
                 outfile,
                 ncores) {
 
@@ -43,13 +41,18 @@ setMethod("getGeneCounts",
             GenomicRanges::resize(unlist(transcriptGRL), regionAroundTSS, fix = "start")
         # get bamfiles
         si <- sampleInfo(CSobject)
-        bamfiles <- si$filtered_file
+        if (all(is.na(si$filtered_file))) {
+            warning("Filtered files not found under sampleInfo(CSobject). Using mapped files")
+            bam.files <- si$mapped_file
+        } else {
+            bam.files <- si$filtered_file
+        }
 
         # count reads
         bpParams <- getMCparams(ncores)
         tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
-                                                          reads = Rsamtools::BamFileList(bamfiles),
-                                                          singleEnd = single_end,
+                                                          reads = Rsamtools::BamFileList(bam.files),
+                                                          singleEnd = !(CSobject@paired_end),
                                                           BPPARAM = bpParams)
         tsscounts.df <- SummarizedExperiment::assay(tsscounts)
 

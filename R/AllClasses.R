@@ -18,6 +18,7 @@
 #' @param demult_R2 a vector of file paths for demultiplexed R2 reads
 #' @param mapped_file a vector of file paths for mapped BAM files.
 #' @param filtered_file a vector of file paths for de-duplicated BAM files.
+#' @param paired_end logical, indiciting whether the data is paired end
 #'
 #' @return An object of class CapSet
 #' @importFrom methods new is
@@ -56,7 +57,8 @@ newCapSet <- function(
                     demult_R1 = NA,
                     demult_R2 = NA,
                     mapped_file = NA,
-                    filtered_file = NA) {
+                    filtered_file = NA,
+                    paired_end = TRUE) {
     ## Get numbers from already provided files
     suppressWarnings({
 
@@ -65,6 +67,7 @@ newCapSet <- function(
             idxList <- as.character(Biostrings::DNAStringSet(idxList))
             # the above func would throw an error if seq not valid
         }
+
         # R1
         if (!is.na(demult_R1)) {
             message("Checking de-multiplexed R1 reads")
@@ -81,10 +84,15 @@ newCapSet <- function(
             if (sum(vapply(demult_R2, file.exists, logical(1L))) != length(demult_R2)) {
                 stop("One or more R2 read files don't exist!")
             }
-            r2_counts <- ShortRead::countLines(demult_R2)
+
+            r2_counts <- as.integer(ShortRead::countLines(demult_R2)/4)
             # R1 and R2 have same no of reads?
-            sum(r1_counts == r1_counts) == length(r1_counts)
+            if (!all(r2_counts == r1_counts)) {
+                stop("discrepency between number of R2 and R1 reads in fastq files!")
+            }
+
         } else {
+            # paired_end stays FALSE
             r2_counts <- NA
         }
         # BAM
@@ -93,10 +101,12 @@ newCapSet <- function(
             if (sum(vapply(mapped_file, file.exists, logical(1L))) != length(mapped_file)) {
                 stop("One or more mapped files don't exist!")
             }
+
+            ## count all reads if single end, else count only R1
             mapped_readcounts <- countBam(BamFileList(mapped_file),
                                             param = ScanBamParam(
-                                              flag = getBamFlags(paired = FALSE)
-                                            ))[, 6] # "file" and "records"
+                                              flag = getBamFlags(countAll = !paired_end)
+                                            ))[, 6] # "records"
         } else {
             mapped_readcounts <- NA
         }
@@ -106,9 +116,10 @@ newCapSet <- function(
             if (sum(vapply(filtered_file, file.exists, logical(1L))) != length(filtered_file)) {
                 stop("One or more de-duplicated files don't exist!")
             }
+            ## count all reads if single end, else count only R1
             filt_readcounts <- countBam(BamFileList(filtered_file),
                                         param = ScanBamParam(
-                                            flag = getBamFlags(paired = FALSE)
+                                            flag = getBamFlags(countAll = !paired_end)
                                         ))[, 6] # "records"
         } else {
             filt_readcounts <- NA
@@ -137,13 +148,14 @@ newCapSet <- function(
         "CapSet",
         sampleInfo = info,
         # sample Information
-        #fastqType = fastqType,
+        paired_end = paired_end,
         fastq_R1 = fastq_R1,
         fastq_R2 = fastq_R2,
         expMethod = expMethod,
         tss_detected = NULL
     )
 }
+
 
 #' Check capset validity
 #'
@@ -222,6 +234,7 @@ CapSet <- setClass(
         fastq_R2 = "charOrNULL",
         expMethod = "character",
         sampleInfo = "DataFrame",
+        paired_end = "logical",
         tss_detected = "ANY"
     ),
     validity = check_capSet

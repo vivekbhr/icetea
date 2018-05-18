@@ -57,7 +57,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">icetea</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.4.0</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.99.0</span>
       </span>
     </div>
 
@@ -130,18 +130,18 @@
     </tr>
     <tr>
       <th>plotType</th>
-      <td><p>The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
+      <td><p>character. The type of plot to make. Choose from "stack" or "dodge" for either a stacked barchart,
 or a bar chart with "dodged" positions (analogous to ggplot)</p></td>
     </tr>
     <tr>
       <th>plotValue</th>
-      <td><p>What values to plot. Choose from "numbers" or "proportions". If "proportions"
+      <td><p>character. What values to plot. Choose from "numbers" or "proportions". If "proportions"
 is selected, the proportion of reads w.r.t total demultiplexed reads per sample
 would be plotted</p></td>
     </tr>
     <tr>
       <th>outFile</th>
-      <td><p>Output file name. (filename extention would be used to determine type).
+      <td><p>character. Output file name. (filename extention would be used to determine type).
 If outfile not specified, the plot would be retured on the screen</p></td>
     </tr>
     </table>
@@ -154,8 +154,8 @@ If outfile not specified, the plot would be retured on the screen</p></td>
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'>
 <span class='co'># load a previously saved CapSet object</span>
-<span class='no'>cs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='exampleCSobject.html'>exampleCSobject</a></span>()</div><div class='output co'>#&gt; <span class='message'>Checking de-multiplexed R1 reads</span></div><div class='output co'>#&gt; <span class='message'>Checking de-multiplexed R2 reads</span></div><div class='output co'>#&gt; <span class='message'>Checking mapped file</span></div><div class='output co'>#&gt; <span class='message'>Checking de-duplicated file</span></div><div class='input'><span class='fu'>plotReadStats</span>(<span class='no'>cs</span>, <span class='kw'>plotType</span> <span class='kw'>=</span> <span class='st'>"dodge"</span>, <span class='kw'>plotValue</span> <span class='kw'>=</span> <span class='st'>"numbers"</span>, <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"test_numbers.pdf"</span>)</div><div class='output co'>#&gt; Plotting following information : samples demult_reads num_mapped num_filtered num_intss</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Saving 6.99 x 6.99 in image</span></div><div class='input'>
-</div><div class='img'><img src='plotReadStats-1.png' alt='' width='700' height='433' /></div></pre>
+<span class='no'>cs</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='exampleCSobject.html'>exampleCSobject</a></span>()</div><div class='output co'>#&gt; <span class='message'>Checking de-multiplexed R1 reads</span></div><div class='output co'>#&gt; <span class='message'>Checking de-multiplexed R2 reads</span></div><div class='output co'>#&gt; <span class='message'>Checking mapped file</span></div><div class='output co'>#&gt; <span class='message'>Checking de-duplicated file</span></div><div class='input'><span class='fu'>plotReadStats</span>(<span class='no'>cs</span>, <span class='kw'>plotType</span> <span class='kw'>=</span> <span class='st'>"dodge"</span>, <span class='kw'>plotValue</span> <span class='kw'>=</span> <span class='st'>"numbers"</span>, <span class='kw'>outFile</span> <span class='kw'>=</span> <span class='st'>"test_numbers.pdf"</span>)</div><div class='output co'>#&gt; Plotting following information : samples demult_reads num_mapped num_filtered num_intss</div><div class='output co'>#&gt; </div><div class='output co'>#&gt; <span class='message'>Saving 10.1 x 5.6 in image</span></div><div class='input'>
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>

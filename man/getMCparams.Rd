@@ -7,10 +7,10 @@
 getMCparams(cores)
 }
 \arguments{
-\item{cores}{No. of cores}
+\item{cores}{integer. No. of cores to use.}
 }
 \value{
-BPPARAM
+BPPARAM object
 }
 \description{
 Get platform-specific multicore params
