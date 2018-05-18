@@ -23,8 +23,8 @@ filterdups_func <- function(bamdf) {
         return(dupStats_umi)
     }
     #getfraglength <- function(x) {
-    #	fraglen <- (2*x$qwidth)  x$isize
-    #	return(fraglen)
+    #    raglen <- (2*x$qwidth)  x$isize
+    #    eturn(fraglen)
     #}
     #dupStats_fraglen <- unlist(lapply(fraglengths, function(x) !(duplicated(x)) ))
     # final dupstats (both UMI and fragment length are same --> remove reads, else keep)
