@@ -41,12 +41,17 @@ setMethod("getGeneCounts",
             GenomicRanges::resize(unlist(transcriptGRL), regionAroundTSS, fix = "start")
         # get bamfiles
         si <- sampleInfo(CSobject)
-        bamfiles <- si$filtered_file
+        if (all(is.na(si$filtered_file))) {
+            warning("Filtered files not found under sampleInfo(CSobject). Using mapped files")
+            bam.files <- si$mapped_file
+        } else {
+            bam.files <- si$filtered_file
+        }
 
         # count reads
         bpParams <- getMCparams(ncores)
         tsscounts <- GenomicAlignments::summarizeOverlaps(transcriptGR,
-                                                          reads = Rsamtools::BamFileList(bamfiles),
+                                                          reads = Rsamtools::BamFileList(bam.files),
                                                           singleEnd = !(CSobject@paired_end),
                                                           BPPARAM = bpParams)
         tsscounts.df <- SummarizedExperiment::assay(tsscounts)
