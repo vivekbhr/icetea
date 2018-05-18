@@ -8,7 +8,8 @@ r_github_packages:
 #   - r-lib/devtools
     - r-lib/covr
 bioc_packages:
-    - BiocCheck, TxDb.Dmelanogaster.UCSC.dm6.ensGene
+    - BiocCheck
+    - TxDb.Dmelanogaster.UCSC.dm6.ensGene
 # in order to sync with devtools::check()
 #r_check_args: --as-cran --timings --no-manual
 warnings_are_errors: true
