@@ -149,9 +149,9 @@ setMethod("detectTSS",
 
             bpParams <- getMCparams(ncores)
             # register parallel backend
-            if (!BiocParallel::bpisup(param)) {
-                BiocParallel::bpstart(param)
-                on.exit(BiocParallel::bpstop(param))
+            if (!BiocParallel::bpisup(bpParams)) {
+                BiocParallel::bpstart(bpParams)
+                on.exit(BiocParallel::bpstop(bpParams))
             }
             # window size
             bin_size <- windowSize
