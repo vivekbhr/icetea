@@ -20,7 +20,7 @@ Imports:
     ggplot2,
     GenomicFeatures,
     ShortRead,
-    BiocParallel,
+    BiocParallel (>= 1.15),
     Biostrings,
     S4Vectors,
     Rsamtools,
