@@ -62,9 +62,9 @@ splitBAM_byRepindex <-
 
         param <- getMCparams(ncores)
         # register parallel backend
-        if (!BiocParallel::bpisup()) {
-            BiocParallel::bpstart()
-            on.exit(BiocParallel::bpstop())
+        if (!BiocParallel::bpisup(param)) {
+            BiocParallel::bpstart(param)
+            on.exit(BiocParallel::bpstop(param))
         }
         BiocParallel::bplapply(seq_along(destinations),
                                function(i, file, destinations, filtrules) {

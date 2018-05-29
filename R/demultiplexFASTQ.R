@@ -191,14 +191,14 @@ setMethod("demultiplexFASTQ",
         ## get the fastq to split (raise error if fastq untrimmed/not existing)
         fastq_R1 <- CSobject@fastq_R1
         fastq_R2 <- CSobject@fastq_R2
-        param <- getMCparams(ncores)
-        message("de-multiplexing the FASTQ file")
-        # register parallel backend
-        if (!BiocParallel::bpisup()) {
-        BiocParallel::bpstart()
-        on.exit(BiocParallel::bpstop())
-        }
 
+        # register parallel backend
+        param <- getMCparams(ncores)
+        if (!BiocParallel::bpisup(param)) {
+        BiocParallel::bpstart(param)
+        on.exit(BiocParallel::bpstop(param))
+        }
+        message("de-multiplexing the FASTQ file")
         ## filter and write
         info <-
             BiocParallel::bplapply(seq_along(destinations), function(i) {

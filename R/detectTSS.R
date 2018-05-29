@@ -148,6 +148,11 @@ setMethod("detectTSS",
                                 flag = getBamFlags(countAll = countall))
 
             bpParams <- getMCparams(ncores)
+            # register parallel backend
+            if (!BiocParallel::bpisup(bpParams)) {
+                BiocParallel::bpstart(bpParams)
+                on.exit(BiocParallel::bpstop(bpParams))
+            }
             # window size
             bin_size <- windowSize
             # background size (200x)
