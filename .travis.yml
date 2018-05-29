@@ -9,7 +9,7 @@ r_github_packages:
 bioc_packages:
     - BiocCheck
 before_install:
-  Rscript -e 'update.packages(ask = FALSE)'
+  Rscript -e 'BiocInstaller::biocUpdatePackages("BiocParallel")'
 # in order to sync with devtools::check()
 #r_check_args: --as-cran --timings --no-manual
 warnings_are_errors: true
