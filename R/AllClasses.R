@@ -68,8 +68,8 @@ newCapSet <- function(
             # the above func would throw an error if seq not valid
         }
 
-        # R1
-        if (!is.na(demult_R1)) {
+        # R1 (read only if none of the entries are NA)
+        if (!any(is.na(demult_R1))) {
             message("Checking de-multiplexed R1 reads")
             if (sum(vapply(demult_R1, file.exists, logical(1L))) != length(demult_R1)) {
                 stop("One or more R1 read files don't exist!")
@@ -78,8 +78,8 @@ newCapSet <- function(
         } else {
             r1_counts <- NA
         }
-        # R2
-        if (!is.na(demult_R2)) {
+        # R2 (read only if none of the entries are NA)
+        if (!any(is.na(demult_R2))) {
             message("Checking de-multiplexed R2 reads")
             if (sum(vapply(demult_R2, file.exists, logical(1L))) != length(demult_R2)) {
                 stop("One or more R2 read files don't exist!")
@@ -95,8 +95,8 @@ newCapSet <- function(
             # paired_end stays FALSE
             r2_counts <- NA
         }
-        # BAM
-        if (!is.na(mapped_file)) {
+        # BAM (read only if none of the entries are NA)
+        if (!any(is.na(mapped_file))) {
             message("Checking mapped file")
             if (sum(vapply(mapped_file, file.exists, logical(1L))) != length(mapped_file)) {
                 stop("One or more mapped files don't exist!")
@@ -110,8 +110,8 @@ newCapSet <- function(
         } else {
             mapped_readcounts <- NA
         }
-        # Filtered BAM
-        if (!is.na(filtered_file)) {
+        # Filtered BAM (read only if none of the entries are NA)
+        if (!any(is.na(filtered_file))) {
             message("Checking de-duplicated file")
             if (sum(vapply(filtered_file, file.exists, logical(1L))) != length(filtered_file)) {
                 stop("One or more de-duplicated files don't exist!")
