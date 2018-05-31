@@ -1,7 +1,7 @@
 Package: icetea
 Type: Package
 Title: Integrating Cap Enrichment with Transcript Expression Analysis
-Version: 0.99.7
+Version: 0.99.8
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
 Description: icetea (Integrating Cap Enrichment with Transcript Expression Analysis)
     provides functions for end-to-end analysis of multiple 5'-profiling methods such as
@@ -22,10 +22,10 @@ Imports:
     ShortRead,
     BiocParallel,
     Biostrings,
-    S4Vectors (== 0.18.2),
+    S4Vectors,
     Rsamtools,
     BiocGenerics,
-    IRanges (== 2.14.10),
+    IRanges,
     GenomicAlignments,
     GenomicRanges,
     rtracklayer,
