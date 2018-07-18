@@ -91,7 +91,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'
 #' @export
 #' @importFrom utils write.table
-#' @importFrom SummarizedExperiment colData rowRanges colData<-
+#' @importFrom SummarizedExperiment mcols mcols<- colData colData<- rowRanges
 #' @importFrom csaw readParam strandedCounts regionCounts filterWindows mergeWindows
 #'
 #' @examples
@@ -202,8 +202,10 @@ setMethod("detectTSS",
             filterstat <- lapply(unique(design$group), function(x) {
                 stat <- localFilter(data[, data$group == x],
                                         wider[, wider$group == x])
-                  return(stat)
+                  return(S4Vectors::DataFrame(stat))
             })
+            # add filter stats as metadata to the data
+            mcols(data) <- filterstat
 
             # Require X-fold enrichment over local background to keep the window (similar to MACS)
             keep <- lapply(filterstat, function(x) {
@@ -212,16 +214,22 @@ setMethod("detectTSS",
             })
 
             filtered.data <- lapply(keep, function(keep) {
-                return(data[keep,])
+                return(data[keep,]) # mcols are carried over
             })
 
             ## merge nearby windows (within bin_size) to get broader TSS
+            ## final fold change = avgFC of windows
             merged <- lapply(filtered.data, function(d) {
-                return(mergeWindows(d, tol = bin_size, ignore.strand = FALSE))
+                dr <- GenomicRanges::granges(d)
+                dr_reduced <- GenomicRanges::reduce(dr, ignore.strand = FALSE, with.revmap = TRUE)
+
+                mcols(dr_reduced) <- aggregate(dr,
+                                               mcols(dr_reduced)$revmap,
+                                               score = mean(filter))
+                return(dr_reduced)
             })
+
             # update the Capset object
-            merged <- lapply(merged, function(x)
-                return(x$region))
             names(merged) <- unique(as.character(groups))
             CSobject@tss_detected <- GenomicRanges::GRangesList(merged)
 
@@ -234,9 +242,8 @@ setMethod("detectTSS",
             # Add the results as a list and save as .Rdata
             output <- list(
                 counts.windows = data,
-                counts.background = wider,
-                filter.stats = S4Vectors::DataFrame(filterstat[[1]])
-            )
+                counts.background = wider)
+
             if (!(is.null(outfile_prefix))) {
                 message("Writing filtering information as .Rdata")
                 save(output, file = paste0(outfile_prefix, ".Rdata"))
