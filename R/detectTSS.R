@@ -225,7 +225,7 @@ setMethod("detectTSS",
 
                 mcols(dr_reduced) <- aggregate(dr,
                                                mcols(dr_reduced)$revmap,
-                                               score = mean(filter))
+                                               score = BiocGenerics::mean(filter))
                 return(dr_reduced)
             })
 
