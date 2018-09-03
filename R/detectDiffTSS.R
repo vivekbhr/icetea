@@ -99,7 +99,7 @@ setMethod("getNormFactors",
 #' }
 #'
 
-diffTSS <-
+fitDiffTSS <-
     function(CSobject,
              TSSfile,
              groups,
@@ -175,6 +175,9 @@ diffTSS <-
                 stopifnot(is.numeric(normfacs) & length(normfacs) == length(groups))
             }
             y$samples$norm.factors <- normfacs
+            # fail early if plotRefSample is not given
+            if (is.null(plotRefSample))
+                stop("Please indicate reference sample for plotting of composition bias!")
             print(plotCompBias(dgelist = y, samples, plotRefSample))
 
         } else if (normalization == "windowTMM") {
@@ -252,7 +255,7 @@ diffQCplots <- function(method, fit, y) {
         dds_rlog <- DESeq2::rlog(fit)
         PCAdata <- DESeq2::plotPCA(dds_rlog, intgroup = "group", returnData=TRUE)
         percentVar <- round(100 * attr(PCAdata, "percentVar"))
-        print(ggplot(PCAdata, aes_string("PC1", "PC2", color = group)) +
+        print(ggplot(PCAdata, aes_string("PC1", "PC2", color = "group")) +
                   geom_hline(aes(yintercept = 0), colour = "grey") +
                   geom_vline(aes(xintercept = 0), colour = "grey") +
                   geom_point(size = 5) +

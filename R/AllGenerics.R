@@ -140,7 +140,7 @@ setGeneric("fitDiffTSS",
                     normalization = NULL,
                     normFactors = NULL,
                     outplots = NULL,
-                    plotRefSample,
+                    plotRefSample = NULL,
                     ncores = 1)
             standardGeneric("fitDiffTSS"))
 
