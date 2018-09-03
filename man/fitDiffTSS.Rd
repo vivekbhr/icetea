@@ -5,11 +5,12 @@
 \alias{diffTSS}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (fit model)}
 \usage{
-fitDiffTSS(CSobject, TSSfile = NULL, groups, normalization = NULL,
-  normFactors = NULL, outplots = NULL, plotRefSample, ncores = 1)
+fitDiffTSS(CSobject, TSSfile = NULL, groups, method = "DESeq2",
+  normalization = NULL, normFactors = NULL, outplots = NULL,
+  plotRefSample, ncores = 1)
 
-diffTSS(CSobject, TSSfile, groups, method = "DESeq2", normalization,
-  normFactors, outplots, plotRefSample, ncores)
+diffTSS(CSobject, TSSfile, groups, method, normalization, normFactors, outplots,
+  plotRefSample, ncores)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
@@ -20,6 +21,8 @@ empty, the union of detected TSS present within the provided CSobject would be p
 \item{groups}{Character vector indicating the group into which each sample within the CSobject falls.
 the groups would be use to create a design matrix. As an example, replicates for one
 condition could be in the same group.}
+
+\item{method}{Which method to use for differential expression analysis? options are "DESeq2" or "edgeR"}
 
 \item{normalization}{A character indicating the type of normalization to perform . Options are "windowTMM",
 "TMM", "RLE", "upperquartile" or NULL (don't compute normalization factors).

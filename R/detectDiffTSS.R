@@ -56,6 +56,7 @@ setMethod("getNormFactors",
 #' @param groups Character vector indicating the group into which each sample within the CSobject falls.
 #'               the groups would be use to create a design matrix. As an example, replicates for one
 #'               condition could be in the same group.
+#' @param method Which method to use for differential expression analysis? options are "DESeq2" or "edgeR"
 #' @param normalization A character indicating the type of normalization to perform . Options are "windowTMM",
 #'                 "TMM", "RLE", "upperquartile" or NULL (don't compute normalization factors).
 #'                 If "windowTMM" is chosen, the normalization factors are calculated using the TMM
@@ -102,7 +103,7 @@ diffTSS <-
     function(CSobject,
              TSSfile,
              groups,
-             method = "DESeq2",
+             method,
              normalization,
              normFactors,
              outplots,
