@@ -4,11 +4,15 @@
 \name{detectDiffTSS}
 \alias{detectDiffTSS}
 \alias{detectDiffTSS,DGEGLM-method}
+\alias{detectDiffTSS,DESeqDataSet-method}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (test)}
 \usage{
 detectDiffTSS(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA)
 
 \S4method{detectDiffTSS}{DGEGLM}(fit, testGroup, contGroup, TSSfile,
+  MAplot_fdr = NA)
+
+\S4method{detectDiffTSS}{DESeqDataSet}(fit, testGroup, contGroup,
   MAplot_fdr = NA)
 }
 \arguments{
@@ -21,8 +25,18 @@ detectDiffTSS(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA)
 \item{TSSfile}{The TSS .bed file used for \code{\link{fitDiffTSS}} command}
 
 \item{MAplot_fdr}{FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)}
+
+\item{fit}{A DESeqDataSet object (output of \code{\link{fitDiffTSS}} command )}
+
+\item{testGroup}{Test group name}
+
+\item{contGroup}{Control group name}
+
+\item{MAplot_fdr}{FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)}
 }
 \value{
+A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
+
 A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 }
 \description{
@@ -45,6 +59,15 @@ dir <- system.file("extdata", package = "icetea")
 # detect differentially expressed TSS between groups (return MA plot)
 detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt",
                tssFile = file.path(dir, "testTSS_merged.bed"), MAplot_fdr = 0.05)
+
+}
+
+\dontrun{
+# load a previously saved DGEGLM object from step 5
+csfit <- load("diffTSS_fit.Rdata")
+dir <- system.file("extdata", package = "icetea")
+# detect differentially expressed TSS between groups (return MA plot)
+detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt", MAplot_fdr = 0.05)
 
 }
 
