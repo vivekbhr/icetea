@@ -143,6 +143,7 @@ setGeneric("fitDiffTSS",
                     ncores = 1)
             standardGeneric("fitDiffTSS"))
 
+#' Detect differentially expressed Transcription Start Sites between two conditions (test)
 #' @name detectDiffTSS
 #' @rdname detectDiffTSS
 #' @export
