@@ -8,7 +8,8 @@
 \usage{
 getNormFactors(CSobject, features, method = "TMM", ...)
 
-\S4method{getNormFactors}{CapSet}(CSobject, features, method = "TMM", ...)
+\S4method{getNormFactors}{CapSet}(CSobject, features, method = "TMM",
+  ...)
 }
 \arguments{
 \item{CSobject}{An object of class \code{\link{CapSet}}}
