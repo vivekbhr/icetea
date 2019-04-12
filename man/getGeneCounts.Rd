@@ -6,8 +6,8 @@
 \alias{getGeneCounts,CapSet-method}
 \title{Get gene-level counts from TSS data}
 \usage{
-getGeneCounts(CSobject, transcriptGRL, regionAroundTSS = 500, outfile = NA,
-  ncores = 1)
+getGeneCounts(CSobject, transcriptGRL, regionAroundTSS = 500,
+  outfile = NA, ncores = 1)
 
 \S4method{getGeneCounts}{CapSet}(CSobject, transcriptGRL,
   regionAroundTSS = 500, outfile = NA, ncores = 1)

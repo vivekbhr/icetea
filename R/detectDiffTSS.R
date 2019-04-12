@@ -57,7 +57,7 @@ setMethod("getNormFactors",
 #'               the groups would be use to create a design matrix. As an example, replicates for one
 #'               condition could be in the same group.
 #' @param normalization A character indicating the type of normalization to perform . Options are "windowTMM",
-#'                 "globalTMM" or NULL (don't compute normalization factors).
+#'                 "TMM", "RLE", "upperquartile" or NULL (don't compute normalization factors).
 #'                 If "windowTMM" is chosen, the normalization factors are calculated using the TMM
 #'                 method on 10 kb windows of the genome. "globalTMM" computes TMM normalization using counts
 #'                 from all the evaluated TSSs. If NULL, the external normalization factors can be used
@@ -98,28 +98,28 @@ setMethod("getNormFactors",
 #' }
 #'
 
-setMethod("fitDiffTSS",
-        signature = "CapSet",
-        function(CSobject,
-            TSSfile,
-            groups,
-            normalization,
-            normFactors,
-            outplots,
-            plotRefSample,
-            ncores) {
+diffTSS <-
+    function(CSobject,
+             TSSfile,
+             groups,
+             method = "DESeq2",
+             normalization,
+             normFactors,
+             outplots,
+             plotRefSample,
+             ncores) {
 
         # get bam files and design
         si <- sampleInfo(CSobject)
         if (all(is.na(si$filtered_file))) {
-                warning("Filtered files not found under sampleInfo(CSobject). Using mapped files")
-                bam.files <- si$mapped_file
-            } else {
-                bam.files <- si$filtered_file
-            }
+            warning("Filtered files not found under sampleInfo(CSobject). Using mapped files")
+            bam.files <- si$mapped_file
+        } else {
+            bam.files <- si$filtered_file
+        }
         if (any(is.na(bam.files))) stop("Some or all of the bam files are not defined!")
         if (sum(file.exists(bam.files)) != length(bam.files)) {
-                stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
+            stop("One or more bam files don't exist! Check sampleInfo(CSobject) ")
         }
 
         samples <- as.character(si$samples)
@@ -140,12 +140,31 @@ setMethod("fitDiffTSS",
         bp_param <- getMCparams(ncores)
         tsscounts <-
             GenomicAlignments::summarizeOverlaps(features = mergedall,
-                                                reads = bam.files,
-                                                singleEnd = !(CSobject@paired_end),
-                                                preprocess.reads = ResizeReads,
-                                                BPPARAM = bp_param)
-        # make DGElist
-        y <- edgeR::DGEList(counts = SummarizedExperiment::assay(tsscounts))
+                                                 reads = bam.files,
+                                                 singleEnd = TRUE,
+                                                 preprocess.reads = ResizeReads,
+                                                 BPPARAM = bp_param)
+        ## check method
+        if (method == "DESeq2") {
+            counts <- assay(tsscounts)
+            colnames(counts) <- samples
+            dds <- DESeq2::DESeqDataSetFromMatrix(
+                counts,
+                rowRanges = SummarizedExperiment::rowRanges(tsscounts),
+                colData = design,
+                design = ~group)
+            if (is.null(normFactors)) {
+                message("Performing DESeq normalization")
+                dds <- DESeq2::estimateSizeFactors(dds)
+            } else {
+                message("Using external normalization factors")
+                DESeq2::sizeFactors(dds) <- normFactors
+            }
+            normalization <- "skip"
+        } else if (method == "edgeR") {
+            # make DGElist
+            y <- edgeR::DGEList(counts = SummarizedExperiment::assay(tsscounts))
+        }
         ## Get norm factors
         if (is.null(normalization)) {
             ## if normalization method not provided, look for external Norm factors
@@ -169,9 +188,9 @@ setMethod("fitDiffTSS",
                                            pe = ifelse(isTRUE(CSobject@paired_end), "first", "none"))
             binned <-
                 csaw::windowCounts(bam.files,
-                                    bin = TRUE,
-                                    width = 10000,
-                                    param = regionparam)
+                                   bin = TRUE,
+                                   width = 10000,
+                                   param = regionparam)
             normfacs <- csaw::normOffsets(binned) # close to unity
             names(normfacs) <- samples
             y.bin <- csaw::asDGEList(binned)
@@ -184,56 +203,98 @@ setMethod("fitDiffTSS",
             y <- edgeR::calcNormFactors(y, method = normalization)
             print(plotCompBias(dgelist = y, samples, plotRefSample))
 
+        } else if (normalization == "skip") {
+            message("skipping additional normalizations")
         } else stop("Unknown normalization method!")
 
-        # proceed with edgeR
-        designm <- model.matrix( ~ 0 + group, design)
-        y <- edgeR::estimateDisp(y, designm)
-        fit <- edgeR::glmQLFit(y, designm, robust = TRUE)
-        # check prior degrees of freedom (avoid Infs)
-        message("Prior degrees of freedom : ")
-        print(summary(fit$df.prior))
+        if (method == "DESeq2") {
+            ## proceed with DESeq2
+            dds <- DESeq2::estimateDispersions(dds)
+            fit <- DESeq2::nbinomWaldTest(dds)
+            y <- NA
+
+        } else if (method == "edgeR") {
+            # proceed with edgeR
+            designm <- model.matrix( ~ 0 + group, design)
+            y <- edgeR::estimateDisp(y, designm)
+            fit <- edgeR::glmQLFit(y, designm, robust = TRUE)
+            # check prior degrees of freedom (avoid Infs)
+            #message("Prior degrees of freedom : ")
+            #print(summary(fit$df.prior))
+
+        }
 
         ## make plots if asked
         if (!is.null(outplots)) {
             pdf(outplots)
-            ## check that the Fit is good
-            par(mfrow = c(1, 2))
-            # BCV plot
-            o <- order(y$AveLogCPM)
-            plot(
-                y$AveLogCPM[o],
-                sqrt(y$trended.dispersion[o]),
-                type = "l",
-                lwd = 2,
-                ylim = c(0, 1),
-                xlab = expression("Ave." ~ Log[2] ~ "CPM"),
-                ylab = ("Biological coefficient of variation")
-            )
-            # dispersion plot
-            edgeR::plotQLDisp(fit)
-
-            ## check with MDSplot if there is batch effect
-            par(mfrow = c(2, 2), mar = c(5, 4, 2, 2))
-            for (top in c(100, 500, 1000, 5000)) {
-                out <- limma::plotMDS(
-                    edgeR::cpm(y, log = TRUE),
-                    main = top,
-                    labels = design$group,
-                    top = top
-                )
-            }
-
+            diffQCplots(method, fit, y)
             dev.off()
         }
 
         ## return the fit
         return(fit)
+    }
 
+
+#' Make DESeq2 or edgeR QC plots
+#' @importFrom ggplot2 ggplot aes aes_string geom_hline geom_vline geom_point labs theme_bw
+#'                     scale_shape_manual
+diffQCplots <- function(method, fit, y) {
+
+    if (method == "DESeq2") {
+
+        ## plot sparsity
+        DESeq2::plotSparsity(fit)
+        ## plot Dispersions
+        DESeq2::plotDispEsts(fit)
+        ## plot PCA
+        dds_rlog <- DESeq2::rlog(fit)
+        PCAdata <- DESeq2::plotPCA(dds_rlog, intgroup = "group", returnData=TRUE)
+        percentVar <- round(100 * attr(PCAdata, "percentVar"))
+        print(ggplot(PCAdata, aes_string("PC1", "PC2", color = group)) +
+                  geom_hline(aes(yintercept = 0), colour = "grey") +
+                  geom_vline(aes(xintercept = 0), colour = "grey") +
+                  geom_point(size = 5) +
+                  labs(x = paste0("PC1: ", percentVar[1], "% variance"),
+                       y = paste0("PC2: ", percentVar[2], "% variance"),
+                       title = "PCA\n") +
+                  theme_bw(base_size = 14) +
+                  scale_shape_manual(values = c(0:18,33:17))
+        )
+
+    } else if (method == "edgeR") {
+
+        ## plot BCV and fit
+        par(mfrow = c(1, 2))
+        o <- order(y$AveLogCPM)
+        plot(
+            y$AveLogCPM[o],
+            sqrt(y$trended.dispersion[o]),
+            type = "l",
+            lwd = 2,
+            ylim = c(0, 1),
+            xlab = expression("Ave." ~ Log[2] ~ "CPM"),
+            ylab = ("Biological coefficient of variation")
+        )
+        ## plot dispersion
+        edgeR::plotQLDisp(fit)
+
+        ## plot MDS (top genes/tss)
+        par(mfrow = c(2, 2), mar = c(5, 4, 2, 2))
+        for (top in c(100, 500, 1000, 5000)) {
+            out <- limma::plotMDS(
+                edgeR::cpm(y, log = TRUE),
+                main = top,
+                labels = design$group,
+                top = top
+            )
         }
-)
 
-## visualize Effect of TMM normalization on composition bias
+    }
+}
+
+
+## for "windowTMM" norm : visualize Effect of TMM normalization on composition bias
 plotCompBias <- function(dgelist, samples, plotRefSample) {
 
         normfacs <- dgelist$samples$norm.factors
@@ -261,8 +322,6 @@ plotCompBias <- function(dgelist, samples, plotRefSample) {
         })
 }
 
-#' Detect differentially expressed Transcription Start Sites between two conditions (test)
-#'
 #' @rdname detectDiffTSS
 #' @param fit DGEGLM object (output of \code{\link{fitDiffTSS}} command )
 #' @param testGroup Test group name
@@ -336,5 +395,67 @@ setMethod("detectDiffTSS",
         }
 
         return(difftss)
+          }
+)
+
+
+#' @rdname detectDiffTSS
+#' @param fit A DESeqDataSet object (output of \code{\link{fitDiffTSS}} command )
+#' @param testGroup Test group name
+#' @param contGroup Control group name
+#' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
+#'
+#' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
+#' @export
+#'
+#' @importFrom DESeq2 results
+#' @importFrom SummarizedExperiment rowRanges
+#' @importFrom ggplot2 ggplot aes_string geom_point geom_abline scale_color_manual labs
+#'                     theme_gray theme scale_x_log10
+#' @examples
+#' \dontrun{
+#' # load a previously saved DGEGLM object from step 5
+#' csfit <- load("diffTSS_fit.Rdata")
+#' dir <- system.file("extdata", package = "icetea")
+#' # detect differentially expressed TSS between groups (return MA plot)
+#' detectDiffTSS(csfit, testGroup = "mut", controlGroup = "wt", MAplot_fdr = 0.05)
+#'
+#' }
+#'
+setMethod("detectDiffTSS",
+          signature = "DESeqDataSet",
+          function(fit,
+                   testGroup,
+                   contGroup,
+                   MAplot_fdr = NA) {
+
+              # Get TSS location as GRanges from dds metadata
+              mergedall <- rowRanges(fit)
+              ## extract results from dds
+              contrastvec <- c("group", testGroup, contGroup)
+              ddr <- results(fit, contrast = contrastvec)
+
+              # add information to TSS GRanges
+              mergedall$score <- ddr$padj
+              mergedall$logFC <- ddr$log2FoldChange
+              mergedall$basemean <- ddr$baseMean
+
+              # MA plot
+              if (!(is.na(MAplot_fdr))) {
+                  p <-
+                      ggplot(as.data.frame(ddr), aes_string("baseMean", "log2FoldChange",
+                                                            col = factor(ddr$padj < MAplot_fdr))) +
+                      geom_point(alpha = 0.5) +
+                      geom_abline(slope = 0, intercept = 0) +
+                      scale_color_manual(values = c("grey40", "darkred")) +
+                      labs(col = "Differentially Expressed") +
+                      theme_gray(base_size = 14) +
+                      theme(legend.position = "top") +
+                      labs(x = "Mean Count", y = "log2(Fold-Change)") +
+                      scale_x_log10()
+                  print(p)
+              }
+
+              return(mergedall)
           }
 )
