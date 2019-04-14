@@ -9,7 +9,6 @@ Description: icetea (Integrating Cap Enrichment with Transcript Expression Analy
     start sites using replicates. It also allows performing differential TSS detection
     between group of samples, therefore, integrating the mRNA cap enrichment information
     with transcript expression analysis.
-Encoding: UTF-8
 Depends:
     R (>= 3.5)
 Imports:
@@ -48,4 +47,5 @@ biocViews: Transcription, GeneExpression, Sequencing,
 URL: https://github.com/vivekbhr/icetea
 BugReports: https://github.com/vivekbhr/icetea/issues
 License: GPL-3 + file LICENSE
+Encoding: UTF-8
 RoxygenNote: 6.1.1

@@ -129,6 +129,7 @@ setGeneric("getNormFactors",
                     ...)
             standardGeneric("getNormFactors"))
 
+#' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
 #' @name fitDiffTSS
 #' @rdname fitDiffTSS
 #' @export
@@ -136,10 +137,11 @@ setGeneric("fitDiffTSS",
             function(CSobject,
                     TSSfile = NULL,
                     groups,
+                    method = "DESeq2",
                     normalization = NULL,
                     normFactors = NULL,
                     outplots = NULL,
-                    plotRefSample,
+                    plotRefSample = NA,
                     ncores = 1)
             standardGeneric("fitDiffTSS"))
 
@@ -151,6 +153,6 @@ setGeneric("detectDiffTSS",
            function(fit,
                     testGroup,
                     contGroup,
-                    TSSfile,
+                    TSSfile = NULL,
                     MAplot_fdr = NA)
             standardGeneric("detectDiffTSS"))
