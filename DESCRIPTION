@@ -46,4 +46,5 @@ biocViews: Transcription, GeneExpression, Sequencing,
 URL: https://github.com/vivekbhr/icetea
 BugReports: https://github.com/vivekbhr/icetea/issues
 License: GPL-3 + file LICENSE
-RoxygenNote: 6.0.1
+Encoding: UTF-8
+RoxygenNote: 6.1.1

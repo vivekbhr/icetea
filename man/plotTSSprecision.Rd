@@ -19,7 +19,7 @@ plotTSSprecision(reference, detectedTSS, distanceCutoff = 500,
 \arguments{
 \item{reference}{Reference Transcrips/Genes as a \code{\link{GRanges}} object}
 
-\item{detectedTSS}{Either a CapSet object with TSS information (after running \code{\link{detectTSS}}
+\item{detectedTSS}{Either a CapSet object with TSS information (after running \code{\link{detectTSS}})
 or a character vector with paths to the BED files containing detcted TSSs}
 
 \item{distanceCutoff}{integer. Maximum distance (in base pairs) from reference TSS to plot}

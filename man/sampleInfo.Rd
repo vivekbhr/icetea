@@ -4,7 +4,6 @@
 \name{sampleInfo}
 \alias{sampleInfo}
 \alias{sampleInfo<-}
-\alias{sampleInfo}
 \alias{sampleInfo,CapSet-method}
 \alias{sampleInfo<-,CapSet-method}
 \title{Retrieve and replace sample information of a CapSet object}

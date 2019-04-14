@@ -12,7 +12,7 @@
 #'
 #' @return A ggplot object, or a file. Plot showing the number/proportion of reads in each category, per sample
 #'
-#' @importFrom ggplot2 ggplot aes_string geom_bar theme_light scale_fill_brewer coord_flip labs ggsave
+#' @importFrom ggplot2 ggplot aes_string geom_bar theme_light theme scale_fill_brewer coord_flip labs ggsave
 #' @export
 #'
 #' @examples
@@ -63,7 +63,7 @@ setMethod(
         if (plotType == "stack") {
             si_stats[-1] <- get_stackedNum(si_stats[-1])
         }
-        y_label <- paste0("Proportion of ", basecat, " reads")
+        y_label <- paste0("Proportion of ", basecat)
 
     } else if (plotValue == "numbers") {
         if (plotType == "stack") {
@@ -89,6 +89,7 @@ setMethod(
                 position = plotType,
                 color = "black") +
         theme_light(base_size = 16)  +
+        #theme(legend.position = "top") +
         scale_fill_brewer(type = "seq", palette = "YlGnBu") +
         coord_flip() +
         labs(x = "Sample", y = y_label, fill = "Category")
@@ -117,7 +118,7 @@ get_stackedNum <- function(df) {
 #' a given reference annotation.
 #'
 #' @param reference Reference Transcrips/Genes as a \code{\link{GRanges}} object
-#' @param detectedTSS Either a CapSet object with TSS information (after running \code{\link{detectTSS}}
+#' @param detectedTSS Either a CapSet object with TSS information (after running \code{\link{detectTSS}})
 #'                    or a character vector with paths to the BED files containing detcted TSSs
 #' @param distanceCutoff integer. Maximum distance (in base pairs) from reference TSS to plot
 #' @param outFile character. Output file name (filename extention would be used to determine type)
@@ -273,7 +274,6 @@ plotPrecision <- function(ref, tssData, distCut) {
         labs(
             x = "Distances from nearby TSS (in bp)",
             y = "Cumulative Fraction",
-            title = "TSS precisions",
             col = "Sample"
         )
     return(p)

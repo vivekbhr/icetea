@@ -7,10 +7,11 @@
 \alias{detectDiffTSS,DESeqDataSet-method}
 \title{Detect differentially expressed Transcription Start Sites between two conditions (test)}
 \usage{
-detectDiffTSS(fit, testGroup, contGroup, TSSfile, MAplot_fdr = NA)
-
-\S4method{detectDiffTSS}{DGEGLM}(fit, testGroup, contGroup, TSSfile,
+detectDiffTSS(fit, testGroup, contGroup, TSSfile = NULL,
   MAplot_fdr = NA)
+
+\S4method{detectDiffTSS}{DGEGLM}(fit, testGroup, contGroup,
+  TSSfile = NULL, MAplot_fdr = NA)
 
 \S4method{detectDiffTSS}{DESeqDataSet}(fit, testGroup, contGroup,
   MAplot_fdr = NA)

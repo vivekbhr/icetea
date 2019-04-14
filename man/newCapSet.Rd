@@ -7,9 +7,9 @@
 \alias{CapSet}
 \title{Create a new CapSet object}
 \usage{
-newCapSet(expMethod, fastq_R1 = NULL, fastq_R2 = NULL, idxList = NULL,
-  sampleNames, demult_R1 = NA, demult_R2 = NA, mapped_file = NA,
-  filtered_file = NA, paired_end = TRUE)
+newCapSet(expMethod, fastq_R1 = NULL, fastq_R2 = NULL,
+  idxList = NULL, sampleNames, demult_R1 = NA, demult_R2 = NA,
+  mapped_file = NA, filtered_file = NA, paired_end = TRUE)
 }
 \arguments{
 \item{expMethod}{experiment method ('CAGE', 'RAMPAGE' or 'MAPCap')}
@@ -43,8 +43,6 @@ files are already de-multiplexed or mapped, the CapSet object can also be create
 using the path to demultiplexed fastq/mapped or filtered BAM files, along with
 corresponding sample names. In these cases statistics and operations for the
 missing files would not be possible.
-
-CapSet object
 }
 \section{Slots}{
 

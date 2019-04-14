@@ -90,8 +90,8 @@ annotateTSS <- function(tssBED,
             geom_bar(stat = "identity", position = "dodge") +
             scale_fill_brewer(palette = "Set1") +
             labs(x = "Feature", y = paste0(n, "of TSS")) +
-            theme(legend.position = "none") +
             theme_gray(base_size = 16) +
+            theme(legend.position = "none") +
             coord_flip()
 
         if (is.null(outFile)) {

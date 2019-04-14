@@ -47,8 +47,6 @@ setMethod("getNormFactors",
 )
 
 
-#' Detect differentially expressed Transcription Start Sites between two conditions (fit model)
-#'
 #' @rdname fitDiffTSS
 #' @param CSobject An object of class \code{\link{CapSet}}
 #' @param TSSfile A .bed file with TSS positions to test for differential TSS analysis. If left
@@ -56,11 +54,14 @@ setMethod("getNormFactors",
 #' @param groups Character vector indicating the group into which each sample within the CSobject falls.
 #'               the groups would be use to create a design matrix. As an example, replicates for one
 #'               condition could be in the same group.
-#' @param method Which method to use for differential expression analysis? options are "DESeq2" or "edgeR"
-#' @param normalization A character indicating the type of normalization to perform . Options are "windowTMM",
+#' @param method Which method to use for differential expression analysis? options are "DESeq2" or "edgeR".
+#'               If "DESeq2" is chosen, the library size is either estimated via DESeq2 (using "median of ratios")
+#'               or can be provided via the "normFactors" option below. Setting the "normalization"
+#'               (below) has no effect in that case.
+#' @param normalization A character indicating the type of normalization to perform. Options are "windowTMM",
 #'                 "TMM", "RLE", "upperquartile" or NULL (don't compute normalization factors).
 #'                 If "windowTMM" is chosen, the normalization factors are calculated using the TMM
-#'                 method on 10 kb windows of the genome. "globalTMM" computes TMM normalization using counts
+#'                 method on 10 kb windows of the genome. "TMM" computes TMM normalization using counts
 #'                 from all the evaluated TSSs. If NULL, the external normalization factors can be used
 #'                  (provided using `normFactors`).
 #' @param normFactors external normalization factors (from Spike-Ins, for example).
@@ -99,8 +100,9 @@ setMethod("getNormFactors",
 #' }
 #'
 
-fitDiffTSS <-
-    function(CSobject,
+setMethod("fitDiffTSS",
+          signature = "CapSet",
+          function(CSobject,
              TSSfile,
              groups,
              method,
@@ -175,10 +177,6 @@ fitDiffTSS <-
                 stopifnot(is.numeric(normfacs) & length(normfacs) == length(groups))
             }
             y$samples$norm.factors <- normfacs
-            # fail early if plotRefSample is not given
-            if (is.null(plotRefSample))
-                stop("Please indicate reference sample for plotting of composition bias!")
-            print(plotCompBias(dgelist = y, samples, plotRefSample))
 
         } else if (normalization == "windowTMM") {
             ## normalization factors calculated using TMM on large Windows
@@ -200,12 +198,16 @@ fitDiffTSS <-
             y.bin <- csaw::asDGEList(binned)
 
             y$samples$norm.factors <- normfacs
+            if (!(is.na(plotRefSample))) {
             print(plotCompBias(dgelist = y.bin, samples, plotRefSample))
+            }
 
         } else if (normalization %in% c("TMM", "RLE", "upperquartile", "none")) {
             ## normalization factors calculated using TMM on all TSSs
             y <- edgeR::calcNormFactors(y, method = normalization)
-            print(plotCompBias(dgelist = y, samples, plotRefSample))
+            if (!(is.na(plotRefSample))) {
+                print(plotCompBias(dgelist = y, samples, plotRefSample))
+            }
 
         } else if (normalization == "skip") {
             message("skipping additional normalizations")
@@ -237,7 +239,8 @@ fitDiffTSS <-
 
         ## return the fit
         return(fit)
-    }
+          }
+    )
 
 
 #' Make DESeq2 or edgeR QC plots
