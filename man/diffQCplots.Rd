@@ -6,6 +6,13 @@
 \usage{
 diffQCplots(method, fit, y)
 }
+\arguments{
+\item{method}{one of "DESeq2" or "edgeR"}
+
+\item{fit}{output of fitDiffTSS (if method = "edgeR")}
+
+\item{y}{output of fitDiffTSS (if method = "DESeq2")}
+}
 \description{
 Make DESeq2 or edgeR QC plots
 }
