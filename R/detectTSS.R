@@ -80,9 +80,10 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'                is half of the specified window length.
 #' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
 #'        usual' amount of starting material and squencing depth (>=5ug starting material,
-#'        = 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
+#'        = 5 mil reads/sample), a cut-off of 4-6 fold can be used. For samples with low
 #'        amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
-#'        samples with 500ng starting material).
+#'        samples with 500ng starting material). The final "score" of detected TSS is the mean
+#'        fold-change of all consecutive windows that passed the foldChange cutoff.
 #' @param restrictChr Chromosomes to restrict the analysis to.
 #' @param ncores No. of cores/threads to use
 #'
