@@ -119,6 +119,7 @@ setMethod("detectTSS",
                     windowSize,
                     sliding,
                     foldChange,
+                    mergeLength,
                     restrictChr,
                     ncores
                     ) {

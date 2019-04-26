@@ -10,8 +10,9 @@ detectTSS(CSobject, groups, outfile_prefix = NULL, windowSize = 10L,
   sliding = TRUE, foldChange = 2, mergeLength = 1L,
   restrictChr = NULL, ncores = 1)
 
-\S4method{detectTSS}{CapSet}(CSobject, groups, outfile_prefix, windowSize,
-  sliding, foldChange, restrictChr, ncores)
+\S4method{detectTSS}{CapSet}(CSobject, groups, outfile_prefix = NULL,
+  windowSize = 10L, sliding = TRUE, foldChange = 2,
+  mergeLength = 1L, restrictChr = NULL, ncores = 1)
 }
 \arguments{
 \item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
