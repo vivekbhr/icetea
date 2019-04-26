@@ -7,11 +7,11 @@
 \title{Detection of Trancription start sites based on local enrichment}
 \usage{
 detectTSS(CSobject, groups, outfile_prefix = NULL, windowSize = 10L,
-  sliding = TRUE, foldChange = 2, restrictChr = NULL, ncores = 1)
-
-\S4method{detectTSS}{CapSet}(CSobject, groups, outfile_prefix = NULL,
-  windowSize = 10L, sliding = TRUE, foldChange = 2,
+  sliding = TRUE, foldChange = 2, mergeLength = 1L,
   restrictChr = NULL, ncores = 1)
+
+\S4method{detectTSS}{CapSet}(CSobject, groups, outfile_prefix, windowSize,
+  sliding, foldChange, restrictChr, ncores)
 }
 \arguments{
 \item{CSobject}{CapSet object created using \code{\link{newCapSet}} function}
@@ -31,11 +31,14 @@ are merged with a distance cutoff, which is the same as window size to get final
 \item{sliding}{TRUE/FALSE. Indicating whether or not to use sliding windows. The windows are shifted by length which
 is half of the specified window length.}
 
-\item{foldChange}{A fold change cutoff of local enrichment to detect the TSS. For samples with
+\item{foldChange}{Numeric. A fold change cutoff of local enrichment to detect the TSS. For samples with
 usual' amount of starting material and squencing depth (>=5ug starting material,
 = 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
 amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 samples with 500ng starting material).}
+
+\item{mergeLength}{Integer. Merge the windows within this distance that pass the foldChange cutoff.
+Default (1L) means that only subsequently enriched windows would be merged.}
 
 \item{restrictChr}{Chromosomes to restrict the analysis to.}
 

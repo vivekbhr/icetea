@@ -78,11 +78,13 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'                   are merged with a distance cutoff, which is the same as window size to get final TSS widths.
 #' @param sliding TRUE/FALSE. Indicating whether or not to use sliding windows. The windows are shifted by length which
 #'                is half of the specified window length.
-#' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
+#' @param foldChange Numeric. A fold change cutoff of local enrichment to detect the TSS. For samples with
 #'        usual' amount of starting material and squencing depth (>=5ug starting material,
 #'        = 5 mil reads/sample), a cut-off of 6 fold can be used. For samples with low
 #'        amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
 #'        samples with 500ng starting material).
+#' @param mergeLength Integer. Merge the windows within this distance that pass the foldChange cutoff.
+#'                    Default (1L) means that only subsequently enriched windows would be merged.
 #' @param restrictChr Chromosomes to restrict the analysis to.
 #' @param ncores No. of cores/threads to use
 #'
@@ -155,7 +157,7 @@ setMethod("detectTSS",
             }
             # window size
             bin_size <- windowSize
-            # background size (200x)
+            # background region size (200 x Window size)
             surrounds <- 200*bin_size
 
             # Count reads into sliding windows
@@ -171,7 +173,7 @@ setMethod("detectTSS",
             colnames(data) <- rownames(design)
             colData(data) <- c(colData(data), design)
 
-            # Get counts for 2kb local region surrounding each bin
+            # Get counts for background region
             neighbors <- suppressWarnings(GenomicRanges::trim(
                 GenomicRanges::resize(rowRanges(data),
                                         surrounds, fix = "center")
@@ -221,7 +223,10 @@ setMethod("detectTSS",
             ## final fold change = avgFC of windows
             merged <- lapply(filtered.data, function(d) {
                 dr <- GenomicRanges::granges(d)
-                dr_reduced <- GenomicRanges::reduce(dr, ignore.strand = FALSE, with.revmap = TRUE)
+                dr_reduced <- GenomicRanges::reduce(dr,
+                                                    min.gapwidth = mergeLength,
+                                                    ignore.strand = FALSE,
+                                                    with.revmap = TRUE)
 
                 mcols(dr_reduced) <- aggregate(dr,
                                                mcols(dr_reduced)$revmap,
