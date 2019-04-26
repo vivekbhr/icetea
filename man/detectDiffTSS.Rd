@@ -23,21 +23,11 @@ detectDiffTSS(fit, testGroup, contGroup, TSSfile = NULL,
 
 \item{contGroup}{Control group name}
 
-\item{TSSfile}{The TSS .bed file used for \code{\link{fitDiffTSS}} command}
-
-\item{MAplot_fdr}{FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)}
-
-\item{fit}{A DESeqDataSet object (output of \code{\link{fitDiffTSS}} command )}
-
-\item{testGroup}{Test group name}
-
-\item{contGroup}{Control group name}
+\item{TSSfile}{The TSS .bed file used for \code{\link{fitDiffTSS}} command (if method "edgeR" was used)}
 
 \item{MAplot_fdr}{FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)}
 }
 \value{
-A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
-
 A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 }
 \description{

@@ -149,6 +149,13 @@ setGeneric("fitDiffTSS",
 #' Detect differentially expressed Transcription Start Sites between two conditions (test)
 #' @name detectDiffTSS
 #' @rdname detectDiffTSS
+#' @param fit DGEGLM object (output of \code{\link{fitDiffTSS}} command )
+#' @param testGroup Test group name
+#' @param contGroup Control group name
+#' @param TSSfile The TSS .bed file used for \code{\link{fitDiffTSS}} command (if method "edgeR" was used)
+#' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
+#'
+#' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 #' @export
 setGeneric("detectDiffTSS",
            function(fit,

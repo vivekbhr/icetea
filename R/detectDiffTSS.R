@@ -246,6 +246,10 @@ setMethod("fitDiffTSS",
 #' Make DESeq2 or edgeR QC plots
 #' @importFrom ggplot2 ggplot aes aes_string geom_hline geom_vline geom_point labs theme_bw
 #'                     scale_shape_manual
+#' @param method one of "DESeq2" or "edgeR"
+#' @param fit output of fitDiffTSS (if method = "edgeR")
+#' @param y output of fitDiffTSS (if method = "DESeq2")
+#'
 diffQCplots <- function(method, fit, y) {
 
     if (method == "DESeq2") {
@@ -330,13 +334,6 @@ plotCompBias <- function(dgelist, samples, plotRefSample) {
 }
 
 #' @rdname detectDiffTSS
-#' @param fit DGEGLM object (output of \code{\link{fitDiffTSS}} command )
-#' @param testGroup Test group name
-#' @param contGroup Control group name
-#' @param TSSfile The TSS .bed file used for \code{\link{fitDiffTSS}} command
-#' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
-#'
-#' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 #' @importFrom limma makeContrasts
 #' @importFrom edgeR glmQLFTest
 #' @importFrom ggplot2 ggplot aes_string geom_point geom_abline scale_color_manual labs theme_gray theme
@@ -407,12 +404,6 @@ setMethod("detectDiffTSS",
 
 
 #' @rdname detectDiffTSS
-#' @param fit A DESeqDataSet object (output of \code{\link{fitDiffTSS}} command )
-#' @param testGroup Test group name
-#' @param contGroup Control group name
-#' @param MAplot_fdr FDR threshold to mark differentially expressed TSS in MAplot (NA = Don't make an MAplot)
-#'
-#' @return A \code{\link{GRanges}} object containing p-values of differential expression for each TSS.
 #' @export
 #'
 #' @importFrom DESeq2 results
