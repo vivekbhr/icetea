@@ -48,8 +48,8 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
             param = bam_param,
             BPPARAM = bp_param)
     coldat <- S4Vectors::DataFrame(bam.files = bam.files,
-                                    forward.totals = S4Vectors::colSums(assay(fdata)),
-                                    reverse.totals = S4Vectors::colSums(assay(rdata)),
+                                    forward.totals = BiocGenerics::colSums(assay(fdata)),
+                                    reverse.totals = BiocGenerics::colSums(assay(rdata)),
                                     ext = NA,
                                     rlen = 1L)
     combined <- SummarizedExperiment::SummarizedExperiment(
