@@ -12,6 +12,8 @@ diffQCplots(method, fit, y, designMat)
 \item{fit}{output of fitDiffTSS (if method = "edgeR")}
 
 \item{y}{output of fitDiffTSS (if method = "DESeq2")}
+
+\item{designMat}{design matrix (data frame)}
 }
 \value{
 Sparsity, dispersion and PCA plot (if method = DESeq2),

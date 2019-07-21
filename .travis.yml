@@ -2,7 +2,7 @@
 
 language: R
 sudo: false
-#cache: packages
+cache: packages
 r: 3.6.0
 r_github_packages:
     - r-lib/covr

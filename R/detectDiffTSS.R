@@ -250,6 +250,7 @@ setMethod("fitDiffTSS",
 #' @param method one of "DESeq2" or "edgeR"
 #' @param fit output of fitDiffTSS (if method = "edgeR")
 #' @param y output of fitDiffTSS (if method = "DESeq2")
+#' @param designMat design matrix (data frame)
 #'
 #' @return Sparsity, dispersion and PCA plot (if method = DESeq2),
 #'         BCV, dispersion and MDS plot (if method = "edgeR")
