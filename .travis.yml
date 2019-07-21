@@ -3,14 +3,14 @@
 language: R
 sudo: false
 cache: packages
-r: 3.5.0
+r: 3.6.0
 r_github_packages:
     - r-lib/covr
-    - Bioconductor/BiocParallel
+#    - Bioconductor/BiocParallel
 bioc_packages:
     - BiocCheck
 before_install:
-  Rscript -e 'BiocInstaller::biocUpdatePackages("BiocParallel")'
+  Rscript -e 'BiocManager::install("BiocParallel", update = TRUE)'
 # in order to sync with devtools::check()
 #r_check_args: --as-cran --timings --no-manual
 warnings_are_errors: true

@@ -48,8 +48,8 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
             param = bam_param,
             BPPARAM = bp_param)
     coldat <- S4Vectors::DataFrame(bam.files = bam.files,
-                                    forward.totals = S4Vectors::colSums(assay(fdata)),
-                                    reverse.totals = S4Vectors::colSums(assay(rdata)),
+                                    forward.totals = BiocGenerics::colSums(assay(fdata)),
+                                    reverse.totals = BiocGenerics::colSums(assay(rdata)),
                                     ext = NA,
                                     rlen = 1L)
     combined <- SummarizedExperiment::SummarizedExperiment(
@@ -69,21 +69,28 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #' @param CSobject CapSet object created using \code{\link{newCapSet}} function
 #' @param groups a character vector that contains group name of the sample, for replicate-based TSS
 #'               calling (see example)
+#'
 #' @param outfile_prefix Output name prefix for the .Rdata file containing window counts, background counts
 #'                       and filtering statistics calculated during TSS detection.
+#'
 #' @param windowSize Size of the window to bin the genome for TSS detection. By default, a window size of
 #'                   10 is used for binning the genome, however smaller window sizes can optionally be provided
 #'                   for higher resolution TSS detection. Note that the background size is set to 200x the
-#'                   window size (2kb for 10bp windows) to calculate local enrichment. Adjacent enriched windows
-#'                   are merged with a distance cutoff, which is the same as window size to get final TSS widths.
+#'                   window size (2kb for 10bp windows) to calculate local enrichment. Subsequently enriched windows
+#'                   are merged, unless the mergeLength is increased.
+#'
 #' @param sliding TRUE/FALSE. Indicating whether or not to use sliding windows. The windows are shifted by length which
 #'                is half of the specified window length.
-#' @param foldChange A fold change cutoff of local enrichment to detect the TSS. For samples with
-#'        usual' amount of starting material and squencing depth (>=5ug starting material,
-#'        = 5 mil reads/sample), a cut-off of 4-6 fold can be used. For samples with low
-#'        amount of material or sequencing depth, use a lower cut-off (eg. use 2-fold for
-#'        samples with 500ng starting material). The final "score" of detected TSS is the mean
-#'        fold-change of all consecutive windows that passed the foldChange cutoff.
+#'
+#' @param foldChange Numeric. A fold change cutoff of local enrichment to detect the TSS. If the
+#'                   samples have good signal enrichment over background (inspect in genome browser),
+#'                   a low cutoff of 2-fold can be used. For samples with low sequencing depth it's
+#'                   also desirable to have a low cutoff of 2-fold. The final "score" of detected TSS
+#'                   is the mean fold-change of all merged windows that passed the foldChange cutoff.
+#'                   TSSs can therefore also be filtered using this score after detectTSS is run.
+#'
+#' @param mergeLength Integer. Merge the windows within this distance that pass the foldChange cutoff.
+#'                    Default (1L) means that only subsequently enriched windows would be merged.
 #' @param restrictChr Chromosomes to restrict the analysis to.
 #' @param ncores No. of cores/threads to use
 #'
@@ -92,6 +99,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'
 #' @export
 #' @importFrom utils write.table
+#' @importFrom S4Vectors aggregate
 #' @importFrom SummarizedExperiment mcols mcols<- colData colData<- rowRanges
 #' @importFrom csaw readParam strandedCounts regionCounts filterWindows mergeWindows
 #'
@@ -118,6 +126,7 @@ setMethod("detectTSS",
                     windowSize,
                     sliding,
                     foldChange,
+                    mergeLength,
                     restrictChr,
                     ncores
                     ) {
@@ -156,7 +165,7 @@ setMethod("detectTSS",
             }
             # window size
             bin_size <- windowSize
-            # background size (200x)
+            # background region size (200 x Window size)
             surrounds <- 200*bin_size
 
             # Count reads into sliding windows
@@ -172,7 +181,7 @@ setMethod("detectTSS",
             colnames(data) <- rownames(design)
             colData(data) <- c(colData(data), design)
 
-            # Get counts for 2kb local region surrounding each bin
+            # Get counts for background region
             neighbors <- suppressWarnings(GenomicRanges::trim(
                 GenomicRanges::resize(rowRanges(data),
                                         surrounds, fix = "center")
@@ -222,7 +231,10 @@ setMethod("detectTSS",
             ## final fold change = avgFC of windows
             merged <- lapply(filtered.data, function(d) {
                 dr <- GenomicRanges::granges(d)
-                dr_reduced <- GenomicRanges::reduce(dr, ignore.strand = FALSE, with.revmap = TRUE)
+                dr_reduced <- GenomicRanges::reduce(dr,
+                                                    min.gapwidth = mergeLength,
+                                                    ignore.strand = FALSE,
+                                                    with.revmap = TRUE)
 
                 mcols(dr_reduced) <- aggregate(dr,
                                                mcols(dr_reduced)$revmap,

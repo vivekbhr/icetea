@@ -9,7 +9,7 @@ test_that("TSS calling produces expected No. of reads and peaks", {
 
     # expected No. of peaks in each group?
     expect_equal(length(cs2@tss_detected), 2)
-    vec <- c(1,3)
+    vec <- c(1,2)
     names(vec) <- c("wt", "mut")
     expect_identical(vapply(cs2@tss_detected, length, numeric(1L)), vec)
 

@@ -95,6 +95,7 @@ setGeneric("detectTSS",
                     windowSize = 10L,
                     sliding = TRUE,
                     foldChange = 2,
+                    mergeLength = 1L,
                     restrictChr = NULL,
                     ncores = 1)
             standardGeneric("detectTSS"))

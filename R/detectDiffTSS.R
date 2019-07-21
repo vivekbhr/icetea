@@ -73,7 +73,8 @@ setMethod("getNormFactors",
 #'        control for composition bias.
 #' @param ncores No. of cores/threads to use
 #'
-#' @return An object of class \link[edgeR]{DGEGLM-class}.
+#' @return An object of class \link[edgeR]{DGEGLM-class} or
+#'         \link[DESeq2]{DESeqDataSet-class}
 #'
 #' @importFrom graphics abline par plot smoothScatter
 #' @importFrom grDevices dev.off pdf
@@ -126,7 +127,7 @@ setMethod("fitDiffTSS",
         }
 
         samples <- as.character(si$samples)
-        design <- data.frame(row.names = samples, group = groups)
+        designDF <- data.frame(row.names = samples, group = groups)
 
         # Import tss locations to test
         if (is.null(TSSfile)) {
@@ -154,7 +155,7 @@ setMethod("fitDiffTSS",
             dds <- DESeq2::DESeqDataSetFromMatrix(
                 counts,
                 rowRanges = SummarizedExperiment::rowRanges(tsscounts),
-                colData = design,
+                colData = designDF,
                 design = ~group)
             if (is.null(normFactors)) {
                 message("Performing DESeq normalization")
@@ -221,7 +222,7 @@ setMethod("fitDiffTSS",
 
         } else if (method == "edgeR") {
             # proceed with edgeR
-            designm <- model.matrix( ~ 0 + group, design)
+            designm <- model.matrix( ~ 0 + group, designDF)
             y <- edgeR::estimateDisp(y, designm)
             fit <- edgeR::glmQLFit(y, designm, robust = TRUE)
             # check prior degrees of freedom (avoid Infs)
@@ -233,7 +234,7 @@ setMethod("fitDiffTSS",
         ## make plots if asked
         if (!is.null(outplots)) {
             pdf(outplots)
-            diffQCplots(method, fit, y)
+            diffQCplots(method, fit, y, designMat = designDF)
             dev.off()
         }
 
@@ -249,8 +250,12 @@ setMethod("fitDiffTSS",
 #' @param method one of "DESeq2" or "edgeR"
 #' @param fit output of fitDiffTSS (if method = "edgeR")
 #' @param y output of fitDiffTSS (if method = "DESeq2")
+#' @param designMat design matrix (data frame)
 #'
-diffQCplots <- function(method, fit, y) {
+#' @return Sparsity, dispersion and PCA plot (if method = DESeq2),
+#'         BCV, dispersion and MDS plot (if method = "edgeR")
+#'
+diffQCplots <- function(method, fit, y, designMat) {
 
     if (method == "DESeq2") {
 
@@ -296,7 +301,7 @@ diffQCplots <- function(method, fit, y) {
             out <- limma::plotMDS(
                 edgeR::cpm(y, log = TRUE),
                 main = top,
-                labels = design$group,
+                labels = designMat$group,
                 top = top
             )
         }

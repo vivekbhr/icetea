@@ -174,14 +174,20 @@ localFilter <- function(data,
     bwidth <- GenomicRanges::width(SummarizedExperiment::rowRanges(background))
 
     # avg logCPM of data
-    dat.y <- csaw::asDGEList(data, assay = assay.data)
-    dat.y <- edgeR::estimateCommonDisp(dat.y)
-    data.ab <- csaw::scaledAverage(dat.y, scale = 1, prior.count = prior.count)
+    #    dat.y <- csaw::asDGEList(data, assay = assay.data)
+    #    dat.y <- edgeR::estimateCommonDisp(dat.y)
+    data.ab <- csaw::scaledAverage(data, scale = 1,
+                                   assay.id = 1,
+                                   prior.count = prior.count)
 
     relative.width <- (bwidth  - dwidth)/dwidth
-    bg.y <- csaw::asDGEList(background, assay = assay.back)
-    bg.y <- edgeR::estimateCommonDisp(bg.y)
-    bg.y$counts <- bg.y$counts - dat.y$counts
+    #    bg.y <- csaw::asDGEList(background, assay = assay.back)
+    #    bg.y <- edgeR::estimateCommonDisp(bg.y)
+    #    bg.y$counts <- bg.y$counts - dat.y$counts
+    bg.y <- background
+    SummarizedExperiment::assay(bg.y) <-
+                   SummarizedExperiment::assay(bg.y) -
+                   SummarizedExperiment::assay(data)
 
     # Some protection for negative widths
     # (counts should be zero, so only the prior gets involved in bg.ab).
@@ -191,12 +197,14 @@ localFilter <- function(data,
         bg.y$counts[subzero,] <- 0L
     }
     # avg logCPM of background
-    bg.ab <- csaw::scaledAverage(bg.y, scale = relative.width, prior.count = prior.count)
+    bg.ab <- csaw::scaledAverage(bg.y, scale = relative.width,
+                                 assay.id = 1,
+                                 prior.count = prior.count)
     # filter stat is the fold change of data over bg
     filter.stat <- data.ab - bg.ab
 
     return(list(abundances = data.ab,
                 back.abundances = bg.ab,
                 filter = filter.stat)
-            )
+    )
 }

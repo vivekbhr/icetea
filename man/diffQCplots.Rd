@@ -4,7 +4,7 @@
 \alias{diffQCplots}
 \title{Make DESeq2 or edgeR QC plots}
 \usage{
-diffQCplots(method, fit, y)
+diffQCplots(method, fit, y, designMat)
 }
 \arguments{
 \item{method}{one of "DESeq2" or "edgeR"}
@@ -12,6 +12,12 @@ diffQCplots(method, fit, y)
 \item{fit}{output of fitDiffTSS (if method = "edgeR")}
 
 \item{y}{output of fitDiffTSS (if method = "DESeq2")}
+
+\item{designMat}{design matrix (data frame)}
+}
+\value{
+Sparsity, dispersion and PCA plot (if method = DESeq2),
+        BCV, dispersion and MDS plot (if method = "edgeR")
 }
 \description{
 Make DESeq2 or edgeR QC plots
