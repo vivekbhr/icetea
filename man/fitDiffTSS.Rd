@@ -48,7 +48,8 @@ control for composition bias.}
 \item{ncores}{No. of cores/threads to use}
 }
 \value{
-An object of class \link[edgeR]{DGEGLM-class}.
+An object of class \link[edgeR]{DGEGLM-class} or
+        \link[DESeq2]{DESeqDataSet-class}
 }
 \description{
 Detect differentially expressed Transcription Start Sites between two conditions (fit model)

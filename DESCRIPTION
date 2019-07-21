@@ -1,7 +1,7 @@
 Package: icetea
 Type: Package
 Title: Integrating Cap Enrichment with Transcript Expression Analysis
-Version: 1.4.0
+Version: 1.3.1
 Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
 Description: icetea (Integrating Cap Enrichment with Transcript Expression Analysis)
     provides functions for end-to-end analysis of multiple 5'-profiling methods such as
@@ -10,7 +10,7 @@ Description: icetea (Integrating Cap Enrichment with Transcript Expression Analy
     between group of samples, therefore, integrating the mRNA cap enrichment information
     with transcript expression analysis.
 Depends:
-    R (>= 3.5)
+    R (>= 3.6)
 Imports:
     stats,
     utils,
