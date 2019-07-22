@@ -49,7 +49,7 @@ control for composition bias.}
 }
 \value{
 An object of class \link[edgeR]{DGEGLM-class} or
-        \link[DESeq2]{DESeqDataSet-class}
+        \link[DESeq2]{DESeqDataSet}
 }
 \description{
 Detect differentially expressed Transcription Start Sites between two conditions (fit model)

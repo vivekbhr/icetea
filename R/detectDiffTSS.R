@@ -74,7 +74,7 @@ setMethod("getNormFactors",
 #' @param ncores No. of cores/threads to use
 #'
 #' @return An object of class \link[edgeR]{DGEGLM-class} or
-#'         \link[DESeq2]{DESeqDataSet-class}
+#'         \link[DESeq2]{DESeqDataSet}
 #'
 #' @importFrom graphics abline par plot smoothScatter
 #' @importFrom grDevices dev.off pdf
