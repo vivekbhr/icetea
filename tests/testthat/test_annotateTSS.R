@@ -10,7 +10,7 @@ test_that("TSS annotation produces correct table", {
                          plotValue = "number", outFile = "TSS_annot.pdf")
     # expect right output
     expect_is(annot, "data.frame")
-    expected_vals <- c(0, 7, 56, 3, 4, 4, 8)
+    expected_vals <- c(0, 7, 56, 3, 4, 3, 8)
     expect_equal(annot$value, expected_vals)
 
     })

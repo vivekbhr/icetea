@@ -2,7 +2,7 @@ Package: icetea
 Type: Package
 Title: Integrating Cap Enrichment with Transcript Expression Analysis
 Version: 1.7.0
-Authors@R: person("Vivek", "Bhardwaj", email = "bhardwaj@ie-freiburg.mpg.de", role = c("aut", "cre"))
+Authors@R: person("Vivek", "Bhardwaj", email = "v.bhardwaj@hubrecht.eu", role = c("aut", "cre"))
 Description: icetea (Integrating Cap Enrichment with Transcript Expression Analysis)
     provides functions for end-to-end analysis of multiple 5'-profiling methods such as
     CAGE, RAMPAGE and MAPCap, beginning from raw reads to detection of transcription
