@@ -132,7 +132,7 @@ get_stackedNum <- function(df) {
 #' @examples
 #'
 #' # load a txdb object
-#' library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+#' suppressMessages(library("TxDb.Dmelanogaster.UCSC.dm6.ensGene"))
 #' seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 #' transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 #'
