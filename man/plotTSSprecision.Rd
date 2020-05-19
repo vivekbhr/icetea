@@ -60,7 +60,7 @@ Plot precision of TSS detection from multiple samples present within a
 \examples{
 
 # load a txdb object
-library("TxDb.Dmelanogaster.UCSC.dm6.ensGene")
+suppressMessages(library("TxDb.Dmelanogaster.UCSC.dm6.ensGene"))
 seqlevelsStyle(TxDb.Dmelanogaster.UCSC.dm6.ensGene) <- "ENSEMBL"
 transcripts <- transcripts(TxDb.Dmelanogaster.UCSC.dm6.ensGene)
 

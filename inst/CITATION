@@ -1,0 +1,19 @@
+citHeader("To cite icetea in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title     = "{MAPCap} allows high-resolution detection and differential
+               expression analysis of transcription start sites",
+  author    = "Bhardwaj, Vivek and Semplicio, Giuseppe and Erdogdu, Niyazi Umut
+               and Manke, Thomas and Akhtar, Asifa",
+  journal   = "Nat. Commun.",
+  publisher = "Nature Publishing Group",
+  volume    =  10,
+  number    =  1,
+  pages     = 3219,
+  month     =  "jul",
+  year      =  2019,
+  language  = "en",
+  url      = "https://www.nature.com/articles/s41467-019-11115-x",
+  textVersion = "Bhardwaj, V., Semplicio, G., Erdogdu, N. U., Manke, T. & Akhtar, A. MAPCap allows high-resolution detection and differential expression analysis of transcription start sites. Nat. Commun. 10, 3219 (2019)"
+)
