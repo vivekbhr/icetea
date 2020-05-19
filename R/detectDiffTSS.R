@@ -38,7 +38,7 @@ setMethod("getNormFactors",
         ## get 5' read counts on the TSS from the bam.files
         counts <- summarizeOverlaps(features = features,
                                     reads = bam.files,
-                                    preprocess.reads = ResizeReads)
+                                    preprocess.reads = readsTo5p)
         # make DGElist
         y <- edgeR::DGEList(counts = assay(counts))
         normfacs <- edgeR::calcNormFactors(y, method = method, ...)

@@ -97,7 +97,8 @@ setGeneric("detectTSS",
                     foldChange = 2,
                     mergeLength = 1L,
                     restrictChr = NULL,
-                    ncores = 1)
+                    ncores = 1,
+                    readPos = "start")
             standardGeneric("detectTSS"))
 
 #' @name exportTSS

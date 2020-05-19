@@ -4,9 +4,14 @@
 \alias{annotateTSS}
 \title{Annotate the provided Transcription Start Sites}
 \usage{
-annotateTSS(tssBED, txdb, featureRank = c("fiveUTR", "promoter",
-  "intron", "coding", "spliceSite", "threeUTR", "intergenic"),
-  plotValue = "number", outFile = NULL)
+annotateTSS(
+  tssBED,
+  txdb,
+  featureRank = c("fiveUTR", "promoter", "intron", "coding", "spliceSite", "threeUTR",
+    "intergenic"),
+  plotValue = "number",
+  outFile = NULL
+)
 }
 \arguments{
 \item{tssBED}{A bed file with detected TSS/differential TSS coordinates}

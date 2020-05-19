@@ -6,12 +6,15 @@
 #' @param bp_param BPPARAM
 #' @param window_size integer. size of window to use
 #' @param sliding logical. perform sliding window counts?
+#' @param func function to preprocess reads
 #'
 #' @importFrom SummarizedExperiment assay rowRanges
 #'
 #' @return RangedSE object with forward and reverse strand counts
 #'
-strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window_size, sliding = FALSE) {
+strandBinCounts <- function(bam.files, restrictChrs, bam_param, 
+                            bp_param, window_size, sliding = FALSE,
+                            func) {
 
     if (sliding == FALSE) {
         windows <- getChromBins(bam.files, restrictChr = restrictChrs, binSize = window_size)
@@ -31,7 +34,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
             inter.feature = ignoreMultiMap,
             singleEnd = TRUE,
             fragments = FALSE,
-            preprocess.reads = ResizeReads,
+            preprocess.reads = func,
             param = bam_param,
             BPPARAM = bp_param)
 
@@ -44,7 +47,7 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
             inter.feature = ignoreMultiMap,
             singleEnd = TRUE,
             fragments = FALSE,
-            preprocess.reads = ResizeReads,
+            preprocess.reads = func,
             param = bam_param,
             BPPARAM = bp_param)
     coldat <- S4Vectors::DataFrame(bam.files = bam.files,
@@ -93,6 +96,9 @@ strandBinCounts <- function(bam.files, restrictChrs, bam_param, bp_param, window
 #'                    Default (1L) means that only subsequently enriched windows would be merged.
 #' @param restrictChr Chromosomes to restrict the analysis to.
 #' @param ncores No. of cores/threads to use
+#' @param readPos character. position of read to use. Options are "start", "end" and "center". 
+#'                For TSS detection, the "start" of reads are used (default). But center or end might be 
+#'                useful for detecting RNA-binding proteins (in iCLIP-like data)
 #'
 #' @return .bed files containing TSS position for each group, along with a bed file for consensus
 #'        (union) TSS sites of all samples.
@@ -128,8 +134,8 @@ setMethod("detectTSS",
                     foldChange,
                     mergeLength,
                     restrictChr,
-                    ncores
-                    ) {
+                    ncores,
+                    readPos) {
             # check whether group and outfile_prefix is provided
             if (missing(outfile_prefix))
                 stop("Please provide outfile_prefix!")
@@ -167,13 +173,20 @@ setMethod("detectTSS",
             bin_size <- windowSize
             # background region size (200 x Window size)
             surrounds <- 200*bin_size
-
+            
+            ## resize to read pos as requested
+            ppfunc <- switch(readPos,
+                   "start" = readsTo5p,
+                   "end" = readsTo3p,
+                   "center" = readsToCenter)
+            
             # Count reads into sliding windows
             data <- strandBinCounts(bam.files, restrictChr,
                                     bam_param = bamParams,
                                     bp_param = bpParams,
                                     window_size = bin_size,
-                                    sliding = sliding)
+                                    sliding = sliding,
+                                    func = ppfunc)
               # add metadata
             #mdat <- list(spacing = bin_size, width = bin_size,
             #            shift = 0, bin = TRUE, final.ext = 1)
@@ -197,7 +210,7 @@ setMethod("detectTSS",
                     inter.feature = FALSE,
                     singleEnd = TRUE,
                     fragments = FALSE,
-                    preprocess.reads = ResizeReads,
+                    preprocess.reads = ppfunc,
                     param = bamParams,
                     BPPARAM = bpParams)
                   })
@@ -219,7 +232,7 @@ setMethod("detectTSS",
 
             # Require X-fold enrichment over local background to keep the window (similar to MACS)
             keep <- lapply(filterstat, function(x) {
-                kp <- x$filter > log2(foldChange)
+                kp <- x$logFC > log2(foldChange)
                 return(kp)
             })
 
@@ -229,8 +242,10 @@ setMethod("detectTSS",
 
             ## merge nearby windows (within bin_size) to get broader TSS
             ## final fold change = avgFC of windows
-            merged <- lapply(filtered.data, function(d) {
-                dr <- GenomicRanges::granges(d)
+            merged <- lapply(seq_along(filtered.data), function(d) {
+                dr <- GenomicRanges::granges(filtered.data[[d]])
+                drm <- mcols(dr)
+                dr$logFC <- drm[[d]]$logFC
                 dr_reduced <- GenomicRanges::reduce(dr,
                                                     min.gapwidth = mergeLength,
                                                     ignore.strand = FALSE,
@@ -238,7 +253,7 @@ setMethod("detectTSS",
 
                 mcols(dr_reduced) <- aggregate(dr,
                                                mcols(dr_reduced)$revmap,
-                                               score = BiocGenerics::mean(filter))
+                                               score = BiocGenerics::mean(logFC))
                 return(dr_reduced)
             })
 

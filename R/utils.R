@@ -141,11 +141,40 @@ getChromWindows <- function(bamFiles, restrictChr = NULL, binSize, stepSize) {
 #'
 #' @return Resized reads as GRanges
 #'
-ResizeReads <- function(reads, width = 1, fix = "start") {
+readsTo5p <- function(reads, width = 1, fix = "start") {
     reads <- as(reads, "GRanges")
     stopifnot(all(GenomicRanges::strand(reads) != "*"))
     GenomicRanges::resize(reads, width = width, fix = fix)
 }
+
+#' preprocess reads to count only 3' overlaps
+#'
+#' @param reads GAlignment object to resize
+#' @param width integer. New read length
+#' @param fix character. 'Start' for 5'
+#'
+#' @return Resized reads as GRanges
+#'
+readsTo3p <- function(reads, width = 1, fix = "end") {
+    reads <- as(reads, "GRanges")
+    stopifnot(all(GenomicRanges::strand(reads) != "*"))
+    GenomicRanges::resize(reads, width = width, fix = fix)
+}
+
+#' preprocess reads to count only center overlaps
+#'
+#' @param reads GAlignment object to resize
+#' @param width integer. New read length
+#' @param fix character. 'Start' for 5'
+#'
+#' @return Resized reads as GRanges
+#'
+readsToCenter <- function(reads, width = 1, fix = "center") {
+    reads <- as(reads, "GRanges")
+    stopifnot(all(GenomicRanges::strand(reads) != "*"))
+    GenomicRanges::resize(reads, width = width, fix = fix)
+}
+
 
 # Calculate local enrichment of windows over background
 # 'local' filter copied and modified from csaw::filterWindows
@@ -205,6 +234,6 @@ localFilter <- function(data,
 
     return(list(abundances = data.ab,
                 back.abundances = bg.ab,
-                filter = filter.stat)
+                logFC = filter.stat)
     )
 }

@@ -7,14 +7,29 @@
 \alias{plotTSSprecision,GRanges,CapSet-method}
 \title{Compare the precision of TSS detection between multiple samples}
 \usage{
-plotTSSprecision(reference, detectedTSS, distanceCutoff = 500,
-  outFile = NULL, ...)
+plotTSSprecision(
+  reference,
+  detectedTSS,
+  distanceCutoff = 500,
+  outFile = NULL,
+  ...
+)
 
-\S4method{plotTSSprecision}{GRanges,character}(reference, detectedTSS,
-  distanceCutoff = 500, outFile = NULL, sampleNames)
+\S4method{plotTSSprecision}{GRanges,character}(
+  reference,
+  detectedTSS,
+  distanceCutoff = 500,
+  outFile = NULL,
+  sampleNames
+)
 
-\S4method{plotTSSprecision}{GRanges,CapSet}(reference, detectedTSS,
-  distanceCutoff = 500, outFile = NULL, ...)
+\S4method{plotTSSprecision}{GRanges,CapSet}(
+  reference,
+  detectedTSS,
+  distanceCutoff = 500,
+  outFile = NULL,
+  ...
+)
 }
 \arguments{
 \item{reference}{Reference Transcrips/Genes as a \code{\link{GRanges}} object}
