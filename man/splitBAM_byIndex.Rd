@@ -4,8 +4,13 @@
 \alias{splitBAM_byIndex}
 \title{Split the composite BAM file using internal indexes (MAPCap)}
 \usage{
-splitBAM_byIndex(bamFile, index_list, outfile_list, max_mismatch = 0,
-  ncores = 1)
+splitBAM_byIndex(
+  bamFile,
+  index_list,
+  outfile_list,
+  max_mismatch = 0,
+  ncores = 1
+)
 }
 \arguments{
 \item{bamFile}{character. Path to a mapped BAM file}

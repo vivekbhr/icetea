@@ -4,8 +4,15 @@
 \alias{split_fastq}
 \title{Split paired-end fastq by barcodes}
 \usage{
-split_fastq(expType, idx_name, outfile_R1, outfile_R2, fastq_R1, fastq_R2,
-  max_mismatch)
+split_fastq(
+  expType,
+  idx_name,
+  outfile_R1,
+  outfile_R2,
+  fastq_R1,
+  fastq_R2,
+  max_mismatch
+)
 }
 \arguments{
 \item{expType}{character. experiment type (RAMPAGE, MAPCap or CAGE)}
