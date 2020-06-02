@@ -13,3 +13,11 @@ Functions for :
 6. Annotation of detected TSS.
 7. QC plots
 8. Other helper functions.
+
+
+icetea v1.8 (Release date: 02-06-2020)
+==============
+
+Changes:
+
+* Additional option to use either 3' or center of the reads when doing TSS calling. This would be useful for protocols like iCLiP etc. Default is to use 5' site (for CAGE-like protocols)
